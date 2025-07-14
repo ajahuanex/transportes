@@ -23,6 +23,10 @@ Este repositorio contiene el monorepo para el sistema de gestión DRTC Puno, que
 - Proyecto Angular inicializado con Angular CLI 20.1.0.
 - Configurado para usar SCSS.
 - Angular Material instalado y configurado.
+- **¡IMPORTANTE: Se está siguiendo un enfoque moderno de Angular 20!**
+  - **Nomenclatura de Archivos:** Los nombres de archivos de servicios y otros artefactos tienden a ser más concisos (ej., `users.ts` en lugar de `users.service.ts`).
+  - **Control Flow (`@if`, `@for`, `@switch`):** Se prefiere el nuevo control flow incorporado en las plantillas de Angular (ej., `@if` en lugar de `*ngIf`) para una mayor eficiencia y legibilidad.
+  - **Signals:** El uso de Signals es el enfoque preferido para la reactividad y la gestión de estado, ofreciendo un rendimiento más eficiente y una mejor experiencia de desarrollo.
 - Para más detalles, consultar `transportes_frontend/GEMINI.md`.
 
 ## Próximos Pasos Acordados
