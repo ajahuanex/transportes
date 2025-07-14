@@ -1,0 +1,66 @@
+<div class="user-form-container">
+  <h2>{{ user ? 'Editar Usuario' : 'Crear Usuario' }}</h2>
+
+  <form [formGroup]="userForm" (ngSubmit)="onSubmit()">
+    <div class="form-group">
+      <label for="username">Username:</label>
+      <input id="username" type="text" formControlName="username">
+      @if (userForm.get('username')?.invalid && userForm.get('username')?.touched) {
+        <div class="error-message">Username es requerido.</div>
+      }
+    </div>
+
+    <div class="form-group">
+      <label for="nombres">Nombres:</label>
+      <input id="nombres" type="text" formControlName="nombres">
+      @if (userForm.get('nombres')?.invalid && userForm.get('nombres')?.touched) {
+        <div class="error-message">Nombres es requerido.</div>
+      }
+    </div>
+
+    <div class="form-group">
+      <label for="apellidos">Apellidos:</label>
+      <input id="apellidos" type="text" formControlName="apellidos">
+      @if (userForm.get('apellidos')?.invalid && userForm.get('apellidos')?.touched) {
+        <div class="error-message">Apellidos es requerido.</div>
+      }
+    </div>
+
+    <div class="form-group">
+      <label for="dni">DNI:</label>
+      <input id="dni" type="text" formControlName="dni">
+      @if (userForm.get('dni')?.invalid && userForm.get('dni')?.touched) {
+        <div class="error-message">DNI es requerido.</div>
+      }
+    </div>
+
+    <div class="form-group">
+      <label for="email">Email:</label>
+      <input id="email" type="email" formControlName="email">
+      @if (userForm.get('email')?.invalid && userForm.get('email')?.touched) {
+        @if (userForm.get('email')?.errors?.['required']) {
+          <div class="error-message">Email es requerido.</div>
+        }
+        @if (userForm.get('email')?.errors?.['email']) {
+          <div class="error-message">Email inválido.</div>
+        }
+      }
+    </div>
+
+    <div class="form-group">
+      <label for="roles">Roles (separados por coma):</label>
+      <input id="roles" type="text" formControlName="roles">
+    </div>
+
+    <div class="form-group">
+      <label for="password">Password:</label>
+      <input id="password" type="password" formControlName="password">
+      @if (userForm.get('password')?.invalid && userForm.get('password')?.touched) {
+        <div class="error-message">Password es requerido.</div>
+      }
+    </div>
+
+    <button type="submit" [disabled]="userForm.invalid">{{ user ? 'Guardar Cambios' : 'Crear Usuario' }}</button>
+    <button type="button" (click)="onCancel()">Cancelar</button>
+  </form>
+</div>

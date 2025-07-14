@@ -1,0 +1,270 @@
+<div class="tuc-form-container">
+  <h2>{{ tuc ? 'Editar TUC' : 'Crear TUC' }}</h2>
+
+  <form [formGroup]="tucForm" (ngSubmit)="onSubmit()">
+    <div class="form-group">
+      <label for="numero_tuc">Número TUC:</label>
+      <input id="numero_tuc" type="text" formControlName="numero_tuc">
+      @if (tucForm.get('numero_tuc')?.invalid && tucForm.get('numero_tuc')?.touched) {
+        <div class="error-message">Número TUC es requerido.</div>
+      }
+    </div>
+
+    <div class="form-group">
+      <label for="numero_tuc_primigenia">Número TUC Primigenia (Opcional):</label>
+      <input id="numero_tuc_primigenia" type="text" formControlName="numero_tuc_primigenia">
+    </div>
+
+    <div class="form-group">
+      <label for="tipo_generacion">Tipo de Generación:</label>
+      <input id="tipo_generacion" type="text" formControlName="tipo_generacion">
+      @if (tucForm.get('tipo_generacion')?.invalid && tucForm.get('tipo_generacion')?.touched) {
+        <div class="error-message">Tipo de Generación es requerido.</div>
+      }
+    </div>
+
+    <div class="form-group">
+      <label for="empresa_id">ID Empresa:</label>
+      <input id="empresa_id" type="text" formControlName="empresa_id">
+      @if (tucForm.get('empresa_id')?.invalid && tucForm.get('empresa_id')?.touched) {
+        <div class="error-message">ID Empresa es requerido.</div>
+      }
+    </div>
+
+    <div class="form-group">
+      <label for="ruc_empresa">RUC Empresa:</label>
+      <input id="ruc_empresa" type="text" formControlName="ruc_empresa">
+      @if (tucForm.get('ruc_empresa')?.invalid && tucForm.get('ruc_empresa')?.touched) {
+        <div class="error-message">RUC Empresa es requerido.</div>
+      }
+    </div>
+
+    <div class="form-group">
+      <label for="razon_social_empresa">Razón Social Empresa:</label>
+      <input id="razon_social_empresa" type="text" formControlName="razon_social_empresa">
+      @if (tucForm.get('razon_social_empresa')?.invalid && tucForm.get('razon_social_empresa')?.touched) {
+        <div class="error-message">Razón Social Empresa es requerida.</div>
+      }
+    </div>
+
+    <div class="form-group">
+      <label for="nombre_representante_legal">Nombre Representante Legal (Opcional):</label>
+      <input id="nombre_representante_legal" type="text" formControlName="nombre_representante_legal">
+    </div>
+
+    <div class="form-group">
+      <label for="vehiculo_id">ID Vehículo:</label>
+      <input id="vehiculo_id" type="text" formControlName="vehiculo_id">
+      @if (tucForm.get('vehiculo_id')?.invalid && tucForm.get('vehiculo_id')?.touched) {
+        <div class="error-message">ID Vehículo es requerido.</div>
+      }
+    </div>
+
+    <div class="form-group">
+      <label for="placa_vehiculo">Placa Vehículo:</label>
+      <input id="placa_vehiculo" type="text" formControlName="placa_vehiculo">
+      @if (tucForm.get('placa_vehiculo')?.invalid && tucForm.get('placa_vehiculo')?.touched) {
+        <div class="error-message">Placa Vehículo es requerida.</div>
+      }
+    </div>
+
+    <div class="form-group">
+      <label for="marca_vehiculo">Marca Vehículo:</label>
+      <input id="marca_vehiculo" type="text" formControlName="marca_vehiculo">
+      @if (tucForm.get('marca_vehiculo')?.invalid && tucForm.get('marca_vehiculo')?.touched) {
+        <div class="error-message">Marca Vehículo es requerida.</div>
+      }
+    </div>
+
+    <div class="form-group">
+      <label for="modelo_vehiculo">Modelo Vehículo:</label>
+      <input id="modelo_vehiculo" type="text" formControlName="modelo_vehiculo">
+      @if (tucForm.get('modelo_vehiculo')?.invalid && tucForm.get('modelo_vehiculo')?.touched) {
+        <div class="error-message">Modelo Vehículo es requerido.</div>
+      }
+    </div>
+
+    <div class="form-group">
+      <label for="anio_fabricacion_vehiculo">Año Fabricación Vehículo:</label>
+      <input id="anio_fabricacion_vehiculo" type="number" formControlName="anio_fabricacion_vehiculo">
+      @if (tucForm.get('anio_fabricacion_vehiculo')?.invalid && tucForm.get('anio_fabricacion_vehiculo')?.touched) {
+        <div class="error-message">Año Fabricación Vehículo es requerido.</div>
+      }
+    </div>
+
+    <div class="form-group">
+      <label for="color_vehiculo">Color Vehículo (Opcional):</label>
+      <input id="color_vehiculo" type="text" formControlName="color_vehiculo">
+    </div>
+
+    <div class="form-group">
+      <label for="categoria_vehiculo">Categoría Vehículo:</label>
+      <input id="categoria_vehiculo" type="text" formControlName="categoria_vehiculo">
+      @if (tucForm.get('categoria_vehiculo')?.invalid && tucForm.get('categoria_vehiculo')?.touched) {
+        <div class="error-message">Categoría Vehículo es requerida.</div>
+      }
+    </div>
+
+    <div class="form-group">
+      <label for="carroceria_vehiculo">Carrocería Vehículo (Opcional):</label>
+      <input id="carroceria_vehiculo" type="text" formControlName="carroceria_vehiculo">
+    </div>
+
+    <div class="form-group">
+      <label for="clase_vehiculo">Clase Vehículo (Opcional):</label>
+      <input id="clase_vehiculo" type="text" formControlName="clase_vehiculo">
+    </div>
+
+    <div class="form-group">
+      <label for="combustible_vehiculo">Combustible Vehículo (Opcional):</label>
+      <input id="combustible_vehiculo" type="text" formControlName="combustible_vehiculo">
+    </div>
+
+    <div class="form-group">
+      <label for="numero_motor_vehiculo">Número Motor Vehículo (Opcional):</label>
+      <input id="numero_motor_vehiculo" type="text" formControlName="numero_motor_vehiculo">
+    </div>
+
+    <div class="form-group">
+      <label for="numero_serie_vin_vehiculo">Número Serie VIN Vehículo (Opcional):</label>
+      <input id="numero_serie_vin_vehiculo" type="text" formControlName="numero_serie_vin_vehiculo">
+    </div>
+
+    <div class="form-group">
+      <label for="num_asientos_vehiculo">Número Asientos Vehículo (Opcional):</label>
+      <input id="num_asientos_vehiculo" type="number" formControlName="num_asientos_vehiculo">
+    </div>
+
+    <div class="form-group">
+      <label for="num_pasajeros_vehiculo">Número Pasajeros Vehículo (Opcional):</label>
+      <input id="num_pasajeros_vehiculo" type="number" formControlName="num_pasajeros_vehiculo">
+    </div>
+
+    <div class="form-group">
+      <label for="cilindros_vehiculo">Cilindros Vehículo (Opcional):</label>
+      <input id="cilindros_vehiculo" type="number" formControlName="cilindros_vehiculo">
+    </div>
+
+    <div class="form-group">
+      <label for="ejes_vehiculo">Ejes Vehículo (Opcional):</label>
+      <input id="ejes_vehiculo" type="number" formControlName="ejes_vehiculo">
+    </div>
+
+    <div class="form-group">
+      <label for="ruedas_vehiculo">Ruedas Vehículo (Opcional):</label>
+      <input id="ruedas_vehiculo" type="number" formControlName="ruedas_vehiculo">
+    </div>
+
+    <div class="form-group">
+      <label for="peso_bruto_vehiculo">Peso Bruto Vehículo (Opcional):</label>
+      <input id="peso_bruto_vehiculo" type="number" formControlName="peso_bruto_vehiculo">
+    </div>
+
+    <div class="form-group">
+      <label for="peso_neto_vehiculo">Peso Neto Vehículo (Opcional):</label>
+      <input id="peso_neto_vehiculo" type="number" formControlName="peso_neto_vehiculo">
+    </div>
+
+    <div class="form-group">
+      <label for="carga_util_vehiculo">Carga Útil Vehículo (Opcional):</label>
+      <input id="carga_util_vehiculo" type="number" formControlName="carga_util_vehiculo">
+    </div>
+
+    <div class="form-group">
+      <label for="largo_vehiculo">Largo Vehículo (Opcional):</label>
+      <input id="largo_vehiculo" type="number" formControlName="largo_vehiculo">
+    </div>
+
+    <div class="form-group">
+      <label for="ancho_vehiculo">Ancho Vehículo (Opcional):</label>
+      <input id="ancho_vehiculo" type="number" formControlName="ancho_vehiculo">
+    </div>
+
+    <div class="form-group">
+      <label for="alto_vehiculo">Alto Vehículo (Opcional):</label>
+      <input id="alto_vehiculo" type="number" formControlName="alto_vehiculo">
+    </div>
+
+    <div class="form-group">
+      <label for="resolucion_origen_id">ID Resolución Origen:</label>
+      <input id="resolucion_origen_id" type="text" formControlName="resolucion_origen_id">
+      @if (tucForm.get('resolucion_origen_id')?.invalid && tucForm.get('resolucion_origen_id')?.touched) {
+        <div class="error-message">ID Resolución Origen es requerido.</div>
+      }
+    </div>
+
+    <div class="form-group">
+      <label for="numero_resolucion">Número Resolución:</label>
+      <input id="numero_resolucion" type="text" formControlName="numero_resolucion">
+      @if (tucForm.get('numero_resolucion')?.invalid && tucForm.get('numero_resolucion')?.touched) {
+        <div class="error-message">Número Resolución es requerido.</div>
+      }
+    </div>
+
+    <div class="form-group">
+      <label for="fecha_resolucion">Fecha Resolución:</label>
+      <input id="fecha_resolucion" type="date" formControlName="fecha_resolucion">
+      @if (tucForm.get('fecha_resolucion')?.invalid && tucForm.get('fecha_resolucion')?.touched) {
+        <div class="error-message">Fecha Resolución es requerida.</div>
+      }
+    </div>
+
+    <div class="form-group">
+      <label for="tipo_resolucion">Tipo Resolución:</label>
+      <input id="tipo_resolucion" type="text" formControlName="tipo_resolucion">
+      @if (tucForm.get('tipo_resolucion')?.invalid && tucForm.get('tipo_resolucion')?.touched) {
+        <div class="error-message">Tipo Resolución es requerido.</div>
+      }
+    </div>
+
+    <div class="form-group">
+      <label for="expediente_id">ID Expediente:</label>
+      <input id="expediente_id" type="text" formControlName="expediente_id">
+      @if (tucForm.get('expediente_id')?.invalid && tucForm.get('expediente_id')?.touched) {
+        <div class="error-message">ID Expediente es requerido.</div>
+      }
+    </div>
+
+    <div class="form-group">
+      <label for="numero_expediente">Número Expediente:</label>
+      <input id="numero_expediente" type="text" formControlName="numero_expediente">
+      @if (tucForm.get('numero_expediente')?.invalid && tucForm.get('numero_expediente')?.touched) {
+        <div class="error-message">Número Expediente es requerido.</div>
+      }
+    </div>
+
+    <div class="form-group">
+      <label for="fecha_emision">Fecha Emisión (Opcional):</label>
+      <input id="fecha_emision" type="date" formControlName="fecha_emision">
+    </div>
+
+    <div class="form-group">
+      <label for="fecha_vencimiento">Fecha Vencimiento:</label>
+      <input id="fecha_vencimiento" type="date" formControlName="fecha_vencimiento">
+      @if (tucForm.get('fecha_vencimiento')?.invalid && tucForm.get('fecha_vencimiento')?.touched) {
+        <div class="error-message">Fecha Vencimiento es requerida.</div>
+      }
+    </div>
+
+    <div class="form-group">
+      <label for="estado">Estado:</label>
+      <input id="estado" type="text" formControlName="estado">
+      @if (tucForm.get('estado')?.invalid && tucForm.get('estado')?.touched) {
+        <div class="error-message">Estado es requerido.</div>
+      }
+    </div>
+
+    <div class="form-group">
+      <label for="motivo_estado">Motivo Estado (Opcional):</label>
+      <input id="motivo_estado" type="text" formControlName="motivo_estado">
+    </div>
+
+    <div class="form-group">
+      <label for="observaciones_tuc">Observaciones TUC (Opcional):</label>
+      <textarea id="observaciones_tuc" formControlName="observaciones_tuc"></textarea>
+    </div>
+
+    <button type="submit" [disabled]="tucForm.invalid">{{ tuc ? 'Guardar Cambios' : 'Crear TUC' }}</button>
+    <button type="button" (click)="onCancel()">Cancelar</button>
+  </form>
+</div>

@@ -1,0 +1,49 @@
+<div class="ticket-list-container">
+  <h2>Lista de Papeletas</h2>
+
+  <button (click)="createTicket()">Crear Papeleta</button>
+
+  @if (tickets().length === 0) {
+    <div class="no-tickets-message">
+      <p>No hay papeletas registradas.</p>
+    </div>
+  } @else {
+    <table>
+      <thead>
+        <tr>
+          <th>ID</th>
+          <th>Número Papeleta</th>
+          <th>Fecha Infracción</th>
+          <th>Tipo Infracción</th>
+          <th>Monto Multa</th>
+          <th>Empresa Responsable RUC</th>
+          <th>Estado Multa</th>
+          <th>Estado Lógico</th>
+          <th>Acciones</th>
+        </tr>
+      </thead>
+      <tbody>
+        @for (ticket of tickets(); track ticket._id) {
+          <tr>
+            <td>{{ ticket._id }}</td>
+            <td>{{ ticket.numero_papeleta }}</td>
+            <td>{{ ticket.fecha_infraccion | date:'shortDate' }}</td>
+            <td>{{ ticket.tipo_infraccion }}</td>
+            <td>{{ ticket.monto_multa }} {{ ticket.moneda }}</td>
+            <td>{{ ticket.ruc_empresa_responsable }}</td>
+            <td>{{ ticket.estado_multa }}</td>
+            <td>{{ ticket.estado_logico }}</td>
+            <td>
+              <button (click)="editTicket(ticket._id)">Editar</button>
+              @if (ticket.estado_logico === 'ACTIVO') {
+                <button (click)="softDeleteTicket(ticket._id)">Eliminar</button>
+              } @else {
+                <button (click)="restoreTicket(ticket._id)">Restaurar</button>
+              }
+            </td>
+          </tr>
+        }
+      </tbody>
+    </table>
+  }
+</div>

@@ -1,0 +1,51 @@
+<div class="resolution-list-container">
+  <h2>Lista de Resoluciones</h2>
+
+  <button (click)="createResolution()">Crear Resolución</button>
+
+  @if (resolutions().length === 0) {
+    <div class="no-resolutions-message">
+      <p>No hay resoluciones registradas.</p>
+    </div>
+  } @else {
+    <table>
+      <thead>
+        <tr>
+          <th>ID</th>
+          <th>Número Resolución</th>
+          <th>Expediente Origen ID</th>
+          <th>Tipo Trámite</th>
+          <th>Fecha Emisión</th>
+          <th>Empresa Afectada ID</th>
+          <th>RUC Empresa Afectada</th>
+          <th>Estado Resolución</th>
+          <th>Estado Lógico</th>
+          <th>Acciones</th>
+        </tr>
+      </thead>
+      <tbody>
+        @for (resolution of resolutions(); track resolution._id) {
+          <tr>
+            <td>{{ resolution._id }}</td>
+            <td>{{ resolution.numero_resolucion }}</td>
+            <td>{{ resolution.expediente_origen_id }}</td>
+            <td>{{ resolution.tipo_tramite }}</td>
+            <td>{{ resolution.fecha_emision | date:'shortDate' }}</td>
+            <td>{{ resolution.empresa_afectada_id }}</td>
+            <td>{{ resolution.ruc_empresa_afectada }}</td>
+            <td>{{ resolution.estado_resolucion }}</td>
+            <td>{{ resolution.estado_logico }}</td>
+            <td>
+              <button (click)="editResolution(resolution._id)">Editar</button>
+              @if (resolution.estado_logico === 'ACTIVO') {
+                <button (click)="softDeleteResolution(resolution._id)">Eliminar</button>
+              } @else {
+                <button (click)="restoreResolution(resolution._id)">Restaurar</button>
+              }
+            </td>
+          </tr>
+        }
+      </tbody>
+    </table>
+  }
+</div>

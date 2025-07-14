@@ -23,6 +23,10 @@ Domingo, 13 de julio de 2025
   - Infracciones y Multas
   - Configuración MTC
   - Papeletas
+- **Refactorización de Endpoints:**
+  - Orden de rutas corregido para evitar conflictos (rutas específicas antes que generales).
+  - Implementación de soft delete y restauración a través de peticiones `PUT` para todas las entidades aplicables, eliminando endpoints `DELETE` y `POST /restore` dedicados.
+  - Campo `estado_logico` añadido a la entidad `Resoluciones` para permitir soft delete.
 
 ### Frontend (Angular)
 - Repositorio Git separado (ignorado por el backend).

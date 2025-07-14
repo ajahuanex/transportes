@@ -1,0 +1,52 @@
+<div class="company-form-container">
+  <h2>{{ company ? 'Editar Empresa' : 'Crear Empresa' }}</h2>
+
+  <form [formGroup]="companyForm" (ngSubmit)="onSubmit()">
+    <div class="form-group">
+      <label for="ruc">RUC:</label>
+      <input id="ruc" type="text" formControlName="ruc">
+      @if (companyForm.get('ruc')?.invalid && companyForm.get('ruc')?.touched) {
+        <div class="error-message">RUC es requerido.</div>
+      }
+    </div>
+
+    <div class="form-group">
+      <label for="razon_social">Razón Social:</label>
+      <input id="razon_social" type="text" formControlName="razon_social">
+      @if (companyForm.get('razon_social')?.invalid && companyForm.get('razon_social')?.touched) {
+        <div class="error-message">Razón Social es requerida.</div>
+      }
+    </div>
+
+    <div class="form-group">
+      <label for="nombre_comercial">Nombre Comercial:</label>
+      <input id="nombre_comercial" type="text" formControlName="nombre_comercial">
+    </div>
+
+    <div class="form-group">
+      <label for="telefono">Teléfono:</label>
+      <input id="telefono" type="text" formControlName="telefono">
+    </div>
+
+    <div class="form-group">
+      <label for="email">Email:</label>
+      <input id="email" type="email" formControlName="email">
+      @if (companyForm.get('email')?.invalid && companyForm.get('email')?.touched) {
+        @if (companyForm.get('email')?.errors?.['email']) {
+          <div class="error-message">Email inválido.</div>
+        }
+      }
+    </div>
+
+    <div class="form-group">
+      <label for="estado_habilitacion_mtc">Estado Habilitación MTC:</label>
+      <input id="estado_habilitacion_mtc" type="text" formControlName="estado_habilitacion_mtc">
+      @if (companyForm.get('estado_habilitacion_mtc')?.invalid && companyForm.get('estado_habilitacion_mtc')?.touched) {
+        <div class="error-message">Estado Habilitación MTC es requerido.</div>
+      }
+    </div>
+
+    <button type="submit" [disabled]="companyForm.invalid">{{ company ? 'Guardar Cambios' : 'Crear Empresa' }}</button>
+    <button type="button" (click)="onCancel()">Cancelar</button>
+  </form>
+</div>

@@ -1,0 +1,49 @@
+<div class="infraction-fine-list-container">
+  <h2>Lista de Infracciones y Multas</h2>
+
+  <button (click)="createInfractionFine()">Crear Infracción/Multa</button>
+
+  @if (infractionsFines().length === 0) {
+    <div class="no-infractions-fines-message">
+      <p>No hay infracciones o multas registradas.</p>
+    </div>
+  } @else {
+    <table>
+      <thead>
+        <tr>
+          <th>ID</th>
+          <th>Número Infracción</th>
+          <th>Fecha Infracción</th>
+          <th>Tipo Infracción</th>
+          <th>Monto Multa</th>
+          <th>Empresa Responsable RUC</th>
+          <th>Estado Multa</th>
+          <th>Estado Lógico</th>
+          <th>Acciones</th>
+        </tr>
+      </thead>
+      <tbody>
+        @for (infractionFine of infractionsFines(); track infractionFine._id) {
+          <tr>
+            <td>{{ infractionFine._id }}</td>
+            <td>{{ infractionFine.numero_infraccion }}</td>
+            <td>{{ infractionFine.fecha_infraccion | date:'shortDate' }}</td>
+            <td>{{ infractionFine.tipo_infraccion }}</td>
+            <td>{{ infractionFine.monto_multa }} {{ infractionFine.moneda }}</td>
+            <td>{{ infractionFine.ruc_empresa_responsable }}</td>
+            <td>{{ infractionFine.estado_multa }}</td>
+            <td>{{ infractionFine.estado_logico }}</td>
+            <td>
+              <button (click)="editInfractionFine(infractionFine._id)">Editar</button>
+              @if (infractionFine.estado_logico === 'ACTIVO') {
+                <button (click)="softDeleteInfractionFine(infractionFine._id)">Eliminar</button>
+              } @else {
+                <button (click)="restoreInfractionFine(infractionFine._id)">Restaurar</button>
+              }
+            </td>
+          </tr>
+        }
+      </tbody>
+    </table>
+  }
+</div>

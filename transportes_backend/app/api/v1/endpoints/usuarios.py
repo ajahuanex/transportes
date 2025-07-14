@@ -33,6 +33,30 @@ async def create_user(
     user = await crud_usuario.create(user_in, created_by_user_id=current_user_id)
     return user
 
+@router.get("/", response_model=List[UsuarioInDB])
+async def get_all_users(
+    skip: int = 0,
+    limit: int = 100,
+    # current_user_id: PydanticObjectId = Depends(get_current_user_id)
+):
+    """
+    Obtiene una lista de todos los usuarios (activos e inactivos).
+    """
+    users = await crud_usuario.get_multi(skip=skip, limit=limit)
+    return users
+
+@router.get("/active", response_model=List[UsuarioInDB])
+async def get_all_active_users(
+    skip: int = 0,
+    limit: int = 100,
+    # current_user_id: PydanticObjectId = Depends(get_current_user_id)
+):
+    """
+    Obtiene una lista de todos los usuarios activos.
+    """
+    users = await crud_usuario.get_multi_active(skip=skip, limit=limit)
+    return users
+
 @router.get("/{user_id}", response_model=UsuarioInDB)
 async def get_user_by_id(
     user_id: str,
@@ -56,18 +80,6 @@ async def get_user_by_id(
         )
     return user
 
-@router.get("/", response_model=List[UsuarioInDB])
-async def get_all_users(
-    skip: int = 0,
-    limit: int = 100,
-    # current_user_id: PydanticObjectId = Depends(get_current_user_id)
-):
-    """
-    Obtiene una lista de todos los usuarios (activos e inactivos).
-    """
-    users = await crud_usuario.get_multi(skip=skip, limit=limit)
-    return users
-
 @router.put("/{user_id}", response_model=UsuarioInDB)
 async def update_user(
     user_id: PydanticObjectId,
@@ -86,41 +98,4 @@ async def update_user(
     user = await crud_usuario.update(user_db, user_in, updated_by_user_id=current_user_id)
     return user
 
-@router.delete("/{user_id}", status_code=status.HTTP_204_NO_CONTENT)
-async def soft_delete_user(
-    user_id: PydanticObjectId,
-    current_user_id: PydanticObjectId = Depends(get_current_user_id) # Quien realiza la eliminación
-):
-    """
-    Realiza un soft delete de un usuario, marcándolo como eliminado lógicamente.
-    """
-    user_db = await crud_usuario.get_active(user_id)
-    if not user_db:
-        raise HTTPException(
-            status_code=status.HTTP_404_NOT_FOUND,
-            detail="Usuario no encontrado o ya eliminado."
-        )
-    await crud_usuario.soft_delete(user_db, deleted_by_user_id=current_user_id)
-    return {"message": "Usuario eliminado lógicamente."}
 
-@router.post("/{user_id}/restore", response_model=UsuarioInDB)
-async def restore_user(
-    user_id: PydanticObjectId,
-    current_user_id: PydanticObjectId = Depends(get_current_user_id) # Quien realiza la restauración
-):
-    """
-    Restaura un usuario que fue soft-deleted.
-    """
-    user_db = await crud_usuario.get(user_id) # Obtener incluso si está eliminado
-    if not user_db:
-        raise HTTPException(
-            status_code=status.HTTP_404_NOT_FOUND,
-            detail="Usuario no encontrado."
-        )
-    if user_db.estado_logico == "ACTIVO":
-        raise HTTPException(
-            status_code=status.HTTP_400_BAD_REQUEST,
-            detail="El usuario ya está activo."
-        )
-    user = await crud_usuario.restore(user_db, restored_by_user_id=current_user_id)
-    return user

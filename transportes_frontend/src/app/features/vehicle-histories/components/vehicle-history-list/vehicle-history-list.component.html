@@ -1,0 +1,39 @@
+<div class="vehicle-history-list-container">
+  <h2>Lista de Historial de Vehículos</h2>
+
+  <button (click)="createVehicleHistory()">Crear Historial de Vehículo</button>
+
+  @if (vehicleHistories().length === 0) {
+    <div class="no-vehicle-histories-message">
+      <p>No hay historial de vehículos registrado.</p>
+    </div>
+  } @else {
+    <table>
+      <thead>
+        <tr>
+          <th>ID</th>
+          <th>Vehículo ID</th>
+          <th>Placa Vehículo</th>
+          <th>Tipo Evento</th>
+          <th>Fecha Evento</th>
+          <th>Acciones</th>
+        </tr>
+      </thead>
+      <tbody>
+        @for (history of vehicleHistories(); track history._id) {
+          <tr>
+            <td>{{ history._id }}</td>
+            <td>{{ history.vehiculo_id }}</td>
+            <td>{{ history.placa_vehiculo }}</td>
+            <td>{{ history.tipo_evento }}</td>
+            <td>{{ history.fecha_evento | date:'shortDate' }}</td>
+            <td>
+              <button (click)="editVehicleHistory(history._id)">Editar</button>
+              <button (click)="deleteVehicleHistory(history._id)">Eliminar</button>
+            </td>
+          </tr>
+        }
+      </tbody>
+    </table>
+  }
+</div>

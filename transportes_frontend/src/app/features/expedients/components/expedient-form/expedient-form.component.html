@@ -1,0 +1,55 @@
+<div class="expedient-form-container">
+  <h2>{{ expedient ? 'Editar Expediente' : 'Crear Expediente' }}</h2>
+
+  <form [formGroup]="expedientForm" (ngSubmit)="onSubmit()">
+    <div class="form-group">
+      <label for="numero_expediente">Número de Expediente:</label>
+      <input id="numero_expediente" type="text" formControlName="numero_expediente">
+      @if (expedientForm.get('numero_expediente')?.invalid && expedientForm.get('numero_expediente')?.touched) {
+        <div class="error-message">Número de Expediente es requerido.</div>
+      }
+    </div>
+
+    <div class="form-group">
+      <label for="empresa_solicitante_id">ID Empresa Solicitante:</label>
+      <input id="empresa_solicitante_id" type="text" formControlName="empresa_solicitante_id">
+      @if (expedientForm.get('empresa_solicitante_id')?.invalid && expedientForm.get('empresa_solicitante_id')?.touched) {
+        <div class="error-message">ID Empresa Solicitante es requerido.</div>
+      }
+    </div>
+
+    <div class="form-group">
+      <label for="tipo_tramite">Tipo de Trámite:</label>
+      <input id="tipo_tramite" type="text" formControlName="tipo_tramite">
+      @if (expedientForm.get('tipo_tramite')?.invalid && expedientForm.get('tipo_tramite')?.touched) {
+        <div class="error-message">Tipo de Trámite es requerido.</div>
+      }
+    </div>
+
+    <div class="form-group">
+      <label for="fecha_inicio_tramite">Fecha Inicio Trámite:</label>
+      <input id="fecha_inicio_tramite" type="date" formControlName="fecha_inicio_tramite">
+    </div>
+
+    <div class="form-group">
+      <label for="estado_expediente">Estado de Expediente:</label>
+      <input id="estado_expediente" type="text" formControlName="estado_expediente">
+      @if (expedientForm.get('estado_expediente')?.invalid && expedientForm.get('estado_expediente')?.touched) {
+        <div class="error-message">Estado de Expediente es requerido.</div>
+      }
+    </div>
+
+    <div class="form-group">
+      <label for="resumen_solicitud">Resumen Solicitud:</label>
+      <textarea id="resumen_solicitud" formControlName="resumen_solicitud"></textarea>
+    </div>
+
+    <div class="form-group">
+      <label for="numero_folios">Número de Folios:</label>
+      <input id="numero_folios" type="number" formControlName="numero_folios">
+    </div>
+
+    <button type="submit" [disabled]="expedientForm.invalid">{{ expedient ? 'Guardar Cambios' : 'Crear Expediente' }}</button>
+    <button type="button" (click)="onCancel()">Cancelar</button>
+  </form>
+</div>

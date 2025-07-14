@@ -1,0 +1,120 @@
+<div class="route-form-container">
+  <h2>{{ route ? 'Editar Ruta' : 'Crear Ruta' }}</h2>
+
+  <form [formGroup]="routeForm" (ngSubmit)="onSubmit()">
+    <div class="form-group">
+      <label for="codigo_ruta">Código de Ruta:</label>
+      <input id="codigo_ruta" type="text" formControlName="codigo_ruta">
+      @if (routeForm.get('codigo_ruta')?.invalid && routeForm.get('codigo_ruta')?.touched) {
+        <div class="error-message">Código de Ruta es requerido.</div>
+      }
+    </div>
+
+    <div formGroupName="origen">
+      <h3>Origen</h3>
+      <div class="form-group">
+        <label for="origen_ciudad">Ciudad:</label>
+        <input id="origen_ciudad" type="text" formControlName="ciudad">
+        @if (routeForm.get('origen.ciudad')?.invalid && routeForm.get('origen.ciudad')?.touched) {
+          <div class="error-message">Ciudad de Origen es requerida.</div>
+        }
+      </div>
+      <div class="form-group">
+        <label for="origen_departamento">Departamento:</label>
+        <input id="origen_departamento" type="text" formControlName="departamento">
+        @if (routeForm.get('origen.departamento')?.invalid && routeForm.get('origen.departamento')?.touched) {
+          <div class="error-message">Departamento de Origen es requerido.</div>
+        }
+      </div>
+      <div class="form-group">
+        <label for="origen_terminal_id">ID Terminal (Opcional):</label>
+        <input id="origen_terminal_id" type="text" formControlName="terminal_id">
+      </div>
+    </div>
+
+    <div formGroupName="destino">
+      <h3>Destino</h3>
+      <div class="form-group">
+        <label for="destino_ciudad">Ciudad:</label>
+        <input id="destino_ciudad" type="text" formControlName="ciudad">
+        @if (routeForm.get('destino.ciudad')?.invalid && routeForm.get('destino.ciudad')?.touched) {
+          <div class="error-message">Ciudad de Destino es requerida.</div>
+        }
+      </div>
+      <div class="form-group">
+        <label for="destino_departamento">Departamento:</label>
+        <input id="destino_departamento" type="text" formControlName="departamento">
+        @if (routeForm.get('destino.departamento')?.invalid && routeForm.get('destino.departamento')?.touched) {
+          <div class="error-message">Departamento de Destino es requerido.</div>
+        }
+      </div>
+      <div class="form-group">
+        <label for="destino_terminal_id">ID Terminal (Opcional):</label>
+        <input id="destino_terminal_id" type="text" formControlName="terminal_id">
+      </div>
+    </div>
+
+    <div class="form-group">
+      <label for="distancia_km">Distancia (km):</label>
+      <input id="distancia_km" type="number" formControlName="distancia_km">
+    </div>
+
+    <div class="form-group">
+      <label for="tiempo_estimado_horas">Tiempo Estimado (horas):</label>
+      <input id="tiempo_estimado_horas" type="number" formControlName="tiempo_estimado_horas">
+    </div>
+
+    <div class="form-group">
+      <label for="tipo_servicio">Tipo de Servicio:</label>
+      <input id="tipo_servicio" type="text" formControlName="tipo_servicio">
+      @if (routeForm.get('tipo_servicio')?.invalid && routeForm.get('tipo_servicio')?.touched) {
+        <div class="error-message">Tipo de Servicio es requerido.</div>
+      }
+    </div>
+
+    <div class="form-group">
+      <label for="empresa_autorizada_id">ID Empresa Autorizada:</label>
+      <input id="empresa_autorizada_id" type="text" formControlName="empresa_autorizada_id">
+      @if (routeForm.get('empresa_autorizada_id')?.invalid && routeForm.get('empresa_autorizada_id')?.touched) {
+        <div class="error-message">ID Empresa Autorizada es requerido.</div>
+      }
+    </div>
+
+    <div class="form-group">
+      <label for="ruc_empresa_autorizada">RUC Empresa Autorizada:</label>
+      <input id="ruc_empresa_autorizada" type="text" formControlName="ruc_empresa_autorizada">
+      @if (routeForm.get('ruc_empresa_autorizada')?.invalid && routeForm.get('ruc_empresa_autorizada')?.touched) {
+        <div class="error-message">RUC Empresa Autorizada es requerido.</div>
+      }
+    </div>
+
+    <div class="form-group">
+      <label for="resolucion_autorizacion_id">ID Resolución Autorización (Opcional):</label>
+      <input id="resolucion_autorizacion_id" type="text" formControlName="resolucion_autorizacion_id">
+    </div>
+
+    <div class="form-group">
+      <label for="numero_resolucion_autorizacion">Número Resolución Autorización:</label>
+      <input id="numero_resolucion_autorizacion" type="text" formControlName="numero_resolucion_autorizacion">
+      @if (routeForm.get('numero_resolucion_autorizacion')?.invalid && routeForm.get('numero_resolucion_autorizacion')?.touched) {
+        <div class="error-message">Número Resolución Autorización es requerido.</div>
+      }
+    </div>
+
+    <div class="form-group">
+      <label for="estado_ruta_mtc">Estado Ruta MTC:</label>
+      <input id="estado_ruta_mtc" type="text" formControlName="estado_ruta_mtc">
+      @if (routeForm.get('estado_ruta_mtc')?.invalid && routeForm.get('estado_ruta_mtc')?.touched) {
+        <div class="error-message">Estado Ruta MTC es requerido.</div>
+      }
+    </div>
+
+    <div class="form-group">
+      <label for="observaciones">Observaciones:</label>
+      <textarea id="observaciones" formControlName="observaciones"></textarea>
+    </div>
+
+    <button type="submit" [disabled]="routeForm.invalid">{{ route ? 'Guardar Cambios' : 'Crear Ruta' }}</button>
+    <button type="button" (click)="onCancel()">Cancelar</button>
+  </form>
+</div>

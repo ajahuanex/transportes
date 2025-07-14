@@ -1,3 +1,69 @@
 import { Routes } from '@angular/router';
+import { UserListComponent } from './features/users/components/user-list/user-list.component';
+import { UserFormComponent } from './features/users/components/user-form/user-form.component';
+import { CompanyListComponent } from './features/companies/components/company-list/company-list.component';
+import { CompanyFormComponent } from './features/companies/components/company-form/company-form.component';
+import { ExpedientListComponent } from './features/expedients/components/expedient-list/expedient-list.component';
+import { ExpedientFormComponent } from './features/expedients/components/expedient-form/expedient-form.component';
+import { ResolutionListComponent } from './features/resolutions/components/resolution-list/resolution-list.component';
+import { ResolutionFormComponent } from './features/resolutions/components/resolution-form/resolution-form.component';
+import { RouteListComponent } from './features/routes/components/route-list/route-list.component';
+import { RouteFormComponent } from './features/routes/components/route-form/route-form.component';
+import { VehicleListComponent } from './features/vehicles/components/vehicle-list/vehicle-list.component';
+import { VehicleFormComponent } from './features/vehicles/components/vehicle-form/vehicle-form.component';
+import { VehicleHistoryListComponent } from './features/vehicle-histories/components/vehicle-history-list/vehicle-history-list.component';
+import { VehicleHistoryFormComponent } from './features/vehicle-histories/components/vehicle-history-form/vehicle-history-form.component';
+import { TucListComponent } from './features/tucs/components/tuc-list/tuc-list.component';
+import { TucFormComponent } from './features/tucs/components/tuc-form/tuc-form.component';
+import { DriverListComponent } from './features/drivers/components/driver-list/driver-list.component';
+import { DriverFormComponent } from './features/drivers/components/driver-form/driver-form.component';
+import { LandTerminalListComponent } from './features/land-terminals/components/land-terminal-list/land-terminal-list.component';
+import { LandTerminalFormComponent } from './features/land-terminals/components/land-terminal-form/land-terminal-form.component';
+import { InfractionFineListComponent } from './features/infractions-fines/components/infraction-fine-list/infraction-fine-list.component';
+import { InfractionFineFormComponent } from './features/infractions-fines/components/infraction-fine-form/infraction-fine-form.component';
+import { MtcConfigListComponent } from './features/mtc-configs/components/mtc-config-list/mtc-config-list.component';
+import { MtcConfigFormComponent } from './features/mtc-configs/components/mtc-config-form/mtc-config-form.component';
+import { TicketListComponent } from './features/tickets/components/ticket-list/ticket-list.component';
+import { TicketFormComponent } from './features/tickets/components/ticket-form/ticket-form.component';
 
-export const routes: Routes = [];
+export const routes: Routes = [
+  { path: 'users', component: UserListComponent },
+  { path: 'users/new', component: UserFormComponent },
+  { path: 'users/edit/:id', component: UserFormComponent },
+  { path: 'companies', component: CompanyListComponent },
+  { path: 'companies/new', component: CompanyFormComponent },
+  { path: 'companies/edit/:id', component: CompanyFormComponent },
+  { path: 'expedients', component: ExpedientListComponent },
+  { path: 'expedients/new', component: ExpedientFormComponent },
+  { path: 'expedients/edit/:id', component: ExpedientFormComponent },
+  { path: 'resolutions', component: ResolutionListComponent },
+  { path: 'resolutions/new', component: ResolutionFormComponent },
+  { path: 'resolutions/edit/:id', component: ResolutionFormComponent },
+  { path: 'routes', component: RouteListComponent },
+  { path: 'routes/new', component: RouteFormComponent },
+  { path: 'routes/edit/:id', component: RouteFormComponent },
+  { path: 'vehicles', component: VehicleListComponent },
+  { path: 'vehicles/new', component: VehicleFormComponent },
+  { path: 'vehicles/edit/:id', component: VehicleFormComponent },
+  { path: 'vehicle-histories', component: VehicleHistoryListComponent },
+  { path: 'vehicle-histories/new', component: VehicleHistoryFormComponent },
+  { path: 'vehicle-histories/edit/:id', component: VehicleHistoryFormComponent },
+  { path: 'tucs', component: TucListComponent },
+  { path: 'tucs/new', component: TucFormComponent },
+  { path: 'tucs/edit/:id', component: TucFormComponent },
+  { path: 'drivers', component: DriverListComponent },
+  { path: 'drivers/new', component: DriverFormComponent },
+  { path: 'drivers/edit/:id', component: DriverFormComponent },
+  { path: 'land-terminals', component: LandTerminalListComponent },
+  { path: 'land-terminals/new', component: LandTerminalFormComponent },
+  { path: 'land-terminals/edit/:id', component: LandTerminalFormComponent },
+  { path: 'infractions-fines', component: InfractionFineListComponent },
+  { path: 'infractions-fines/new', component: InfractionFineFormComponent },
+  { path: 'infractions-fines/edit/:id', component: InfractionFineFormComponent },
+  { path: 'mtc-configs', component: MtcConfigListComponent },
+  { path: 'mtc-configs/new', component: MtcConfigFormComponent },
+  { path: 'mtc-configs/edit/:id', component: MtcConfigFormComponent },
+  { path: 'tickets', component: TicketListComponent },
+  { path: 'tickets/new', component: TicketFormComponent },
+  { path: 'tickets/edit/:id', component: TicketFormComponent }
+];

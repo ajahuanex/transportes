@@ -1,0 +1,136 @@
+<div class="ticket-form-container">
+  <h2>{{ ticket ? 'Editar Papeleta' : 'Crear Papeleta' }}</h2>
+
+  <form [formGroup]="ticketForm" (ngSubmit)="onSubmit()">
+    <div class="form-group">
+      <label for="numero_papeleta">Número de Papeleta:</label>
+      <input id="numero_papeleta" type="text" formControlName="numero_papeleta">
+      @if (ticketForm.get('numero_papeleta')?.invalid && ticketForm.get('numero_papeleta')?.touched) {
+        <div class="error-message">Número de Papeleta es requerido.</div>
+      }
+    </div>
+
+    <div class="form-group">
+      <label for="fecha_infraccion">Fecha de Infracción:</label>
+      <input id="fecha_infraccion" type="date" formControlName="fecha_infraccion">
+      @if (ticketForm.get('fecha_infraccion')?.invalid && ticketForm.get('fecha_infraccion')?.touched) {
+        <div class="error-message">Fecha de Infracción es requerida.</div>
+      }
+    </div>
+
+    <div class="form-group">
+      <label for="tipo_infraccion">Tipo de Infracción:</label>
+      <input id="tipo_infraccion" type="text" formControlName="tipo_infraccion">
+      @if (ticketForm.get('tipo_infraccion')?.invalid && ticketForm.get('tipo_infraccion')?.touched) {
+        <div class="error-message">Tipo de Infracción es requerido.</div>
+      }
+    </div>
+
+    <div class="form-group">
+      <label for="codigo_infraccion">Código de Infracción:</label>
+      <input id="codigo_infraccion" type="text" formControlName="codigo_infraccion">
+      @if (ticketForm.get('codigo_infraccion')?.invalid && ticketForm.get('codigo_infraccion')?.touched) {
+        <div class="error-message">Código de Infracción es requerido.</div>
+      }
+    </div>
+
+    <div class="form-group">
+      <label for="descripcion_infraccion">Descripción de Infracción:</label>
+      <textarea id="descripcion_infraccion" formControlName="descripcion_infraccion"></textarea>
+      @if (ticketForm.get('descripcion_infraccion')?.invalid && ticketForm.get('descripcion_infraccion')?.touched) {
+        <div class="error-message">Descripción de Infracción es requerida.</div>
+      }
+    </div>
+
+    <div class="form-group">
+      <label for="monto_multa">Monto de Multa:</label>
+      <input id="monto_multa" type="number" formControlName="monto_multa">
+      @if (ticketForm.get('monto_multa')?.invalid && ticketForm.get('monto_multa')?.touched) {
+        <div class="error-message">Monto de Multa es requerido.</div>
+      }
+    </div>
+
+    <div class="form-group">
+      <label for="moneda">Moneda:</label>
+      <input id="moneda" type="text" formControlName="moneda">
+      @if (ticketForm.get('moneda')?.invalid && ticketForm.get('moneda')?.touched) {
+        <div class="error-message">Moneda es requerida.</div>
+      }
+    </div>
+
+    <div class="form-group">
+      <label for="empresa_responsable_id">ID Empresa Responsable:</label>
+      <input id="empresa_responsable_id" type="text" formControlName="empresa_responsable_id">
+      @if (ticketForm.get('empresa_responsable_id')?.invalid && ticketForm.get('empresa_responsable_id')?.touched) {
+        <div class="error-message">ID Empresa Responsable es requerido.</div>
+      }
+    </div>
+
+    <div class="form-group">
+      <label for="ruc_empresa_responsable">RUC Empresa Responsable:</label>
+      <input id="ruc_empresa_responsable" type="text" formControlName="ruc_empresa_responsable">
+      @if (ticketForm.get('ruc_empresa_responsable')?.invalid && ticketForm.get('ruc_empresa_responsable')?.touched) {
+        <div class="error-message">RUC Empresa Responsable es requerido.</div>
+      }
+    </div>
+
+    <div class="form-group">
+      <label for="vehiculo_involucrado_id">ID Vehículo Involucrado (Opcional):</label>
+      <input id="vehiculo_involucrado_id" type="text" formControlName="vehiculo_involucrado_id">
+    </div>
+
+    <div class="form-group">
+      <label for="placa_vehiculo_involucrado">Placa Vehículo Involucrado (Opcional):</label>
+      <input id="placa_vehiculo_involucrado" type="text" formControlName="placa_vehiculo_involucrado">
+    </div>
+
+    <div class="form-group">
+      <label for="conductor_involucrado_id">ID Conductor Involucrado (Opcional):</label>
+      <input id="conductor_involucrado_id" type="text" formControlName="conductor_involucrado_id">
+    </div>
+
+    <div class="form-group">
+      <label for="dni_conductor_involucrado">DNI Conductor Involucrado (Opcional):</label>
+      <input id="dni_conductor_involucrado" type="text" formControlName="dni_conductor_involucrado">
+    </div>
+
+    <div class="form-group">
+      <label for="autoridad_emisora">Autoridad Emisora:</label>
+      <input id="autoridad_emisora" type="text" formControlName="autoridad_emisora">
+      @if (ticketForm.get('autoridad_emisora')?.invalid && ticketForm.get('autoridad_emisora')?.touched) {
+        <div class="error-message">Autoridad Emisora es requerida.</div>
+      }
+    </div>
+
+    <div class="form-group">
+      <label for="estado_multa">Estado de Multa:</label>
+      <input id="estado_multa" type="text" formControlName="estado_multa">
+      @if (ticketForm.get('estado_multa')?.invalid && ticketForm.get('estado_multa')?.touched) {
+        <div class="error-message">Estado de Multa es requerido.</div>
+      }
+    </div>
+
+    <div class="form-group">
+      <label for="fecha_notificacion">Fecha Notificación (Opcional):</label>
+      <input id="fecha_notificacion" type="date" formControlName="fecha_notificacion">
+    </div>
+
+    <div class="form-group">
+      <label for="fecha_pago">Fecha Pago (Opcional):</label>
+      <input id="fecha_pago" type="date" formControlName="fecha_pago">
+    </div>
+
+    <div class="form-group">
+      <label for="monto_pagado">Monto Pagado (Opcional):</label>
+      <input id="monto_pagado" type="number" formControlName="monto_pagado">
+    </div>
+
+    <div class="form-group">
+      <label for="observaciones_multa">Observaciones Multa (Opcional):</label>
+      <textarea id="observaciones_multa" formControlName="observaciones_multa"></textarea>
+    </div>
+
+    <button type="submit" [disabled]="ticketForm.invalid">{{ ticket ? 'Guardar Cambios' : 'Crear Papeleta' }}</button>
+    <button type="button" (click)="onCancel()">Cancelar</button>
+  </form>
+</div>

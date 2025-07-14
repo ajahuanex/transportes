@@ -30,6 +30,7 @@ class ResolucionBase(BaseModel):
     rutas_afectadas: List[RutaAfectadaSchema] = []
     observaciones: Optional[str] = None
     estado_resolucion: str = "Vigente"
+    estado_logico: str = "ACTIVO"
     origen_dato: str = "PRODUCCION"
 
 class ResolucionCreate(ResolucionBase):
@@ -51,6 +52,7 @@ class ResolucionUpdate(ResolucionBase):
     rutas_afectadas: Optional[List[RutaAfectadaSchema]] = None
     observaciones: Optional[str] = None
     estado_resolucion: Optional[str] = None
+    estado_logico: Optional[str] = None
     origen_dato: Optional[str] = None
 
 class ResolucionInDB(ResolucionBase):

@@ -1,0 +1,53 @@
+<div class="vehicle-list-container">
+  <h2>Lista de Vehículos</h2>
+
+  <button (click)="createVehicle()">Crear Vehículo</button>
+
+  @if (vehicles().length === 0) {
+    <div class="no-vehicles-message">
+      <p>No hay vehículos registrados.</p>
+    </div>
+  } @else {
+    <table>
+      <thead>
+        <tr>
+          <th>ID</th>
+          <th>Placa</th>
+          <th>Empresa ID</th>
+          <th>Tipo Servicio Principal</th>
+          <th>Estado Vehículo MTC</th>
+          <th>Marca</th>
+          <th>Modelo</th>
+          <th>Año Fabricación</th>
+          <th>Categoría</th>
+          <th>Estado Lógico</th>
+          <th>Acciones</th>
+        </tr>
+      </thead>
+      <tbody>
+        @for (vehicle of vehicles(); track vehicle._id) {
+          <tr>
+            <td>{{ vehicle._id }}</td>
+            <td>{{ vehicle.placa }}</td>
+            <td>{{ vehicle.empresa_id }}</td>
+            <td>{{ vehicle.tipo_servicio_principal }}</td>
+            <td>{{ vehicle.estado_vehiculo_mtc }}</td>
+            <td>{{ vehicle.marca }}</td>
+            <td>{{ vehicle.modelo }}</td>
+            <td>{{ vehicle.anio_fabricacion }}</td>
+            <td>{{ vehicle.categoria }}</td>
+            <td>{{ vehicle.estado_logico }}</td>
+            <td>
+              <button (click)="editVehicle(vehicle._id)">Editar</button>
+              @if (vehicle.estado_logico === 'ACTIVO') {
+                <button (click)="softDeleteVehicle(vehicle._id)">Eliminar</button>
+              } @else {
+                <button (click)="restoreVehicle(vehicle._id)">Restaurar</button>
+              }
+            </td>
+          </tr>
+        }
+      </tbody>
+    </table>
+  }
+</div>

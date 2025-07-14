@@ -1,0 +1,44 @@
+<div class="mtc-config-list-container">
+  <h2>Configuración MTC</h2>
+
+  @if (!mtcConfig()) {
+    <div class="no-config-message">
+      <p>No hay configuración MTC registrada.</p>
+      <button (click)="createMtcConfig()">Crear Configuración MTC</button>
+    </div>
+  } @else {
+    <div class="config-details">
+      <h3>Detalles de la Configuración</h3>
+      <p><strong>ID:</strong> {{ mtcConfig()!._id }}</p>
+      <p><strong>Última Actualización:</strong> {{ mtcConfig()!.fecha_ultima_actualizacion | date:'medium' }}</p>
+      <p><strong>Observaciones:</strong> {{ mtcConfig()!.observaciones }}</p>
+
+      <h4>Reglas de Antigüedad de Vehículos:</h4>
+      @if (mtcConfig()!.reglas_antiguedad.length === 0) {
+        <p>No hay reglas de antigüedad configuradas.</p>
+      } @else {
+        <table>
+          <thead>
+            <tr>
+              <th>Tipo Servicio</th>
+              <th>Categoría Vehicular</th>
+              <th>Edad Máxima (años)</th>
+              <th>Notas</th>
+            </tr>
+          </thead>
+          <tbody>
+            @for (regla of mtcConfig()!.reglas_antiguedad; track $index) {
+              <tr>
+                <td>{{ regla.tipo_servicio }}</td>
+                <td>{{ regla.categoria_vehicular }}</td>
+                <td>{{ regla.edad_maxima_anios }}</td>
+                <td>{{ regla.notas }}</td>
+              </tr>
+            }
+          </tbody>
+        </table>
+      }
+      <button (click)="editMtcConfig()">Editar Configuración MTC</button>
+    </div>
+  }
+</div>

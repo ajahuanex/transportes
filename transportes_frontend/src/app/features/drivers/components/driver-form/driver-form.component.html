@@ -1,0 +1,96 @@
+<div class="driver-form-container">
+  <h2>{{ driver ? 'Editar Conductor' : 'Crear Conductor' }}</h2>
+
+  <form [formGroup]="driverForm" (ngSubmit)="onSubmit()">
+    <div class="form-group">
+      <label for="dni">DNI:</label>
+      <input id="dni" type="text" formControlName="dni">
+      @if (driverForm.get('dni')?.invalid && driverForm.get('dni')?.touched) {
+        <div class="error-message">DNI es requerido.</div>
+      }
+    </div>
+
+    <div class="form-group">
+      <label for="nombres">Nombres:</label>
+      <input id="nombres" type="text" formControlName="nombres">
+      @if (driverForm.get('nombres')?.invalid && driverForm.get('nombres')?.touched) {
+        <div class="error-message">Nombres es requerido.</div>
+      }
+    </div>
+
+    <div class="form-group">
+      <label for="apellidos">Apellidos:</label>
+      <input id="apellidos" type="text" formControlName="apellidos">
+      @if (driverForm.get('apellidos')?.invalid && driverForm.get('apellidos')?.touched) {
+        <div class="error-message">Apellidos es requerido.</div>
+      }
+    </div>
+
+    <div formGroupName="licencia_conducir">
+      <h3>Licencia de Conducir</h3>
+      <div class="form-group">
+        <label for="licencia_numero">Número:</label>
+        <input id="licencia_numero" type="text" formControlName="numero">
+        @if (driverForm.get('licencia_conducir.numero')?.invalid && driverForm.get('licencia_conducir.numero')?.touched) {
+          <div class="error-message">Número de Licencia es requerido.</div>
+        }
+      </div>
+      <div class="form-group">
+        <label for="licencia_clase_categoria">Clase/Categoría:</label>
+        <input id="licencia_clase_categoria" type="text" formControlName="clase_categoria">
+        @if (driverForm.get('licencia_conducir.clase_categoria')?.invalid && driverForm.get('licencia_conducir.clase_categoria')?.touched) {
+          <div class="error-message">Clase/Categoría es requerida.</div>
+        }
+      </div>
+      <div class="form-group">
+        <label for="licencia_fecha_emision">Fecha Emisión:</label>
+        <input id="licencia_fecha_emision" type="date" formControlName="fecha_emision">
+        @if (driverForm.get('licencia_conducir.fecha_emision')?.invalid && driverForm.get('licencia_conducir.fecha_emision')?.touched) {
+          <div class="error-message">Fecha Emisión es requerida.</div>
+        }
+      </div>
+      <div class="form-group">
+        <label for="licencia_fecha_vencimiento">Fecha Vencimiento:</label>
+        <input id="licencia_fecha_vencimiento" type="date" formControlName="fecha_vencimiento">
+        @if (driverForm.get('licencia_conducir.fecha_vencimiento')?.invalid && driverForm.get('licencia_conducir.fecha_vencimiento')?.touched) {
+          <div class="error-message">Fecha Vencimiento es requerida.</div>
+        }
+      </div>
+      <div class="form-group">
+        <label for="licencia_puntos">Puntos (Opcional):</label>
+        <input id="licencia_puntos" type="number" formControlName="puntos">
+      </div>
+    </div>
+
+    <div class="form-group">
+      <label for="fecha_nacimiento">Fecha de Nacimiento (Opcional):</label>
+      <input id="fecha_nacimiento" type="date" formControlName="fecha_nacimiento">
+    </div>
+
+    <div class="form-group">
+      <label for="telefono">Teléfono (Opcional):</label>
+      <input id="telefono" type="text" formControlName="telefono">
+    </div>
+
+    <div class="form-group">
+      <label for="email">Email (Opcional):</label>
+      <input id="email" type="email" formControlName="email">
+      @if (driverForm.get('email')?.invalid && driverForm.get('email')?.touched) {
+        @if (driverForm.get('email')?.errors?.['email']) {
+          <div class="error-message">Email inválido.</div>
+        }
+      }
+    </div>
+
+    <div class="form-group">
+      <label for="estado_habilitacion_mtc">Estado Habilitación MTC:</label>
+      <input id="estado_habilitacion_mtc" type="text" formControlName="estado_habilitacion_mtc">
+      @if (driverForm.get('estado_habilitacion_mtc')?.invalid && driverForm.get('estado_habilitacion_mtc')?.touched) {
+        <div class="error-message">Estado Habilitación MTC es requerido.</div>
+      }
+    </div>
+
+    <button type="submit" [disabled]="driverForm.invalid">{{ driver ? 'Guardar Cambios' : 'Crear Conductor' }}</button>
+    <button type="button" (click)="onCancel()">Cancelar</button>
+  </form>
+</div>

@@ -1,0 +1,172 @@
+<div class="vehicle-form-container">
+  <h2>{{ vehicle ? 'Editar Vehículo' : 'Crear Vehículo' }}</h2>
+
+  <form [formGroup]="vehicleForm" (ngSubmit)="onSubmit()">
+    <div class="form-group">
+      <label for="placa">Placa:</label>
+      <input id="placa" type="text" formControlName="placa">
+      @if (vehicleForm.get('placa')?.invalid && vehicleForm.get('placa')?.touched) {
+        <div class="error-message">Placa es requerida.</div>
+      }
+    </div>
+
+    <div class="form-group">
+      <label for="empresa_id">ID Empresa:</label>
+      <input id="empresa_id" type="text" formControlName="empresa_id">
+      @if (vehicleForm.get('empresa_id')?.invalid && vehicleForm.get('empresa_id')?.touched) {
+        <div class="error-message">ID Empresa es requerido.</div>
+      }
+    </div>
+
+    <div class="form-group">
+      <label for="tipo_servicio_principal">Tipo de Servicio Principal:</label>
+      <input id="tipo_servicio_principal" type="text" formControlName="tipo_servicio_principal">
+      @if (vehicleForm.get('tipo_servicio_principal')?.invalid && vehicleForm.get('tipo_servicio_principal')?.touched) {
+        <div class="error-message">Tipo de Servicio Principal es requerido.</div>
+      }
+    </div>
+
+    <div class="form-group">
+      <label for="estado_vehiculo_mtc">Estado Vehículo MTC:</label>
+      <input id="estado_vehiculo_mtc" type="text" formControlName="estado_vehiculo_mtc">
+      @if (vehicleForm.get('estado_vehiculo_mtc')?.invalid && vehicleForm.get('estado_vehiculo_mtc')?.touched) {
+        <div class="error-message">Estado Vehículo MTC es requerido.</div>
+      }
+    </div>
+
+    <div class="form-group">
+      <label for="marca">Marca:</label>
+      <input id="marca" type="text" formControlName="marca">
+      @if (vehicleForm.get('marca')?.invalid && vehicleForm.get('marca')?.touched) {
+        <div class="error-message">Marca es requerida.</div>
+      }
+    </div>
+
+    <div class="form-group">
+      <label for="modelo">Modelo:</label>
+      <input id="modelo" type="text" formControlName="modelo">
+      @if (vehicleForm.get('modelo')?.invalid && vehicleForm.get('modelo')?.touched) {
+        <div class="error-message">Modelo es requerido.</div>
+      }
+    </div>
+
+    <div class="form-group">
+      <label for="anio_fabricacion">Año de Fabricación:</label>
+      <input id="anio_fabricacion" type="number" formControlName="anio_fabricacion">
+      @if (vehicleForm.get('anio_fabricacion')?.invalid && vehicleForm.get('anio_fabricacion')?.touched) {
+        <div class="error-message">Año de Fabricación es requerido.</div>
+      }
+    </div>
+
+    <div class="form-group">
+      <label for="color">Color:</label>
+      <input id="color" type="text" formControlName="color">
+    </div>
+
+    <div class="form-group">
+      <label for="categoria">Categoría:</label>
+      <input id="categoria" type="text" formControlName="categoria">
+      @if (vehicleForm.get('categoria')?.invalid && vehicleForm.get('categoria')?.touched) {
+        <div class="error-message">Categoría es requerida.</div>
+      }
+    </div>
+
+    <div class="form-group">
+      <label for="carroceria">Carrocería:</label>
+      <input id="carroceria" type="text" formControlName="carroceria">
+    </div>
+
+    <div class="form-group">
+      <label for="clase">Clase:</label>
+      <input id="clase" type="text" formControlName="clase">
+    </div>
+
+    <div class="form-group">
+      <label for="combustible">Combustible:</label>
+      <input id="combustible" type="text" formControlName="combustible">
+    </div>
+
+    <div class="form-group">
+      <label for="numero_motor">Número de Motor:</label>
+      <input id="numero_motor" type="text" formControlName="numero_motor">
+    </div>
+
+    <div class="form-group">
+      <label for="numero_serie_chasis">Número de Serie Chasis:</label>
+      <input id="numero_serie_chasis" type="text" formControlName="numero_serie_chasis">
+    </div>
+
+    <div class="form-group">
+      <label for="num_asientos">Número de Asientos:</label>
+      <input id="num_asientos" type="number" formControlName="num_asientos">
+    </div>
+
+    <div class="form-group">
+      <label for="capacidad_pasajeros">Capacidad de Pasajeros:</label>
+      <input id="capacidad_pasajeros" type="number" formControlName="capacidad_pasajeros">
+    </div>
+
+    <div class="form-group">
+      <label for="cilindros">Cilindros:</label>
+      <input id="cilindros" type="number" formControlName="cilindros">
+    </div>
+
+    <div class="form-group">
+      <label for="ejes">Ejes:</label>
+      <input id="ejes" type="number" formControlName="ejes">
+    </div>
+
+    <div class="form-group">
+      <label for="ruedas">Ruedas:</label>
+      <input id="ruedas" type="number" formControlName="ruedas">
+    </div>
+
+    <div class="form-group">
+      <label for="peso_bruto_vehicular">Peso Bruto Vehicular:</label>
+      <input id="peso_bruto_vehicular" type="number" formControlName="peso_bruto_vehicular">
+    </div>
+
+    <div class="form-group">
+      <label for="peso_neto">Peso Neto:</label>
+      <input id="peso_neto" type="number" formControlName="peso_neto">
+    </div>
+
+    <div class="form-group">
+      <label for="carga_util">Carga Útil:</label>
+      <input id="carga_util" type="number" formControlName="carga_util">
+    </div>
+
+    <div class="form-group">
+      <label for="largo">Largo:</label>
+      <input id="largo" type="number" formControlName="largo">
+    </div>
+
+    <div class="form-group">
+      <label for="ancho">Ancho:</label>
+      <input id="ancho" type="number" formControlName="ancho">
+    </div>
+
+    <div class="form-group">
+      <label for="alto">Alto:</label>
+      <input id="alto" type="number" formControlName="alto">
+    </div>
+
+    <div class="form-group">
+      <label for="observaciones">Observaciones:</label>
+      <textarea id="observaciones" formControlName="observaciones"></textarea>
+    </div>
+
+    <div class="form-group">
+      <label for="fecha_ultima_revision_tecnica">Fecha Última Revisión Técnica:</label>
+      <input id="fecha_ultima_revision_tecnica" type="date" formControlName="fecha_ultima_revision_tecnica">
+    </div>
+
+    <div class="form-group">
+      <label for="fecha_vencimiento_revision_tecnica">Fecha Vencimiento Revisión Técnica:</label>
+      <input id="fecha_vencimiento_revision_tecnica" type="date" formControlName="fecha_vencimiento_revision_tecnica">
+    </div>
+
+    <button type="submit" [disabled]="vehicleForm.invalid">{{ vehicle ? 'Guardar Cambios' : 'Crear Vehículo' }}</button>
+    <button type="button" (click)="onCancel()">Cancelar</button>
+  </form>
+</div>

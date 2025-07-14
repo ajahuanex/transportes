@@ -1,0 +1,67 @@
+<div class="vehicle-history-form-container">
+  <h2>{{ vehicleHistory ? 'Editar Historial de Vehículo' : 'Crear Historial de Vehículo' }}</h2>
+
+  <form [formGroup]="vehicleHistoryForm" (ngSubmit)="onSubmit()">
+    <div class="form-group">
+      <label for="vehiculo_id">ID Vehículo:</label>
+      <input id="vehiculo_id" type="text" formControlName="vehiculo_id">
+      @if (vehicleHistoryForm.get('vehiculo_id')?.invalid && vehicleHistoryForm.get('vehiculo_id')?.touched) {
+        <div class="error-message">ID Vehículo es requerido.</div>
+      }
+    </div>
+
+    <div class="form-group">
+      <label for="placa_vehiculo">Placa Vehículo:</label>
+      <input id="placa_vehiculo" type="text" formControlName="placa_vehiculo">
+      @if (vehicleHistoryForm.get('placa_vehiculo')?.invalid && vehicleHistoryForm.get('placa_vehiculo')?.touched) {
+        <div class="error-message">Placa Vehículo es requerida.</div>
+      }
+    </div>
+
+    <div class="form-group">
+      <label for="tipo_evento">Tipo de Evento:</label>
+      <input id="tipo_evento" type="text" formControlName="tipo_evento">
+      @if (vehicleHistoryForm.get('tipo_evento')?.invalid && vehicleHistoryForm.get('tipo_evento')?.touched) {
+        <div class="error-message">Tipo de Evento es requerido.</div>
+      }
+    </div>
+
+    <div class="form-group">
+      <label for="fecha_evento">Fecha Evento:</label>
+      <input id="fecha_evento" type="date" formControlName="fecha_evento">
+    </div>
+
+    <div class="form-group">
+      <label for="resolucion_id">ID Resolución (Opcional):</label>
+      <input id="resolucion_id" type="text" formControlName="resolucion_id">
+    </div>
+
+    <div class="form-group">
+      <label for="campo_modificado">Campo Modificado:</label>
+      <input id="campo_modificado" type="text" formControlName="campo_modificado">
+    </div>
+
+    <div class="form-group">
+      <label for="valor_anterior">Valor Anterior:</label>
+      <input id="valor_anterior" type="text" formControlName="valor_anterior">
+    </div>
+
+    <div class="form-group">
+      <label for="valor_nuevo">Valor Nuevo:</label>
+      <input id="valor_nuevo" type="text" formControlName="valor_nuevo">
+    </div>
+
+    <div class="form-group">
+      <label for="observaciones">Observaciones:</label>
+      <textarea id="observaciones" formControlName="observaciones"></textarea>
+    </div>
+
+    <div class="form-group">
+      <label for="usuario_id">ID Usuario:</label>
+      <input id="usuario_id" type="text" formControlName="usuario_id">
+    </div>
+
+    <button type="submit" [disabled]="vehicleHistoryForm.invalid">{{ vehicleHistory ? 'Guardar Cambios' : 'Crear Historial' }}</button>
+    <button type="button" (click)="onCancel()">Cancelar</button>
+  </form>
+</div>

@@ -1,0 +1,91 @@
+<div class="resolution-form-container">
+  <h2>{{ resolution ? 'Editar Resolución' : 'Crear Resolución' }}</h2>
+
+  <form [formGroup]="resolutionForm" (ngSubmit)="onSubmit()">
+    <div class="form-group">
+      <label for="numero_resolucion">Número de Resolución:</label>
+      <input id="numero_resolucion" type="text" formControlName="numero_resolucion">
+      @if (resolutionForm.get('numero_resolucion')?.invalid && resolutionForm.get('numero_resolucion')?.touched) {
+        <div class="error-message">Número de Resolución es requerido.</div>
+      }
+    </div>
+
+    <div class="form-group">
+      <label for="expediente_origen_id">ID Expediente Origen:</label>
+      <input id="expediente_origen_id" type="text" formControlName="expediente_origen_id">
+      @if (resolutionForm.get('expediente_origen_id')?.invalid && resolutionForm.get('expediente_origen_id')?.touched) {
+        <div class="error-message">ID Expediente Origen es requerido.</div>
+      }
+    </div>
+
+    <div class="form-group">
+      <label for="resolucion_asociada_anterior_id">ID Resolución Asociada Anterior:</label>
+      <input id="resolucion_asociada_anterior_id" type="text" formControlName="resolucion_asociada_anterior_id">
+    </div>
+
+    <div class="form-group">
+      <label for="resolucion_primigenia_id">ID Resolución Primigenia:</label>
+      <input id="resolucion_primigenia_id" type="text" formControlName="resolucion_primigenia_id">
+    </div>
+
+    <div class="form-group">
+      <label for="tipo_tramite">Tipo de Trámite:</label>
+      <input id="tipo_tramite" type="text" formControlName="tipo_tramite">
+      @if (resolutionForm.get('tipo_tramite')?.invalid && resolutionForm.get('tipo_tramite')?.touched) {
+        <div class="error-message">Tipo de Trámite es requerido.</div>
+      }
+    </div>
+
+    <div class="form-group">
+      <label for="fecha_emision">Fecha Emisión:</label>
+      <input id="fecha_emision" type="date" formControlName="fecha_emision">
+    </div>
+
+    <div class="form-group">
+      <label for="fecha_inicio_vigencia">Fecha Inicio Vigencia:</label>
+      <input id="fecha_inicio_vigencia" type="date" formControlName="fecha_inicio_vigencia">
+    </div>
+
+    <div class="form-group">
+      <label for="anios_vigencia">Años de Vigencia:</label>
+      <input id="anios_vigencia" type="number" formControlName="anios_vigencia">
+    </div>
+
+    <div class="form-group">
+      <label for="fecha_fin_vigencia">Fecha Fin Vigencia:</label>
+      <input id="fecha_fin_vigencia" type="date" formControlName="fecha_fin_vigencia">
+    </div>
+
+    <div class="form-group">
+      <label for="empresa_afectada_id">ID Empresa Afectada:</label>
+      <input id="empresa_afectada_id" type="text" formControlName="empresa_afectada_id">
+      @if (resolutionForm.get('empresa_afectada_id')?.invalid && resolutionForm.get('empresa_afectada_id')?.touched) {
+        <div class="error-message">ID Empresa Afectada es requerido.</div>
+      }
+    </div>
+
+    <div class="form-group">
+      <label for="ruc_empresa_afectada">RUC Empresa Afectada:</label>
+      <input id="ruc_empresa_afectada" type="text" formControlName="ruc_empresa_afectada">
+      @if (resolutionForm.get('ruc_empresa_afectada')?.invalid && resolutionForm.get('ruc_empresa_afectada')?.touched) {
+        <div class="error-message">RUC Empresa Afectada es requerido.</div>
+      }
+    </div>
+
+    <div class="form-group">
+      <label for="observaciones">Observaciones:</label>
+      <textarea id="observaciones" formControlName="observaciones"></textarea>
+    </div>
+
+    <div class="form-group">
+      <label for="estado_resolucion">Estado de Resolución:</label>
+      <input id="estado_resolucion" type="text" formControlName="estado_resolucion">
+      @if (resolutionForm.get('estado_resolucion')?.invalid && resolutionForm.get('estado_resolucion')?.touched) {
+        <div class="error-message">Estado de Resolución es requerido.</div>
+      }
+    </div>
+
+    <button type="submit" [disabled]="resolutionForm.invalid">{{ resolution ? 'Guardar Cambios' : 'Crear Resolución' }}</button>
+    <button type="button" (click)="onCancel()">Cancelar</button>
+  </form>
+</div>

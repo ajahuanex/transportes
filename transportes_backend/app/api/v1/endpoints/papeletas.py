@@ -26,22 +26,18 @@ async def create_papeleta(
     papeleta = await crud_papeleta.create(papeleta_in, created_by_user_id=current_user_id)
     return papeleta
 
-@router.get("/{papeleta_id}", response_model=PapeletaInDB)
-async def get_papeleta_by_id(
-    papeleta_id: PydanticObjectId,
+@router.get("/", response_model=List[PapeletaInDB])
+async def get_all_papeletas(
+    skip: int = 0,
+    limit: int = 100,
 ):
     """
-    Obtiene una papeleta por su ID.
+    Obtiene una lista de todas las papeletas (activas e inactiva).
     """
-    papeleta = await crud_papeleta.get_active(papeleta_id)
-    if not papeleta:
-        raise HTTPException(
-            status_code=status.HTTP_404_NOT_FOUND,
-            detail="Papeleta no encontrada o eliminada lógicamente."
-        )
-    return papeleta
+    papeletas = await crud_papeleta.get_multi(skip=skip, limit=limit)
+    return papeletas
 
-@router.get("/", response_model=List[PapeletaInDB])
+@router.get("/active", response_model=List[PapeletaInDB])
 async def get_all_active_papeletas(
     skip: int = 0,
     limit: int = 100,
@@ -51,6 +47,21 @@ async def get_all_active_papeletas(
     """
     papeletas = await crud_papeleta.get_multi_active(skip=skip, limit=limit)
     return papeletas
+
+@router.get("/{papeleta_id}", response_model=PapeletaInDB)
+async def get_papeleta_by_id(
+    papeleta_id: PydanticObjectId,
+):
+    """
+    Obtiene una papeleta por su ID.
+    """
+    papeleta = await crud_papeleta.get(papeleta_id) # Obtiene la papeleta sin importar su estado lógico
+    if not papeleta:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail="Papeleta no encontrada."
+        )
+    return papeleta
 
 @router.put("/{papeleta_id}", response_model=PapeletaInDB)
 async def update_papeleta(
@@ -68,43 +79,4 @@ async def update_papeleta(
             detail="Papeleta no encontrada."
         )
     papeleta = await crud_papeleta.update(papeleta_db, papeleta_in, updated_by_user_id=current_user_id)
-    return papeleta
-
-@router.delete("/{papeleta_id}", status_code=status.HTTP_204_NO_CONTENT)
-async def soft_delete_papeleta(
-    papeleta_id: PydanticObjectId,
-    current_user_id: PydanticObjectId = Depends(get_current_user_id)
-):
-    """
-    Realiza un soft delete de una papeleta.
-    """
-    papeleta_db = await crud_papeleta.get_active(papeleta_id)
-    if not papeleta_db:
-        raise HTTPException(
-            status_code=status.HTTP_404_NOT_FOUND,
-            detail="Papeleta no encontrada o ya eliminada."
-        )
-    await crud_papeleta.soft_delete(papeleta_db, deleted_by_user_id=current_user_id)
-    return {"message": "Papeleta eliminada lógicamente."}
-
-@router.post("/{papeleta_id}/restore", response_model=PapeletaInDB)
-async def restore_papeleta(
-    papeleta_id: PydanticObjectId,
-    current_user_id: PydanticObjectId = Depends(get_current_user_id)
-):
-    """
-    Restaura una papeleta que fue soft-deleted.
-    """
-    papeleta_db = await crud_papeleta.get(papeleta_id)
-    if not papeleta_db:
-        raise HTTPException(
-            status_code=status.HTTP_404_NOT_FOUND,
-            detail="Papeleta no encontrada."
-        )
-    if papeleta_db.estado_logico == "ACTIVO":
-        raise HTTPException(
-            status_code=status.HTTP_400_BAD_REQUEST,
-            detail="La papeleta ya está activa."
-        )
-    papeleta = await crud_papeleta.restore(papeleta_db, restored_by_user_id=current_user_id)
     return papeleta

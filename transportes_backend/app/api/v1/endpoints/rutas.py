@@ -56,6 +56,28 @@ async def create_ruta(
     ruta = await crud_ruta.create(ruta_in, created_by_user_id=current_user_id)
     return ruta
 
+@router.get("/", response_model=List[RutaInDB])
+async def get_all_rutas(
+    skip: int = 0,
+    limit: int = 100,
+):
+    """
+    Obtiene una lista de todas las rutas (activos e inactivos).
+    """
+    rutas = await crud_ruta.get_multi(skip=skip, limit=limit)
+    return rutas
+
+@router.get("/active", response_model=List[RutaInDB])
+async def get_all_active_rutas(
+    skip: int = 0,
+    limit: int = 100,
+):
+    """
+    Obtiene una lista de todas las rutas activas.
+    """
+    rutas = await crud_ruta.get_multi_active(skip=skip, limit=limit)
+    return rutas
+
 @router.get("/{ruta_id}", response_model=RutaInDB)
 async def get_ruta_by_id(
     ruta_id: str,
@@ -77,17 +99,6 @@ async def get_ruta_by_id(
             detail="Ruta no encontrada."
         )
     return ruta
-
-@router.get("/", response_model=List[RutaInDB])
-async def get_all_rutas(
-    skip: int = 0,
-    limit: int = 100,
-):
-    """
-    Obtiene una lista de todas las rutas (activos e inactivos).
-    """
-    rutas = await crud_ruta.get_multi(skip=skip, limit=limit)
-    return rutas
 
 @router.put("/{ruta_id}", response_model=RutaInDB)
 async def update_ruta(
@@ -112,57 +123,4 @@ async def update_ruta(
             detail="Ruta no encontrada."
         )
     ruta = await crud_ruta.update(ruta_db, ruta_in, updated_by_user_id=current_user_id)
-    return ruta
-
-@router.delete("/{ruta_id}", status_code=status.HTTP_204_NO_CONTENT)
-async def soft_delete_ruta(
-    ruta_id: str,
-    current_user_id: PydanticObjectId = Depends(get_current_user_id)
-):
-    """
-    Realiza un soft delete de una ruta.
-    """
-    try:
-        object_id = PydanticObjectId(ruta_id)
-    except Exception:
-        raise HTTPException(
-            status_code=status.HTTP_400_BAD_REQUEST,
-            detail="ID de ruta inválido."
-        )
-    ruta_db = await crud_ruta.get(object_id)
-    if not ruta_db:
-        raise HTTPException(
-            status_code=status.HTTP_404_NOT_FOUND,
-            detail="Ruta no encontrada o ya eliminada."
-        )
-    await crud_ruta.soft_delete(ruta_db, deleted_by_user_id=current_user_id)
-    return {"message": "Ruta eliminada lógicamente."}
-
-@router.post("/{ruta_id}/restore", response_model=RutaInDB)
-async def restore_ruta(
-    ruta_id: str,
-    current_user_id: PydanticObjectId = Depends(get_current_user_id)
-):
-    """
-    Restaura una ruta que fue soft-deleted.
-    """
-    try:
-        object_id = PydanticObjectId(ruta_id)
-    except Exception:
-        raise HTTPException(
-            status_code=status.HTTP_400_BAD_REQUEST,
-            detail="ID de ruta inválido."
-        )
-    ruta_db = await crud_ruta.get(object_id) # Obtener incluso si está eliminado
-    if not ruta_db:
-        raise HTTPException(
-            status_code=status.HTTP_404_NOT_FOUND,
-            detail="Ruta no encontrada."
-        )
-    if ruta_db.estado_logico == "ACTIVO":
-        raise HTTPException(
-            status_code=status.HTTP_400_BAD_REQUEST,
-            detail="La ruta ya está activa."
-        )
-    ruta = await crud_ruta.restore(ruta_db, restored_by_user_id=current_user_id)
     return ruta

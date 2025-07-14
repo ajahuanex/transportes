@@ -26,22 +26,18 @@ async def create_infraccion_multa(
     infraccion = await crud_infraccion_multa.create(infraccion_in, created_by_user_id=current_user_id)
     return infraccion
 
-@router.get("/{infraccion_id}", response_model=InfraccionMultaInDB)
-async def get_infraccion_multa_by_id(
-    infraccion_id: PydanticObjectId,
+@router.get("/", response_model=List[InfraccionMultaInDB])
+async def get_all_infracciones_multas(
+    skip: int = 0,
+    limit: int = 100,
 ):
     """
-    Obtiene una infracción o multa por su ID.
+    Obtiene una lista de todas las infracciones/multas (activas e inactiva).
     """
-    infraccion = await crud_infraccion_multa.get_active(infraccion_id)
-    if not infraccion:
-        raise HTTPException(
-            status_code=status.HTTP_404_NOT_FOUND,
-            detail="Infracción/multa no encontrada o eliminada lógicamente."
-        )
-    return infraccion
+    infracciones = await crud_infraccion_multa.get_multi(skip=skip, limit=limit)
+    return infracciones
 
-@router.get("/", response_model=List[InfraccionMultaInDB])
+@router.get("/active", response_model=List[InfraccionMultaInDB])
 async def get_all_active_infracciones_multas(
     skip: int = 0,
     limit: int = 100,
@@ -51,6 +47,21 @@ async def get_all_active_infracciones_multas(
     """
     infracciones = await crud_infraccion_multa.get_multi_active(skip=skip, limit=limit)
     return infracciones
+
+@router.get("/{infraccion_id}", response_model=InfraccionMultaInDB)
+async def get_infraccion_multa_by_id(
+    infraccion_id: PydanticObjectId,
+):
+    """
+    Obtiene una infracción o multa por su ID.
+    """
+    infraccion = await crud_infraccion_multa.get(infraccion_id) # Obtiene la infracción/multa sin importar su estado lógico
+    if not infraccion:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail="Infracción/multa no encontrada."
+        )
+    return infraccion
 
 @router.put("/{infraccion_id}", response_model=InfraccionMultaInDB)
 async def update_infraccion_multa(
@@ -68,43 +79,4 @@ async def update_infraccion_multa(
             detail="Infracción/multa no encontrada."
         )
     infraccion = await crud_infraccion_multa.update(infraccion_db, infraccion_in, updated_by_user_id=current_user_id)
-    return infraccion
-
-@router.delete("/{infraccion_id}", status_code=status.HTTP_204_NO_CONTENT)
-async def soft_delete_infraccion_multa(
-    infraccion_id: PydanticObjectId,
-    current_user_id: PydanticObjectId = Depends(get_current_user_id)
-):
-    """
-    Realiza un soft delete de una infracción o multa.
-    """
-    infraccion_db = await crud_infraccion_multa.get_active(infraccion_id)
-    if not infraccion_db:
-        raise HTTPException(
-            status_code=status.HTTP_404_NOT_FOUND,
-            detail="Infracción/multa no encontrada o ya eliminada."
-        )
-    await crud_infraccion_multa.soft_delete(infraccion_db, deleted_by_user_id=current_user_id)
-    return {"message": "Infracción/multa eliminada lógicamente."}
-
-@router.post("/{infraccion_id}/restore", response_model=InfraccionMultaInDB)
-async def restore_infraccion_multa(
-    infraccion_id: PydanticObjectId,
-    current_user_id: PydanticObjectId = Depends(get_current_user_id)
-):
-    """
-    Restaura una infracción o multa que fue soft-deleted.
-    """
-    infraccion_db = await crud_infraccion_multa.get(infraccion_id)
-    if not infraccion_db:
-        raise HTTPException(
-            status_code=status.HTTP_404_NOT_FOUND,
-            detail="Infracción/multa no encontrada."
-        )
-    if infraccion_db.estado_logico == "ACTIVO":
-        raise HTTPException(
-            status_code=status.HTTP_400_BAD_REQUEST,
-            detail="La infracción/multa ya está activa."
-        )
-    infraccion = await crud_infraccion_multa.restore(infraccion_db, restored_by_user_id=current_user_id)
     return infraccion

@@ -1,0 +1,49 @@
+<div class="land-terminal-list-container">
+  <h2>Lista de Terminales Terrestres</h2>
+
+  <button (click)="createLandTerminal()">Crear Terminal Terrestre</button>
+
+  @if (landTerminals().length === 0) {
+    <div class="no-land-terminals-message">
+      <p>No hay terminales terrestres registradas.</p>
+    </div>
+  } @else {
+    <table>
+      <thead>
+        <tr>
+          <th>ID</th>
+          <th>Nombre</th>
+          <th>Ciudad</th>
+          <th>Departamento</th>
+          <th>Administrador</th>
+          <th>Teléfono</th>
+          <th>Email</th>
+          <th>Estado Lógico</th>
+          <th>Acciones</th>
+        </tr>
+      </thead>
+      <tbody>
+        @for (terminal of landTerminals(); track terminal._id) {
+          <tr>
+            <td>{{ terminal._id }}</td>
+            <td>{{ terminal.nombre }}</td>
+            <td>{{ terminal.ubicacion?.ciudad }}</td>
+            <td>{{ terminal.ubicacion?.departamento }}</td>
+            <td>{{ terminal.administrador }}</td>
+            <td>{{ terminal.telefono }}</td>
+            <td>{{ terminal.email }}</td>
+            <td>{{ terminal.estado_logico }}</td>
+            <td>
+              <button (click)="editLandTerminal(terminal._id)">Editar</button>
+              @if (terminal.estado_logico === 'ACTIVO') {
+                <button (click)="softDeleteLandTerminal(terminal._id)">Eliminar</button>
+              } @else {
+                <button (click)="restoreLandTerminal(terminal._id)">Restaurar</button>
+              }
+            </td>
+          </tr>
+        }
+      </tbody>
+    </table>
+  }
+</div>

@@ -36,6 +36,28 @@ async def create_vehiculo(
     vehiculo = await crud_vehiculo.create(vehiculo_in, created_by_user_id=current_user_id)
     return vehiculo
 
+@router.get("/", response_model=List[VehiculoInDB])
+async def get_all_vehiculos(
+    skip: int = 0,
+    limit: int = 100,
+):
+    """
+    Obtiene una lista de todos los vehículos (activos e inactivos).
+    """
+    vehiculos = await crud_vehiculo.get_multi(skip=skip, limit=limit)
+    return vehiculos
+
+@router.get("/active", response_model=List[VehiculoInDB])
+async def get_all_active_vehiculos(
+    skip: int = 0,
+    limit: int = 100,
+):
+    """
+    Obtiene una lista de todos los vehículos activos.
+    """
+    vehiculos = await crud_vehiculo.get_multi_active(skip=skip, limit=limit)
+    return vehiculos
+
 @router.get("/{vehiculo_id}", response_model=VehiculoInDB)
 async def get_vehiculo_by_id(
     vehiculo_id: str,
@@ -57,17 +79,6 @@ async def get_vehiculo_by_id(
             detail="Vehículo no encontrado."
         )
     return vehiculo
-
-@router.get("/", response_model=List[VehiculoInDB])
-async def get_all_vehiculos(
-    skip: int = 0,
-    limit: int = 100,
-):
-    """
-    Obtiene una lista de todos los vehículos (activos e inactivos).
-    """
-    vehiculos = await crud_vehiculo.get_multi(skip=skip, limit=limit)
-    return vehiculos
 
 @router.put("/{vehiculo_id}", response_model=VehiculoInDB)
 async def update_vehiculo(
@@ -109,57 +120,4 @@ async def update_vehiculo(
             )
 
     vehiculo = await crud_vehiculo.update(vehiculo_db, vehiculo_in, updated_by_user_id=current_user_id)
-    return vehiculo
-
-@router.delete("/{vehiculo_id}", status_code=status.HTTP_204_NO_CONTENT)
-async def soft_delete_vehiculo(
-    vehiculo_id: str,
-    current_user_id: PydanticObjectId = Depends(get_current_user_id)
-):
-    """
-    Realiza un soft delete de un vehículo.
-    """
-    try:
-        object_id = PydanticObjectId(vehiculo_id)
-    except Exception:
-        raise HTTPException(
-            status_code=status.HTTP_400_BAD_REQUEST,
-            detail="ID de vehículo inválido."
-        )
-    vehiculo_db = await crud_vehiculo.get(object_id)
-    if not vehiculo_db:
-        raise HTTPException(
-            status_code=status.HTTP_404_NOT_FOUND,
-            detail="Vehículo no encontrado o ya eliminado."
-        )
-    await crud_vehiculo.soft_delete(vehiculo_db, deleted_by_user_id=current_user_id)
-    return {"message": "Vehículo eliminado lógicamente."}
-
-@router.post("/{vehiculo_id}/restore", response_model=VehiculoInDB)
-async def restore_vehiculo(
-    vehiculo_id: str,
-    current_user_id: PydanticObjectId = Depends(get_current_user_id)
-):
-    """
-    Restaura un vehículo que fue soft-deleted.
-    """
-    try:
-        object_id = PydanticObjectId(vehiculo_id)
-    except Exception:
-        raise HTTPException(
-            status_code=status.HTTP_400_BAD_REQUEST,
-            detail="ID de vehículo inválido."
-        )
-    vehiculo_db = await crud_vehiculo.get(object_id) # Obtener incluso si está eliminado
-    if not vehiculo_db:
-        raise HTTPException(
-            status_code=status.HTTP_404_NOT_FOUND,
-            detail="Vehículo no encontrado."
-        )
-    if vehiculo_db.estado_logico == "ACTIVO":
-        raise HTTPException(
-            status_code=status.HTTP_400_BAD_REQUEST,
-            detail="El vehículo ya está activo."
-        )
-    vehiculo = await crud_vehiculo.restore(vehiculo_db, restored_by_user_id=current_user_id)
     return vehiculo

@@ -17,16 +17,17 @@ Este repositorio contiene el monorepo para el sistema de gestión DRTC Puno, que
 - Dependencias instaladas.
 - Conexión a MongoDB y Redis establecida.
 - Endpoints CRUD para las entidades principales implementados.
+- **Refactorización de Endpoints:** Orden de rutas corregido y soft delete/restauración manejados vía `PUT` para todas las entidades aplicables.
 - Para más detalles, consultar `transportes_backend/GEMINI.md`.
 
 ### Frontend (Angular)
 - Proyecto Angular inicializado con Angular CLI 20.1.0.
-- Configurado para usar SCSS.
-- Angular Material instalado y configurado.
+- Configurado para usar SCSS y Angular Material.
 - **¡IMPORTANTE: Se está siguiendo un enfoque moderno de Angular 20!**
   - **Nomenclatura de Archivos:** Los nombres de archivos de servicios y otros artefactos tienden a ser más concisos (ej., `users.ts` en lugar de `users.service.ts`).
   - **Control Flow (`@if`, `@for`, `@switch`):** Se prefiere el nuevo control flow incorporado en las plantillas de Angular (ej., `@if` en lugar de `*ngIf`) para una mayor eficiencia y legibilidad.
   - **Signals:** El uso de Signals es el enfoque preferido para la reactividad y la gestión de estado, ofreciendo un rendimiento más eficiente y una mejor experiencia de desarrollo.
+  - **Implementación completa de CRUD para todas las entidades:** Usuarios, Empresas, Expedientes, Resoluciones, Rutas, Vehículos, Historial de Vehículos, TUCs, Conductores, Terminales Terrestres, Infracciones y Multas, Configuración MTC, Papeletas.
 - Para más detalles, consultar `transportes_frontend/GEMINI.md`.
 
 ## Próximos Pasos Acordados

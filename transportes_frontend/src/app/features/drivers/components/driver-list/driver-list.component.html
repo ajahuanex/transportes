@@ -1,0 +1,49 @@
+<div class="driver-list-container">
+  <h2>Lista de Conductores</h2>
+
+  <button (click)="createDriver()">Crear Conductor</button>
+
+  @if (drivers().length === 0) {
+    <div class="no-drivers-message">
+      <p>No hay conductores registrados.</p>
+    </div>
+  } @else {
+    <table>
+      <thead>
+        <tr>
+          <th>ID</th>
+          <th>DNI</th>
+          <th>Nombres</th>
+          <th>Apellidos</th>
+          <th>Licencia Número</th>
+          <th>Licencia Clase</th>
+          <th>Estado Habilitación MTC</th>
+          <th>Estado Lógico</th>
+          <th>Acciones</th>
+        </tr>
+      </thead>
+      <tbody>
+        @for (driver of drivers(); track driver._id) {
+          <tr>
+            <td>{{ driver._id }}</td>
+            <td>{{ driver.dni }}</td>
+            <td>{{ driver.nombres }}</td>
+            <td>{{ driver.apellidos }}</td>
+            <td>{{ driver.licencia_conducir.numero }}</td>
+            <td>{{ driver.licencia_conducir.clase_categoria }}</td>
+            <td>{{ driver.estado_habilitacion_mtc }}</td>
+            <td>{{ driver.estado_logico }}</td>
+            <td>
+              <button (click)="editDriver(driver._id)">Editar</button>
+              @if (driver.estado_logico === 'ACTIVO') {
+                <button (click)="softDeleteDriver(driver._id)">Eliminar</button>
+              } @else {
+                <button (click)="restoreDriver(driver._id)">Restaurar</button>
+              }
+            </td>
+          </tr>
+        }
+      </tbody>
+    </table>
+  }
+</div>

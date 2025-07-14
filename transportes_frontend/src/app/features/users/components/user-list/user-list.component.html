@@ -1,0 +1,50 @@
+<div class="user-list-container">
+  <h2>Lista de Usuarios</h2>
+
+  <button (click)="createUser()">Crear Usuario</button>
+
+  @if (users().length === 0) {
+    <div class="no-users-message">
+      <p>No hay usuarios registrados.</p>
+    </div>
+  } @else {
+    <table>
+      <thead>
+        <tr>
+          <th>ID</th>
+          <th>Username</th>
+          <th>Nombres</th>
+          <th>Apellidos</th>
+          <th>DNI</th>
+          <th>Email</th>
+          <th>Roles</th>
+          <th>Estado Lógico</th>
+          <th>Acciones</th>
+        </tr>
+      </thead>
+      <tbody>
+        @for (user of users(); track user._id) {
+          <tr>
+            <td>{{ user._id }}</td>
+            <td>{{ user.username }}</td>
+            <td>{{ user.nombres }}</td>
+            <td>{{ user.apellidos }}</td>
+            <td>{{ user.dni }}</td>
+            <td>{{ user.email }}</td>
+            <td>{{ user.roles.join(', ') }}</td>
+            <td>{{ user.estado_logico }}</td>
+            <td>
+              <button (click)="editUser(user._id)">Editar</button>
+              @if (user.estado_logico === 'ACTIVO') {
+                <button (click)="softDeleteUser(user._id)">Eliminar</button>
+              } @else {
+                <button (click)="restoreUser(user._id)">Restaurar</button>
+              }
+            </td>
+          </tr>
+        }
+      </tbody>
+    </table>
+  }
+</div>
+

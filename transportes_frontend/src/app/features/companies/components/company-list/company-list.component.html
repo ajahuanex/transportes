@@ -1,0 +1,47 @@
+<div class="company-list-container">
+  <h2>Lista de Empresas</h2>
+
+  <button (click)="createCompany()">Crear Empresa</button>
+
+  @if (companies().length === 0) {
+    <div class="no-companies-message">
+      <p>No hay empresas registradas.</p>
+    </div>
+  } @else {
+    <table>
+      <thead>
+        <tr>
+          <th>ID</th>
+          <th>RUC</th>
+          <th>Razón Social</th>
+          <th>Nombre Comercial</th>
+          <th>Teléfono</th>
+          <th>Email</th>
+          <th>Estado Lógico</th>
+          <th>Acciones</th>
+        </tr>
+      </thead>
+      <tbody>
+        @for (company of companies(); track company._id) {
+          <tr>
+            <td>{{ company._id }}</td>
+            <td>{{ company.ruc }}</td>
+            <td>{{ company.razon_social }}</td>
+            <td>{{ company.nombre_comercial }}</td>
+            <td>{{ company.telefono }}</td>
+            <td>{{ company.email }}</td>
+            <td>{{ company.estado_logico }}</td>
+            <td>
+              <button (click)="editCompany(company._id)">Editar</button>
+              @if (company.estado_logico === 'ACTIVO') {
+                <button (click)="softDeleteCompany(company._id)">Eliminar</button>
+              } @else {
+                <button (click)="restoreCompany(company._id)">Restaurar</button>
+              }
+            </td>
+          </tr>
+        }
+      </tbody>
+    </table>
+  }
+</div>

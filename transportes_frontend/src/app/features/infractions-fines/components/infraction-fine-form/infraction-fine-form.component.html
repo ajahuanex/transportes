@@ -1,0 +1,133 @@
+<div class="infraction-fine-form-container">
+  <h2>{{ infractionFine ? 'Editar Infracción/Multa' : 'Crear Infracción/Multa' }}</h2>
+
+  <form [formGroup]="infractionFineForm" (ngSubmit)="onSubmit()">
+    <div class="form-group">
+      <label for="numero_infraccion">Número de Infracción:</label>
+      <input id="numero_infraccion" type="text" formControlName="numero_infraccion">
+      @if (infractionFineForm.get('numero_infraccion')?.invalid && infractionFineForm.get('numero_infraccion')?.touched) {
+        <div class="error-message">Número de Infracción es requerido.</div>
+      }
+    </div>
+
+    <div class="form-group">
+      <label for="fecha_infraccion">Fecha de Infracción:</label>
+      <input id="fecha_infraccion" type="date" formControlName="fecha_infraccion">
+    </div>
+
+    <div class="form-group">
+      <label for="tipo_infraccion">Tipo de Infracción:</label>
+      <input id="tipo_infraccion" type="text" formControlName="tipo_infraccion">
+      @if (infractionFineForm.get('tipo_infraccion')?.invalid && infractionFineForm.get('tipo_infraccion')?.touched) {
+        <div class="error-message">Tipo de Infracción es requerido.</div>
+      }
+    </div>
+
+    <div class="form-group">
+      <label for="codigo_infraccion">Código de Infracción:</label>
+      <input id="codigo_infraccion" type="text" formControlName="codigo_infraccion">
+      @if (infractionFineForm.get('codigo_infraccion')?.invalid && infractionFineForm.get('codigo_infraccion')?.touched) {
+        <div class="error-message">Código de Infracción es requerido.</div>
+      }
+    </div>
+
+    <div class="form-group">
+      <label for="descripcion_infraccion">Descripción de Infracción:</label>
+      <textarea id="descripcion_infraccion" formControlName="descripcion_infraccion"></textarea>
+      @if (infractionFineForm.get('descripcion_infraccion')?.invalid && infractionFineForm.get('descripcion_infraccion')?.touched) {
+        <div class="error-message">Descripción de Infracción es requerida.</div>
+      }
+    </div>
+
+    <div class="form-group">
+      <label for="monto_multa">Monto de Multa:</label>
+      <input id="monto_multa" type="number" formControlName="monto_multa">
+      @if (infractionFineForm.get('monto_multa')?.invalid && infractionFineForm.get('monto_multa')?.touched) {
+        <div class="error-message">Monto de Multa es requerido.</div>
+      }
+    </div>
+
+    <div class="form-group">
+      <label for="moneda">Moneda:</label>
+      <input id="moneda" type="text" formControlName="moneda">
+      @if (infractionFineForm.get('moneda')?.invalid && infractionFineForm.get('moneda')?.touched) {
+        <div class="error-message">Moneda es requerida.</div>
+      }
+    </div>
+
+    <div class="form-group">
+      <label for="empresa_responsable_id">ID Empresa Responsable:</label>
+      <input id="empresa_responsable_id" type="text" formControlName="empresa_responsable_id">
+      @if (infractionFineForm.get('empresa_responsable_id')?.invalid && infractionFineForm.get('empresa_responsable_id')?.touched) {
+        <div class="error-message">ID Empresa Responsable es requerido.</div>
+      }
+    </div>
+
+    <div class="form-group">
+      <label for="ruc_empresa_responsable">RUC Empresa Responsable:</label>
+      <input id="ruc_empresa_responsable" type="text" formControlName="ruc_empresa_responsable">
+      @if (infractionFineForm.get('ruc_empresa_responsable')?.invalid && infractionFineForm.get('ruc_empresa_responsable')?.touched) {
+        <div class="error-message">RUC Empresa Responsable es requerido.</div>
+      }
+    </div>
+
+    <div class="form-group">
+      <label for="vehiculo_involucrado_id">ID Vehículo Involucrado (Opcional):</label>
+      <input id="vehiculo_involucrado_id" type="text" formControlName="vehiculo_involucrado_id">
+    </div>
+
+    <div class="form-group">
+      <label for="placa_vehiculo_involucrado">Placa Vehículo Involucrado (Opcional):</label>
+      <input id="placa_vehiculo_involucrado" type="text" formControlName="placa_vehiculo_involucrado">
+    </div>
+
+    <div class="form-group">
+      <label for="conductor_involucrado_id">ID Conductor Involucrado (Opcional):</label>
+      <input id="conductor_involucrado_id" type="text" formControlName="conductor_involucrado_id">
+    </div>
+
+    <div class="form-group">
+      <label for="dni_conductor_involucrado">DNI Conductor Involucrado (Opcional):</label>
+      <input id="dni_conductor_involucrado" type="text" formControlName="dni_conductor_involucrado">
+    </div>
+
+    <div class="form-group">
+      <label for="autoridad_emisora">Autoridad Emisora:</label>
+      <input id="autoridad_emisora" type="text" formControlName="autoridad_emisora">
+      @if (infractionFineForm.get('autoridad_emisora')?.invalid && infractionFineForm.get('autoridad_emisora')?.touched) {
+        <div class="error-message">Autoridad Emisora es requerida.</div>
+      }
+    </div>
+
+    <div class="form-group">
+      <label for="estado_multa">Estado de Multa:</label>
+      <input id="estado_multa" type="text" formControlName="estado_multa">
+      @if (infractionFineForm.get('estado_multa')?.invalid && infractionFineForm.get('estado_multa')?.touched) {
+        <div class="error-message">Estado de Multa es requerido.</div>
+      }
+    </div>
+
+    <div class="form-group">
+      <label for="fecha_notificacion">Fecha Notificación (Opcional):</label>
+      <input id="fecha_notificacion" type="date" formControlName="fecha_notificacion">
+    </div>
+
+    <div class="form-group">
+      <label for="fecha_pago">Fecha Pago (Opcional):</label>
+      <input id="fecha_pago" type="date" formControlName="fecha_pago">
+    </div>
+
+    <div class="form-group">
+      <label for="monto_pagado">Monto Pagado (Opcional):</label>
+      <input id="monto_pagado" type="number" formControlName="monto_pagado">
+    </div>
+
+    <div class="form-group">
+      <label for="observaciones_multa">Observaciones Multa (Opcional):</label>
+      <textarea id="observaciones_multa" formControlName="observaciones_multa"></textarea>
+    </div>
+
+    <button type="submit" [disabled]="infractionFineForm.invalid">{{ infractionFine ? 'Guardar Cambios' : 'Crear Infracción/Multa' }}</button>
+    <button type="button" (click)="onCancel()">Cancelar</button>
+  </form>
+</div>

@@ -39,6 +39,7 @@ class Resolucion(Document):
     rutas_afectadas: List[RutaAfectada] = []
     observaciones: Optional[str] = None
     estado_resolucion: str = Field(default="Vigente", index=True) # Vigente, Caducada, Anulada, Revocada
+    estado_logico: str = Field(default="ACTIVO", index=True) # ACTIVO, ELIMINADO
 
     fecha_creacion: datetime = Field(default_factory=lambda: datetime.now(LIMA_TZ))
     creado_por_usuario_id: Optional[PydanticObjectId] = None

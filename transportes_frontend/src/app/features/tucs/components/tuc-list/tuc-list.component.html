@@ -1,0 +1,47 @@
+<div class="tuc-list-container">
+  <h2>Lista de TUCs</h2>
+
+  <button (click)="createTUC()">Crear TUC</button>
+
+  @if (tucs().length === 0) {
+    <div class="no-tucs-message">
+      <p>No hay TUCs registradas.</p>
+    </div>
+  } @else {
+    <table>
+      <thead>
+        <tr>
+          <th>ID</th>
+          <th>Número TUC</th>
+          <th>Empresa ID</th>
+          <th>Placa Vehículo</th>
+          <th>Estado</th>
+          <th>Fecha Vencimiento</th>
+          <th>Estado Lógico</th>
+          <th>Acciones</th>
+        </tr>
+      </thead>
+      <tbody>
+        @for (tuc of tucs(); track tuc._id) {
+          <tr>
+            <td>{{ tuc._id }}</td>
+            <td>{{ tuc.numero_tuc }}</td>
+            <td>{{ tuc.empresa_id }}</td>
+            <td>{{ tuc.placa_vehiculo }}</td>
+            <td>{{ tuc.estado }}</td>
+            <td>{{ tuc.fecha_vencimiento | date:'shortDate' }}</td>
+            <td>{{ tuc.estado_logico }}</td>
+            <td>
+              <button (click)="editTUC(tuc._id)">Editar</button>
+              @if (tuc.estado_logico === 'ACTIVO') {
+                <button (click)="softDeleteTUC(tuc._id)">Eliminar</button>
+              } @else {
+                <button (click)="restoreTUC(tuc._id)">Restaurar</button>
+              }
+            </td>
+          </tr>
+        }
+      </tbody>
+    </table>
+  }
+</div>

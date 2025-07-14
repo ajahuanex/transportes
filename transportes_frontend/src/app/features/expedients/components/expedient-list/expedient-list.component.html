@@ -1,0 +1,45 @@
+<div class="expedient-list-container">
+  <h2>Lista de Expedientes</h2>
+
+  <button (click)="createExpedient()">Crear Expediente</button>
+
+  @if (expedients().length === 0) {
+    <div class="no-expedients-message">
+      <p>No hay expedientes registrados.</p>
+    </div>
+  } @else {
+    <table>
+      <thead>
+        <tr>
+          <th>ID</th>
+          <th>Número Expediente</th>
+          <th>Empresa Solicitante ID</th>
+          <th>Tipo Trámite</th>
+          <th>Estado Expediente</th>
+          <th>Estado Lógico</th>
+          <th>Acciones</th>
+        </tr>
+      </thead>
+      <tbody>
+        @for (expedient of expedients(); track expedient._id) {
+          <tr>
+            <td>{{ expedient._id }}</td>
+            <td>{{ expedient.numero_expediente }}</td>
+            <td>{{ expedient.empresa_solicitante_id }}</td>
+            <td>{{ expedient.tipo_tramite }}</td>
+            <td>{{ expedient.estado_expediente }}</td>
+            <td>{{ expedient.estado_logico }}</td>
+            <td>
+              <button (click)="editExpedient(expedient._id)">Editar</button>
+              @if (expedient.estado_logico === 'ACTIVO') {
+                <button (click)="softDeleteExpedient(expedient._id)">Eliminar</button>
+              } @else {
+                <button (click)="restoreExpedient(expedient._id)">Restaurar</button>
+              }
+            </td>
+          </tr>
+        }
+      </tbody>
+    </table>
+  }
+</div>

@@ -1,0 +1,49 @@
+<div class="route-list-container">
+  <h2>Lista de Rutas</h2>
+
+  <button (click)="createRoute()">Crear Ruta</button>
+
+  @if (routes().length === 0) {
+    <div class="no-routes-message">
+      <p>No hay rutas registradas.</p>
+    </div>
+  } @else {
+    <table>
+      <thead>
+        <tr>
+          <th>ID</th>
+          <th>Código Ruta</th>
+          <th>Origen</th>
+          <th>Destino</th>
+          <th>Tipo Servicio</th>
+          <th>Empresa Autorizada RUC</th>
+          <th>Estado Ruta MTC</th>
+          <th>Estado Lógico</th>
+          <th>Acciones</th>
+        </tr>
+      </thead>
+      <tbody>
+        @for (route of routes(); track route._id) {
+          <tr>
+            <td>{{ route._id }}</td>
+            <td>{{ route.codigo_ruta }}</td>
+            <td>{{ route.origen.ciudad }} ({{ route.origen.departamento }})</td>
+            <td>{{ route.destino.ciudad }} ({{ route.destino.departamento }})</td>
+            <td>{{ route.tipo_servicio }}</td>
+            <td>{{ route.ruc_empresa_autorizada }}</td>
+            <td>{{ route.estado_ruta_mtc }}</td>
+            <td>{{ route.estado_logico }}</td>
+            <td>
+              <button (click)="editRoute(route._id)">Editar</button>
+              @if (route.estado_logico === 'ACTIVO') {
+                <button (click)="softDeleteRoute(route._id)">Eliminar</button>
+              } @else {
+                <button (click)="restoreRoute(route._id)">Restaurar</button>
+              }
+            </td>
+          </tr>
+        }
+      </tbody>
+    </table>
+  }
+</div>

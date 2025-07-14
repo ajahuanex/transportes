@@ -1,0 +1,48 @@
+<div class="mtc-config-form-container">
+  <h2>{{ mtcConfig ? 'Editar Configuración MTC' : 'Crear Configuración MTC' }}</h2>
+
+  <form [formGroup]="mtcConfigForm" (ngSubmit)="onSubmit()">
+    <div class="form-group">
+      <label for="observaciones">Observaciones:</label>
+      <textarea id="observaciones" formControlName="observaciones"></textarea>
+    </div>
+
+    <h3>Reglas de Antigüedad de Vehículos</h3>
+    <div formArrayName="reglas_antiguedad">
+      @for (regla of reglasAntiguedad.controls; track $index) {
+        <div [formGroupName]="$index" class="regla-group">
+          <div class="form-group">
+            <label for="tipo_servicio_{{$index}}">Tipo de Servicio:</label>
+            <input id="tipo_servicio_{{$index}}" type="text" formControlName="tipo_servicio">
+            @if (regla.get('tipo_servicio')?.invalid && regla.get('tipo_servicio')?.touched) {
+              <div class="error-message">Tipo de Servicio es requerido.</div>
+            }
+          </div>
+          <div class="form-group">
+            <label for="categoria_vehicular_{{$index}}">Categoría Vehicular:</label>
+            <input id="categoria_vehicular_{{$index}}" type="text" formControlName="categoria_vehicular">
+            @if (regla.get('categoria_vehicular')?.invalid && regla.get('categoria_vehicular')?.touched) {
+              <div class="error-message">Categoría Vehicular es requerida.</div>
+            }
+          </div>
+          <div class="form-group">
+            <label for="edad_maxima_anios_{{$index}}">Edad Máxima (años):</label>
+            <input id="edad_maxima_anios_{{$index}}" type="number" formControlName="edad_maxima_anios">
+            @if (regla.get('edad_maxima_anios')?.invalid && regla.get('edad_maxima_anios')?.touched) {
+              <div class="error-message">Edad Máxima es requerida.</div>
+            }
+          </div>
+          <div class="form-group">
+            <label for="notas_{{$index}}">Notas (Opcional):</label>
+            <textarea id="notas_{{$index}}" formControlName="notas"></textarea>
+          </div>
+          <button type="button" (click)="removeReglaAntiguedad($index)">Eliminar Regla</button>
+        </div>
+      }
+    </div>
+    <button type="button" (click)="addReglaAntiguedad()">Añadir Regla</button>
+
+    <button type="submit" [disabled]="mtcConfigForm.invalid">{{ mtcConfig ? 'Guardar Cambios' : 'Crear Configuración' }}</button>
+    <button type="button" (click)="onCancel()">Cancelar</button>
+  </form>
+</div>
