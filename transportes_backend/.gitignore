@@ -1,0 +1,35 @@
+
+# Python
+__pycache__/
+*.pyc
+*.pyd
+*.so
+.Python
+
+# Virtual environments
+venv/
+.venv/
+
+# Environment variables
+.env
+.flaskenv
+
+# Testing
+.pytest_cache/
+.coverage
+htmlcov/
+
+# Django specific (if applicable)
+*.log
+*.pot
+*.mo
+
+# Frontend (Angular/Node.js)
+node_modules/
+dist/
+.angular/
+.vscode/
+package-lock.json
+
+# Ignore the entire frontend project directory as it's a separate Git repo
+drtc-puno-frontend/
