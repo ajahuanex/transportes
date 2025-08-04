@@ -1,0 +1,347 @@
+<div class="expedientes-container">
+  <!-- Header -->
+  <div class="page-header">
+    <div class="header-content">
+      <h1 class="page-title">
+        <i class="fas fa-folder-open"></i>
+        Gestión de Expedientes
+      </h1>
+      <p class="page-subtitle">
+        Administración y seguimiento de expedientes de trámites
+      </p>
+    </div>
+    <div class="header-actions">
+      <button class="btn btn-primary" (click)="nuevoExpediente()">
+        <i class="fas fa-plus"></i>
+        Nuevo Expediente
+      </button>
+      <button class="btn btn-outline" (click)="verExpedientesEliminados()">
+        <i class="fas fa-trash-alt"></i>
+        Ver Eliminados
+      </button>
+      <button class="btn btn-secondary" (click)="exportarDatos()">
+        <i class="fas fa-download"></i>
+        Exportar
+      </button>
+    </div>
+  </div>
+
+  <!-- Loading -->
+  @if (currentIsLoading()) {
+    <div class="loading-container">
+      <i class="fas fa-spinner fa-spin"></i>
+      <span>Cargando expedientes...</span>
+    </div>
+  }
+
+  <!-- Error -->
+  @if (currentError()) {
+    <div class="error-container">
+      <i class="fas fa-exclamation-triangle"></i>
+      <span>{{ currentError() }}</span>
+      <button class="btn btn-outline" (click)="cargarExpedientes()">
+        Reintentar
+      </button>
+    </div>
+  }
+
+  <!-- Contenido principal -->
+  @if (!currentIsLoading() && !currentError()) {
+    <!-- Barra de búsqueda simple -->
+    <div class="search-section">
+      <div class="search-container">
+        <div class="search-input-wrapper">
+          <i class="fas fa-search search-icon"></i>
+          <input 
+            type="text" 
+            class="search-input"
+            [ngModel]="currentFiltros().busquedaGeneral"
+            (ngModelChange)="actualizarBusquedaGeneral($event)"
+            placeholder="Buscar por número, tipo, trámite, solicitante..."
+            (keyup.enter)="aplicarFiltros()"
+          >
+        </div>
+        <button class="btn btn-outline" (click)="toggleFiltrosAvanzados()">
+          <i class="fas fa-filter"></i>
+          Filtros Avanzados
+          <i class="fas fa-chevron-down" [class.rotated]="mostrarFiltrosAvanzados()"></i>
+        </button>
+      </div>
+    </div>
+
+    <!-- Filtros avanzados (colapsibles) -->
+    @if (mostrarFiltrosAvanzados()) {
+      <div class="filters-section">
+        <div class="filters-header">
+          <h3>Filtros Avanzados</h3>
+          <button class="btn btn-link" (click)="limpiarFiltros()">
+            <i class="fas fa-times"></i>
+            Limpiar
+          </button>
+        </div>
+        
+        <div class="filters-grid">
+          <div class="form-group">
+            <label for="numero">Número de Expediente</label>
+            <input 
+              type="text" 
+              id="numero" 
+              [ngModel]="currentFiltros().numero"
+              (ngModelChange)="actualizarFiltroNumero($event)"
+              placeholder="E-1234-2025"
+              (keyup.enter)="aplicarFiltros()"
+            >
+          </div>
+
+          <div class="form-group">
+            <label for="tipo">Tipo de Expediente</label>
+            <select 
+              id="tipo" 
+              [ngModel]="currentFiltros().tipo"
+              (ngModelChange)="actualizarFiltroTipo($event)"
+            >
+              <option value="">Todos los tipos</option>
+              <option [value]="TipoExpediente.EMPRESA_TRANSPORTE">Empresa Transporte</option>
+              <option [value]="TipoExpediente.VEHICULO">Vehículo</option>
+              <option [value]="TipoExpediente.CONDUCTOR">Conductor</option>
+              <option [value]="TipoExpediente.RUTA">Ruta</option>
+              <option [value]="TipoExpediente.TUC">TUC</option>
+              <option [value]="TipoExpediente.RESOLUCION">Resolución</option>
+              <option [value]="TipoExpediente.OTRO">Otro</option>
+            </select>
+          </div>
+
+          <div class="form-group">
+            <label for="tipoTramite">Tipo de Trámite</label>
+            <select 
+              id="tipoTramite" 
+              [ngModel]="currentFiltros().tipoTramite"
+              (ngModelChange)="actualizarFiltroTipoTramite($event)"
+            >
+              <option value="">Todos los trámites</option>
+              <option [value]="TipoTramite.SOLICITUD_INICIAL">Solicitud Inicial</option>
+              <option [value]="TipoTramite.RENOVACION">Renovación</option>
+              <option [value]="TipoTramite.MODIFICACION">Modificación</option>
+              <option [value]="TipoTramite.CANCELACION">Cancelación</option>
+              <option [value]="TipoTramite.SUSPENSION">Suspensión</option>
+              <option [value]="TipoTramite.REACTIVACION">Reactivación</option>
+            </select>
+          </div>
+
+          <div class="form-group">
+            <label for="estado">Estado</label>
+            <select 
+              id="estado" 
+              [ngModel]="currentFiltros().estado"
+              (ngModelChange)="actualizarFiltroEstado($event)"
+            >
+              <option value="">Todos los estados</option>
+              <option [value]="EstadoExpediente.ABIERTO">Abierto</option>
+              <option [value]="EstadoExpediente.EN_TRAMITE">En Trámite</option>
+              <option [value]="EstadoExpediente.PENDIENTE_DOCUMENTACION">Pendiente Documentación</option>
+              <option [value]="EstadoExpediente.EN_REVISION">En Revisión</option>
+              <option [value]="EstadoExpediente.APROBADO">Aprobado</option>
+              <option [value]="EstadoExpediente.RECHAZADO">Rechazado</option>
+              <option [value]="EstadoExpediente.CERRADO">Cerrado</option>
+              <option [value]="EstadoExpediente.SUSPENDIDO">Suspendido</option>
+            </select>
+          </div>
+
+          <div class="form-group">
+            <label for="solicitante">Solicitante</label>
+            <input 
+              type="text" 
+              id="solicitante" 
+              [ngModel]="currentFiltros().solicitanteId"
+              (ngModelChange)="actualizarFiltroSolicitante($event)"
+              placeholder="RUC, DNI o nombre"
+              (keyup.enter)="aplicarFiltros()"
+            >
+          </div>
+
+          <div class="form-group">
+            <label for="prioridad">Prioridad</label>
+            <select 
+              id="prioridad" 
+              [ngModel]="currentFiltros().prioridad"
+              (ngModelChange)="actualizarFiltroPrioridad($event)"
+            >
+              <option value="">Todas las prioridades</option>
+              <option value="BAJA">Baja</option>
+              <option value="MEDIA">Media</option>
+              <option value="ALTA">Alta</option>
+              <option value="URGENTE">Urgente</option>
+            </select>
+          </div>
+
+          <div class="form-group">
+            <label for="responsable">Responsable</label>
+            <input 
+              type="text" 
+              id="responsable" 
+              [ngModel]="currentFiltros().responsable"
+              (ngModelChange)="actualizarFiltroResponsable($event)"
+              placeholder="Nombre del responsable"
+              (keyup.enter)="aplicarFiltros()"
+            >
+          </div>
+        </div>
+
+        <div class="filters-actions">
+          <button class="btn btn-primary" (click)="aplicarFiltros()">
+            <i class="fas fa-search"></i>
+            Aplicar Filtros
+          </button>
+        </div>
+      </div>
+    }
+
+    <!-- Tabla de expedientes -->
+    <div class="table-section">
+      <div class="table-header">
+        <h3>Expedientes Registrados</h3>
+        <div class="table-controls">
+          <app-column-selector 
+            [columns]="currentColumnas()" 
+            (columnsChange)="onColumnasChange($event)"
+          ></app-column-selector>
+          <div class="table-info">
+            <span>Mostrando {{ currentExpedientes().length }} de {{ currentTotalExpedientes() }} expedientes</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="table-container">
+        @if (currentExpedientes().length === 0) {
+          <div class="empty-state">
+            <i class="fas fa-folder-open"></i>
+            <h4>No se encontraron expedientes</h4>
+            <p>No hay expedientes que coincidan con los filtros aplicados</p>
+            <button class="btn btn-primary" (click)="limpiarFiltros()">
+              Limpiar Filtros
+            </button>
+          </div>
+        } @else {
+          <table class="table">
+            <thead>
+              <tr>
+                @for (columna of currentColumnas(); track columna.key) {
+                  @if (columna.visible) {
+                    <th>{{ columna.label }}</th>
+                  }
+                }
+                <th>Acciones</th>
+              </tr>
+            </thead>
+            <tbody>
+              @for (expediente of currentExpedientes(); track expediente.id) {
+                <tr class="expediente-row" [attr.data-expediente-id]="expediente.id">
+                  @for (columna of currentColumnas(); track columna.key) {
+                    @if (columna.visible) {
+                      <td>
+                        @switch (columna.key) {
+                          @case ('numero') {
+                            <strong class="expediente-numero">{{ expediente.numero }}</strong>
+                          }
+                          @case ('tipo') {
+                            <span class="badge tipo-expediente">{{ getColumnFormatter('tipo')?.(expediente.tipo) || expediente.tipo }}</span>
+                          }
+                          @case ('tipoTramite') {
+                            <span class="badge tipo-tramite">{{ getColumnFormatter('tipoTramite')?.(expediente.tipoTramite) || expediente.tipoTramite }}</span>
+                          }
+                          @case ('solicitante.nombre') {
+                            <div class="solicitante-info">
+                              <div class="solicitante-nombre">{{ expediente.solicitante?.nombre || 'N/A' }}</div>
+                              <div class="solicitante-tipo">{{ expediente.solicitante?.tipo === 'EMPRESA' ? 'Empresa' : 'Persona Natural' }}</div>
+                            </div>
+                          }
+                          @case ('solicitante.documento') {
+                            <span class="documento">{{ expediente.solicitante?.documento || 'N/A' }}</span>
+                          }
+                          @case ('estado') {
+                            <span class="badge" [class]="getEstadoClass(expediente.estado)">
+                              {{ getColumnFormatter('estado')?.(expediente.estado) || expediente.estado }}
+                            </span>
+                          }
+                          @case ('prioridad') {
+                            <span class="badge" [class]="getPrioridadClass(expediente.prioridad || '')">
+                              {{ getColumnFormatter('prioridad')?.(expediente.prioridad || '') || expediente.prioridad || 'N/A' }}
+                            </span>
+                          }
+                          @case ('responsable') {
+                            {{ expediente.responsable || 'Sin asignar' }}
+                          }
+                          @case ('fechaApertura') {
+                            {{ expediente.fechaApertura | date:'dd/MM/yyyy' }}
+                          }
+                          @case ('fechaLimite') {
+                            @if (expediente.fechaLimite) {
+                              <span [class]="isFechaVencida(expediente.fechaLimite) ? 'fecha-vencida' : ''">
+                                {{ expediente.fechaLimite | date:'dd/MM/yyyy' }}
+                              </span>
+                            } @else {
+                              <span class="sin-fecha">Sin fecha límite</span>
+                            }
+                          }
+                          @case ('descripcion') {
+                            <div class="descripcion-truncada" [title]="expediente.descripcion || ''">
+                              {{ expediente.descripcion && expediente.descripcion.length > 50 ? expediente.descripcion.substring(0, 50) + '...' : expediente.descripcion || 'Sin descripción' }}
+                            </div>
+                          }
+                          @case ('fechaCreacion') {
+                            {{ expediente.fechaCreacion | date:'dd/MM/yyyy' }}
+                          }
+                          @default {
+                            {{ getNestedValue(expediente, columna.key) || '-' }}
+                          }
+                        }
+                      </td>
+                    }
+                  }
+                  <td>
+                    <div class="actions">
+                      <button class="btn btn-sm btn-outline" (click)="verExpediente(expediente.id)" title="Ver detalles">
+                        <i class="fas fa-eye"></i>
+                      </button>
+                      <button class="btn btn-sm btn-outline" (click)="editarExpediente(expediente.id)" title="Editar">
+                        <i class="fas fa-edit"></i>
+                      </button>
+                      <div class="dropdown" #dropdown>
+                        <button class="btn btn-sm btn-outline dropdown-toggle" (click)="toggleDropdown(dropdown)" title="Más acciones">
+                          <i class="fas fa-ellipsis-v"></i>
+                        </button>
+                        <div class="dropdown-menu" [class.show]="dropdownsAbiertos().includes(expediente.id)">
+                          <button class="dropdown-item" (click)="cambiarEstado(expediente.id, 'EN_TRAMITE')">
+                            <i class="fas fa-play"></i>
+                            En Trámite
+                          </button>
+                          <button class="dropdown-item" (click)="cambiarEstado(expediente.id, 'EN_REVISION')">
+                            <i class="fas fa-search"></i>
+                            En Revisión
+                          </button>
+                          <button class="dropdown-item" (click)="cambiarEstado(expediente.id, 'APROBADO')">
+                            <i class="fas fa-check"></i>
+                            Aprobar
+                          </button>
+                          <button class="dropdown-item" (click)="cambiarEstado(expediente.id, 'RECHAZADO')">
+                            <i class="fas fa-times"></i>
+                            Rechazar
+                          </button>
+                          <div class="dropdown-divider"></div>
+                          <button class="dropdown-item text-danger" (click)="eliminarExpediente(expediente.id)">
+                            <i class="fas fa-trash"></i>
+                            Eliminar
+                          </button>
+                        </div>
+                      </div>
+                    </div>
+                  </td>
+                </tr>
+              }
+            </tbody>
+          </table>
+        }
+      </div>
+    </div>
+  }
+</div> 

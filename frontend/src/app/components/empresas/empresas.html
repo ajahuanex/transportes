@@ -1,0 +1,463 @@
+<div class="empresas-container">
+  <!-- Header -->
+  <div class="page-header">
+    <div class="header-content">
+      <h1 class="page-title">
+        <i class="fas fa-building"></i>
+        Gestión de Empresas de Transporte
+      </h1>
+      <p class="page-subtitle">
+        Administración y control de empresas registradas en DRTC Puno
+      </p>
+    </div>
+    <div class="header-actions">
+      <button class="btn btn-primary" (click)="nuevaEmpresa()">
+        <i class="fas fa-plus"></i>
+        Nueva Empresa
+      </button>
+      <button class="btn btn-outline" (click)="verEmpresasEliminadas()">
+        <i class="fas fa-trash-alt"></i>
+        Ver Eliminadas
+      </button>
+      <button class="btn btn-secondary" (click)="exportarDatos()">
+        <i class="fas fa-download"></i>
+        Exportar
+      </button>
+    </div>
+  </div>
+
+  <!-- Filtros Mejorados -->
+  <div class="filters-section">
+    <div class="filters-header">
+      <h3><i class="fas fa-filter"></i> Filtros de Búsqueda</h3>
+      <button class="btn btn-text" (click)="toggleFiltros()">
+        <i class="fas" [class]="filtrosVisibles() ? 'fa-chevron-up' : 'fa-chevron-down'"></i>
+        {{ filtrosVisibles() ? 'Ocultar' : 'Mostrar' }} filtros
+      </button>
+    </div>
+    
+    @if (filtrosVisibles()) {
+      <div class="filters-content">
+        <div class="filters-grid">
+          <div class="form-group">
+            <label for="ruc">
+              <i class="fas fa-id-card"></i>
+              RUC
+            </label>
+            <input 
+              type="text" 
+              id="ruc" 
+              [ngModel]="currentFiltros().ruc"
+              (ngModelChange)="actualizarFiltroRUC($event)"
+              placeholder="Buscar por RUC"
+              (keyup.enter)="aplicarFiltros()"
+              class="form-control"
+            >
+          </div>
+          <div class="form-group">
+            <label for="razonSocial">
+              <i class="fas fa-building"></i>
+              Razón Social
+            </label>
+            <input 
+              type="text" 
+              id="razonSocial" 
+              [ngModel]="currentFiltros().razonSocial"
+              (ngModelChange)="actualizarFiltroRazonSocial($event)"
+              placeholder="Buscar por razón social"
+              (keyup.enter)="aplicarFiltros()"
+              class="form-control"
+            >
+          </div>
+          <div class="form-group">
+            <label for="estado">
+              <i class="fas fa-toggle-on"></i>
+              Estado
+            </label>
+            <select 
+              id="estado" 
+              [ngModel]="currentFiltros().estado"
+              (ngModelChange)="actualizarFiltroEstado($event)"
+              (change)="aplicarFiltros()"
+              class="form-control"
+            >
+              <option value="">Todos los estados</option>
+              <option value="ACTIVO">Activo</option>
+              <option value="SUSPENDIDO">Suspendido</option>
+              <option value="CANCELADO">Cancelado</option>
+              <option value="PENDIENTE">Pendiente</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label for="distrito">
+              <i class="fas fa-map-marker-alt"></i>
+              Distrito
+            </label>
+            <input 
+              type="text" 
+              id="distrito" 
+              [ngModel]="currentFiltros().distrito"
+              (ngModelChange)="actualizarFiltroDistrito($event)"
+              placeholder="Filtrar por distrito"
+              (keyup.enter)="aplicarFiltros()"
+              class="form-control"
+            >
+          </div>
+          <div class="form-group">
+            <label for="expediente">
+              <i class="fas fa-folder"></i>
+              Expediente
+            </label>
+            <input 
+              type="text" 
+              id="expediente" 
+              [ngModel]="currentFiltros().numeroExpediente"
+              (ngModelChange)="actualizarFiltroExpediente($event)"
+              placeholder="E-1234-2025"
+              (keyup.enter)="aplicarFiltros()"
+              class="form-control"
+            >
+          </div>
+        </div>
+        <div class="filters-actions">
+          <button class="btn btn-primary" (click)="aplicarFiltros()">
+            <i class="fas fa-search"></i>
+            Buscar
+          </button>
+          <button class="btn btn-secondary" (click)="limpiarFiltros()">
+            <i class="fas fa-times"></i>
+            Limpiar
+          </button>
+        </div>
+      </div>
+    }
+  </div>
+
+  <!-- Tabla de Empresas Mejorada -->
+  <div class="table-section">
+    <div class="table-header">
+      <div class="table-title">
+        <h3><i class="fas fa-table"></i> Empresas Registradas</h3>
+        <div class="table-stats">
+          <span class="stat-item">
+            <i class="fas fa-building"></i>
+            {{ currentEmpresas().length }} empresas
+          </span>
+          <span class="stat-item">
+            <i class="fas fa-check-circle text-success"></i>
+            {{ getEmpresasActivas() }} activas
+          </span>
+          <span class="stat-item">
+            <i class="fas fa-pause-circle text-warning"></i>
+            {{ getEmpresasSuspendidas() }} suspendidas
+          </span>
+        </div>
+      </div>
+      <div class="table-controls">
+        <app-column-selector 
+          [columns]="currentColumnas()" 
+          (columnsChange)="onColumnasChange($event)"
+        ></app-column-selector>
+        <div class="table-info">
+          <span>Mostrando {{ currentEmpresas().length }} de {{ currentTotalEmpresas() }} empresas</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="table-container">
+      <table class="table table-hover">
+        <thead>
+          <tr>
+            @for (columna of currentColumnas(); track columna.key) {
+              @if (columna.visible) {
+                <th class="table-header-cell">
+                  <div class="header-content">
+                    <span>{{ columna.label }}</span>
+                    @if (columna.sortable) {
+                      <button class="sort-btn" (click)="ordenarPor(columna.key)">
+                        <i class="fas fa-sort"></i>
+                      </button>
+                    }
+                  </div>
+                </th>
+              }
+            }
+            <th class="table-header-cell actions-header">
+              <i class="fas fa-cogs"></i>
+              Acciones
+            </th>
+          </tr>
+        </thead>
+        <tbody>
+          @for (empresa of currentEmpresas(); track empresa.id) {
+            <tr class="empresa-row" [class]="getRowClass(empresa)">
+              @for (columna of currentColumnas(); track columna.key) {
+                @if (columna.visible) {
+                  <td class="table-cell">
+                    @switch (columna.key) {
+                      @case ('ruc') {
+                        <div class="ruc-cell">
+                          <strong>{{ empresa.ruc }}</strong>
+                          <div class="ruc-verification">
+                            <i class="fas fa-check-circle text-success" title="RUC verificado"></i>
+                          </div>
+                        </div>
+                      }
+                      @case ('razonSocial') {
+                        <div class="empresa-info">
+                          <div class="empresa-nombre">{{ empresa.razonSocial }}</div>
+                          @if (empresa.nombreComercial) {
+                            <div class="empresa-comercial">
+                              <i class="fas fa-tag"></i>
+                              {{ empresa.nombreComercial }}
+                            </div>
+                          }
+                          @if (empresa.nombreCorto) {
+                            <div class="empresa-corto">
+                              <i class="fas fa-signature"></i>
+                              {{ empresa.nombreCorto }}
+                            </div>
+                          }
+                        </div>
+                      }
+                      @case ('razonSocialInterno') {
+                        <div class="interno-cell">
+                          @if (empresa.razonSocialInterno) {
+                            <span class="interno-text">{{ empresa.razonSocialInterno }}</span>
+                            <i class="fas fa-eye-slash" title="Razón social interno"></i>
+                          } @else {
+                            <span class="no-data">-</span>
+                          }
+                        </div>
+                      }
+                      @case ('nombreCorto') {
+                        <div class="corto-cell">
+                          @if (empresa.nombreCorto) {
+                            <span class="corto-text">{{ empresa.nombreCorto }}</span>
+                          } @else {
+                            <span class="no-data">-</span>
+                          }
+                        </div>
+                      }
+                      @case ('nombreComercial') {
+                        <div class="comercial-cell">
+                          @if (empresa.nombreComercial) {
+                            <span class="comercial-text">{{ empresa.nombreComercial }}</span>
+                          } @else {
+                            <span class="no-data">-</span>
+                          }
+                        </div>
+                      }
+                      @case ('representanteLegal.nombre') {
+                        <div class="representante-info">
+                          <div class="representante-nombre">
+                            <i class="fas fa-user"></i>
+                            {{ empresa.representanteLegal.nombres }} {{ empresa.representanteLegal.apellidos }}
+                          </div>
+                          <div class="representante-cargo">
+                            <i class="fas fa-briefcase"></i>
+                            {{ empresa.representanteLegal.cargo }}
+                          </div>
+                          @if (empresa.representanteLegalSecundario) {
+                            <div class="representante-secundario">
+                              <i class="fas fa-user-plus"></i>
+                              Secundario: {{ empresa.representanteLegalSecundario.nombres }}
+                            </div>
+                          }
+                        </div>
+                      }
+                      @case ('contacto.telefono') {
+                        <div class="contacto-cell">
+                          @if (empresa.contacto.telefono) {
+                            <a href="tel:{{ empresa.contacto.telefono }}" class="contacto-link">
+                              <i class="fas fa-phone"></i>
+                              {{ empresa.contacto.telefono }}
+                            </a>
+                          } @else {
+                            <span class="no-data">-</span>
+                          }
+                        </div>
+                      }
+                      @case ('contacto.email') {
+                        <div class="contacto-cell">
+                          @if (empresa.contacto.email) {
+                            <a href="mailto:{{ empresa.contacto.email }}" class="contacto-link">
+                              <i class="fas fa-envelope"></i>
+                              {{ empresa.contacto.email }}
+                            </a>
+                          } @else {
+                            <span class="no-data">-</span>
+                          }
+                        </div>
+                      }
+                      @case ('direccion.distrito') {
+                        <div class="direccion-cell">
+                          <i class="fas fa-map-marker-alt"></i>
+                          {{ empresa.direccion.distrito }}, {{ empresa.direccion.provincia }}
+                        </div>
+                      }
+                      @case ('expediente.numero') {
+                        <div class="expediente-cell">
+                          <span class="expediente-numero">{{ empresa.expediente.numero }}</span>
+                          <div class="expediente-estado">
+                            <span class="badge badge-sm" [class]="getExpedienteEstadoClass(empresa.expediente.estado)">
+                              {{ empresa.expediente.estado }}
+                            </span>
+                          </div>
+                        </div>
+                      }
+                      @case ('expediente.fecha') {
+                        <div class="fecha-cell">
+                          <i class="fas fa-calendar"></i>
+                          {{ empresa.expediente.fecha | date:'dd/MM/yyyy' }}
+                        </div>
+                      }
+                      @case ('estado') {
+                        <div class="estado-cell">
+                          <span class="badge" [class]="getEstadoClass(empresa.estado)">
+                            <i [class]="getEstadoIcon(empresa.estado)"></i>
+                            {{ getEstadoText(empresa.estado) }}
+                          </span>
+                          @if (empresa.estado === 'SUSPENDIDO') {
+                            <div class="suspension-info">
+                              <small class="text-muted">Suspensión temporal</small>
+                            </div>
+                          }
+                        </div>
+                      }
+                      @case ('fechaCreacion') {
+                        <div class="fecha-cell">
+                          <i class="fas fa-calendar-plus"></i>
+                          {{ empresa.fechaCreacion | date:'dd/MM/yyyy' }}
+                          <div class="tiempo-registro">
+                            <small class="text-muted">{{ getTiempoRegistro(empresa.fechaCreacion) }}</small>
+                          </div>
+                        </div>
+                      }
+                      @default {
+                        <div class="default-cell">
+                          {{ getNestedValue(empresa, columna.key) || '-' }}
+                        </div>
+                      }
+                    }
+                  </td>
+                }
+              }
+              <td class="table-cell actions-cell">
+                <div class="actions">
+                  <div class="action-buttons">
+                    <button class="btn btn-sm btn-primary" (click)="verEmpresa(empresa.id)" title="Ver detalles">
+                      <i class="fas fa-eye"></i>
+                    </button>
+                    <button class="btn btn-sm btn-secondary" (click)="editarEmpresa(empresa.id)" title="Editar">
+                      <i class="fas fa-edit"></i>
+                    </button>
+                    <button 
+                      class="btn btn-sm" 
+                      [class]="empresa.estado === 'ACTIVO' ? 'btn-warning' : 'btn-success'"
+                      (click)="toggleEstadoEmpresa(empresa)"
+                      [title]="empresa.estado === 'ACTIVO' ? 'Suspender empresa' : 'Activar empresa'"
+                    >
+                      <i [class]="empresa.estado === 'ACTIVO' ? 'fas fa-pause' : 'fas fa-play'"></i>
+                    </button>
+                    <button class="btn btn-sm btn-danger" (click)="eliminarEmpresa(empresa.id)" title="Eliminar">
+                      <i class="fas fa-trash"></i>
+                    </button>
+                  </div>
+                  <div class="quick-actions">
+                    <button class="btn btn-sm btn-outline" (click)="verExpediente(empresa)" title="Ver expediente">
+                      <i class="fas fa-folder-open"></i>
+                    </button>
+                    <button class="btn btn-sm btn-outline" (click)="verDocumentos(empresa)" title="Ver documentos">
+                      <i class="fas fa-file-alt"></i>
+                    </button>
+                  </div>
+                </div>
+              </td>
+            </tr>
+          }
+        </tbody>
+      </table>
+    </div>
+
+    <!-- Paginación Mejorada -->
+    @if (currentTotalPaginas() > 1) {
+      <div class="pagination-section">
+        <div class="pagination-info">
+          <span>
+            <i class="fas fa-info-circle"></i>
+            Página {{ currentPaginaActual() }} de {{ currentTotalPaginas() }}
+            ({{ currentTotalEmpresas() }} empresas totales)
+          </span>
+        </div>
+        <div class="pagination-controls">
+          <button 
+            class="btn btn-secondary" 
+            [disabled]="currentPaginaActual() === 1"
+            (click)="cambiarPagina(currentPaginaActual() - 1)"
+          >
+            <i class="fas fa-chevron-left"></i>
+            Anterior
+          </button>
+          <div class="page-numbers">
+            @for (pagina of getPaginas(); track pagina) {
+              <button 
+                class="btn btn-page" 
+                [class]="pagina === currentPaginaActual() ? 'btn-primary' : 'btn-secondary'"
+                (click)="cambiarPagina(pagina)"
+              >
+                {{ pagina }}
+              </button>
+            }
+          </div>
+          <button 
+            class="btn btn-secondary" 
+            [disabled]="currentPaginaActual() === currentTotalPaginas()"
+            (click)="cambiarPagina(currentPaginaActual() + 1)"
+          >
+            Siguiente
+            <i class="fas fa-chevron-right"></i>
+          </button>
+        </div>
+      </div>
+    }
+  </div>
+
+  <!-- Loading Mejorado -->
+  @if (isLoading()) {
+    <div class="loading-overlay">
+      <div class="loading-content">
+        <div class="spinner">
+          <i class="fas fa-spinner fa-spin"></i>
+        </div>
+        <div class="loading-text">
+          <h3>Cargando empresas...</h3>
+          <p>Por favor espere mientras se cargan los datos</p>
+        </div>
+      </div>
+    </div>
+  }
+
+  <!-- Mensaje sin datos mejorado -->
+  @if (!isLoading() && currentEmpresas().length === 0) {
+    <div class="no-data-section">
+      <div class="no-data-content">
+        <div class="no-data-icon">
+          <i class="fas fa-inbox"></i>
+        </div>
+        <h3>No se encontraron empresas</h3>
+        <p>No hay empresas que coincidan con los filtros aplicados.</p>
+        <div class="no-data-actions">
+          <button class="btn btn-primary" (click)="limpiarFiltros()">
+            <i class="fas fa-times"></i>
+            Limpiar filtros
+          </button>
+          <button class="btn btn-secondary" (click)="nuevaEmpresa()">
+            <i class="fas fa-plus"></i>
+            Crear primera empresa
+          </button>
+        </div>
+      </div>
+    </div>
+  }
+</div>

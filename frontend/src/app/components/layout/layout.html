@@ -1,0 +1,183 @@
+<div class="layout-container">
+  <!-- Sidebar -->
+  <aside class="sidebar" [class.collapsed]="isSidebarCollapsed()">
+    <div class="sidebar-header">
+      @if (!isSidebarCollapsed()) {
+        <div class="logo">
+          <i class="fas fa-shield-alt"></i>
+          <span>DRTC Puno</span>
+        </div>
+      } @else {
+        <div class="logo-collapsed">
+          <i class="fas fa-shield-alt"></i>
+        </div>
+      }
+      <button class="sidebar-toggle" (click)="toggleSidebar()">
+        <i class="fas fa-bars"></i>
+      </button>
+    </div>
+
+    <nav class="sidebar-nav">
+      <ul class="nav-menu">
+        <li class="nav-item">
+          <a routerLink="/dashboard" routerLinkActive="active" class="nav-link">
+            <i class="fas fa-tachometer-alt"></i>
+            @if (!isSidebarCollapsed()) {
+              <span>Dashboard</span>
+            }
+          </a>
+        </li>
+        
+        <li class="nav-item">
+          <a routerLink="/empresas" routerLinkActive="active" class="nav-link">
+            <i class="fas fa-building"></i>
+            @if (!isSidebarCollapsed()) {
+              <span>Empresas</span>
+            }
+          </a>
+        </li>
+        
+        <li class="nav-item">
+          <a routerLink="/vehiculos" routerLinkActive="active" class="nav-link">
+            <i class="fas fa-bus"></i>
+            @if (!isSidebarCollapsed()) {
+              <span>Vehículos</span>
+            }
+          </a>
+        </li>
+        
+        <li class="nav-item">
+          <a routerLink="/conductores" routerLinkActive="active" class="nav-link">
+            <i class="fas fa-user-tie"></i>
+            @if (!isSidebarCollapsed()) {
+              <span>Conductores</span>
+            }
+          </a>
+        </li>
+        
+        <li class="nav-item">
+          <a routerLink="/rutas" routerLinkActive="active" class="nav-link">
+            <i class="fas fa-route"></i>
+            @if (!isSidebarCollapsed()) {
+              <span>Rutas</span>
+            }
+          </a>
+        </li>
+        
+        <li class="nav-item">
+          <a routerLink="/expedientes" routerLinkActive="active" class="nav-link">
+            <i class="fas fa-folder-open"></i>
+            @if (!isSidebarCollapsed()) {
+              <span>Expedientes</span>
+            }
+          </a>
+        </li>
+        
+        <li class="nav-item">
+          <a routerLink="/resoluciones" routerLinkActive="active" class="nav-link">
+            <i class="fas fa-gavel"></i>
+            @if (!isSidebarCollapsed()) {
+              <span>Resoluciones</span>
+            }
+          </a>
+        </li>
+        
+        <li class="nav-item">
+          <a routerLink="/tucs" routerLinkActive="active" class="nav-link">
+            <i class="fas fa-id-card"></i>
+            @if (!isSidebarCollapsed()) {
+              <span>TUCs</span>
+            }
+          </a>
+        </li>
+        
+        <li class="nav-item">
+          <a routerLink="/reportes" routerLinkActive="active" class="nav-link">
+            <i class="fas fa-chart-bar"></i>
+            @if (!isSidebarCollapsed()) {
+              <span>Reportes</span>
+            }
+          </a>
+        </li>
+        
+        <li class="nav-item">
+          <a routerLink="/notificaciones" routerLinkActive="active" class="nav-link">
+            <i class="fas fa-bell"></i>
+            @if (!isSidebarCollapsed()) {
+              <span>Notificaciones</span>
+            }
+          </a>
+        </li>
+      </ul>
+    </nav>
+
+    @if (!isSidebarCollapsed()) {
+      <div class="sidebar-footer">
+        <div class="user-info">
+          <div class="user-avatar">
+            <i class="fas fa-user"></i>
+          </div>
+          <div class="user-details">
+            <div class="user-name">Admin DRTC</div>
+            <div class="user-role">Administrador</div>
+          </div>
+        </div>
+      </div>
+    }
+  </aside>
+
+  <!-- Main Content -->
+  <main class="main-content">
+    <!-- Header -->
+    <header class="header">
+      <div class="header-left">
+        <h1 class="page-title">{{ currentPageTitle() }}</h1>
+      </div>
+      
+      <div class="header-right">
+        <div class="header-actions">
+          <!-- Notifications -->
+          <button class="header-btn" (click)="toggleNotifications()">
+            <i class="fas fa-bell"></i>
+            @if (currentNotificationCount() > 0) {
+              <span class="notification-badge">{{ currentNotificationCount() }}</span>
+            }
+          </button>
+          
+          <!-- User Menu -->
+          <div class="user-menu" (click)="toggleUserMenu()">
+            <div class="user-avatar">
+              <i class="fas fa-user"></i>
+            </div>
+            <span class="user-name">Admin DRTC</span>
+            <i class="fas fa-chevron-down"></i>
+            
+            <!-- Dropdown Menu -->
+            @if (isUserMenuOpen()) {
+              <div class="dropdown-menu">
+                <a href="#" class="dropdown-item">
+                  <i class="fas fa-user"></i>
+                  Perfil
+                </a>
+                <a href="#" class="dropdown-item">
+                  <i class="fas fa-cog"></i>
+                  Configuración
+                </a>
+                <div class="dropdown-divider"></div>
+                <a href="#" class="dropdown-item">
+                  <i class="fas fa-sign-out-alt"></i>
+                  Cerrar Sesión
+                </a>
+              </div>
+            }
+          </div>
+        </div>
+      </div>
+    </header>
+
+    <!-- Page Content -->
+    <div class="page-content">
+      <router-outlet></router-outlet>
+    </div>
+  </main>
+</div> 

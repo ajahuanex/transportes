@@ -1,0 +1,470 @@
+.empresas-eliminadas-container {
+  padding: 2rem;
+  max-width: 1200px;
+  margin: 0 auto;
+
+  .header {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    margin-bottom: 2rem;
+    padding-bottom: 1rem;
+    border-bottom: 2px solid #e0e0e0;
+
+    .header-content {
+      .title {
+        font-size: 2rem;
+        font-weight: 700;
+        color: #333;
+        margin: 0 0 0.5rem 0;
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+
+        i {
+          color: #dc3545;
+        }
+      }
+
+      .subtitle {
+        color: #666;
+        margin: 0;
+        font-size: 1rem;
+      }
+    }
+
+    .header-actions {
+      .btn {
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+      }
+    }
+  }
+
+  .loading-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 3rem;
+    text-align: center;
+
+    .spinner {
+      width: 40px;
+      height: 40px;
+      border: 4px solid #f3f3f3;
+      border-top: 4px solid #007bff;
+      border-radius: 50%;
+      animation: spin 1s linear infinite;
+      margin-bottom: 1rem;
+    }
+
+    p {
+      color: #666;
+      font-size: 1.1rem;
+    }
+  }
+
+  .error-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 3rem;
+    text-align: center;
+    background: #fff5f5;
+    border: 1px solid #fed7d7;
+    border-radius: 8px;
+    margin: 2rem 0;
+
+    i {
+      font-size: 3rem;
+      color: #e53e3e;
+      margin-bottom: 1rem;
+    }
+
+    p {
+      color: #c53030;
+      font-size: 1.1rem;
+      margin-bottom: 1rem;
+    }
+  }
+
+  .empty-state {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 4rem 2rem;
+    text-align: center;
+    background: #f8f9fa;
+    border-radius: 8px;
+    margin: 2rem 0;
+
+    i {
+      font-size: 4rem;
+      color: #6c757d;
+      margin-bottom: 1rem;
+    }
+
+    h3 {
+      color: #495057;
+      margin-bottom: 0.5rem;
+    }
+
+    p {
+      color: #6c757d;
+      margin-bottom: 1.5rem;
+      max-width: 400px;
+    }
+  }
+
+  .empresas-list {
+    .list-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 1.5rem;
+
+      .info {
+        .count {
+          font-size: 1.1rem;
+          color: #666;
+          font-weight: 500;
+        }
+      }
+    }
+
+    .empresas-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(400px, 1fr));
+      gap: 1.5rem;
+      margin-bottom: 2rem;
+
+      .empresa-card {
+        background: white;
+        border: 1px solid #e0e0e0;
+        border-radius: 8px;
+        padding: 1.5rem;
+        transition: all 0.3s ease;
+        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+
+        &.eliminada {
+          border-left: 4px solid #dc3545;
+          background: #fff5f5;
+
+          .card-header {
+            .estado-badge {
+              background: #dc3545;
+              color: white;
+            }
+          }
+        }
+
+        .card-header {
+          display: flex;
+          justify-content: space-between;
+          align-items: flex-start;
+          margin-bottom: 1rem;
+          padding-bottom: 1rem;
+          border-bottom: 1px solid #f0f0f0;
+
+          .empresa-info {
+            flex: 1;
+
+            .razon-social {
+              font-size: 1.2rem;
+              font-weight: 600;
+              color: #333;
+              margin: 0 0 0.25rem 0;
+            }
+
+            .ruc {
+              color: #666;
+              font-size: 0.9rem;
+              margin: 0 0 0.25rem 0;
+            }
+
+            .nombre-corto {
+              color: #007bff;
+              font-size: 0.9rem;
+              font-weight: 500;
+              margin: 0;
+            }
+          }
+
+          .estado-badge {
+            padding: 0.25rem 0.75rem;
+            border-radius: 20px;
+            font-size: 0.8rem;
+            font-weight: 500;
+            text-transform: uppercase;
+          }
+        }
+
+        .card-body {
+          margin-bottom: 1rem;
+
+          .info-row {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 0.5rem;
+            font-size: 0.9rem;
+
+            .label {
+              font-weight: 500;
+              color: #666;
+              min-width: 100px;
+            }
+
+            .value {
+              color: #333;
+              text-align: right;
+              flex: 1;
+            }
+          }
+        }
+
+        .eliminacion-info {
+          background: #f8f9fa;
+          padding: 1rem;
+          border-radius: 6px;
+          margin-bottom: 1rem;
+          border-left: 3px solid #dc3545;
+
+          .info-row {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 0.5rem;
+            font-size: 0.85rem;
+
+            .label {
+              font-weight: 500;
+              color: #495057;
+              min-width: 120px;
+            }
+
+            .value {
+              color: #6c757d;
+              text-align: right;
+              flex: 1;
+            }
+          }
+        }
+
+        .card-actions {
+          display: flex;
+          gap: 0.5rem;
+          flex-wrap: wrap;
+
+          .btn {
+            flex: 1;
+            min-width: 120px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.25rem;
+            font-size: 0.85rem;
+            padding: 0.5rem 0.75rem;
+          }
+        }
+      }
+    }
+
+    .pagination {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      gap: 1rem;
+      margin-top: 2rem;
+
+      .btn {
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+        padding: 0.5rem 1rem;
+      }
+
+      .page-info {
+        font-weight: 500;
+        color: #666;
+        min-width: 120px;
+        text-align: center;
+      }
+    }
+  }
+}
+
+// Estados
+.estado-activo {
+  background: #28a745 !important;
+  color: white !important;
+}
+
+.estado-suspendido {
+  background: #ffc107 !important;
+  color: #212529 !important;
+}
+
+.estado-cancelado {
+  background: #6c757d !important;
+  color: white !important;
+}
+
+.estado-pendiente {
+  background: #17a2b8 !important;
+  color: white !important;
+}
+
+.estado-eliminado {
+  background: #dc3545 !important;
+  color: white !important;
+}
+
+.estado-default {
+  background: #6c757d !important;
+  color: white !important;
+}
+
+// Botones
+.btn {
+  padding: 0.5rem 1rem;
+  border: none;
+  border-radius: 6px;
+  font-size: 0.9rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  text-decoration: none;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+
+  &:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  }
+
+  &:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+    transform: none;
+    box-shadow: none;
+  }
+
+  &.btn-primary {
+    background: #007bff;
+    color: white;
+
+    &:hover {
+      background: #0056b3;
+    }
+  }
+
+  &.btn-secondary {
+    background: #6c757d;
+    color: white;
+
+    &:hover {
+      background: #545b62;
+    }
+  }
+
+  &.btn-success {
+    background: #28a745;
+    color: white;
+
+    &:hover {
+      background: #1e7e34;
+    }
+  }
+
+  &.btn-danger {
+    background: #dc3545;
+    color: white;
+
+    &:hover {
+      background: #c82333;
+    }
+  }
+
+  &.btn-outline {
+    background: transparent;
+    color: #007bff;
+    border: 1px solid #007bff;
+
+    &:hover {
+      background: #007bff;
+      color: white;
+    }
+  }
+
+  &.btn-sm {
+    padding: 0.25rem 0.5rem;
+    font-size: 0.8rem;
+  }
+}
+
+// Animaciones
+@keyframes spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+
+// Responsive
+@media (max-width: 768px) {
+  .empresas-eliminadas-container {
+    padding: 1rem;
+
+    .header {
+      flex-direction: column;
+      gap: 1rem;
+      align-items: stretch;
+
+      .header-actions {
+        .btn {
+          justify-content: center;
+        }
+      }
+    }
+
+    .empresas-list {
+      .empresas-grid {
+        grid-template-columns: 1fr;
+        gap: 1rem;
+
+        .empresa-card {
+          .card-header {
+            flex-direction: column;
+            gap: 0.5rem;
+
+            .estado-badge {
+              align-self: flex-start;
+            }
+          }
+
+          .card-body,
+          .eliminacion-info {
+            .info-row {
+              flex-direction: column;
+              gap: 0.25rem;
+
+              .value {
+                text-align: left;
+              }
+            }
+          }
+
+          .card-actions {
+            flex-direction: column;
+
+            .btn {
+              min-width: auto;
+            }
+          }
+        }
+      }
+    }
+  }
+} 

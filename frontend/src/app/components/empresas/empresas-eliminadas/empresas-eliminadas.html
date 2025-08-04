@@ -1,0 +1,162 @@
+<div class="empresas-eliminadas-container">
+  <!-- Header -->
+  <div class="header">
+    <div class="header-content">
+      <h1 class="title">
+        <i class="fas fa-trash-alt"></i>
+        Empresas Eliminadas
+      </h1>
+      <p class="subtitle">
+        Gestión de empresas que han sido eliminadas lógicamente del sistema
+      </p>
+    </div>
+    <div class="header-actions">
+      <button class="btn btn-secondary" (click)="volverALista()">
+        <i class="fas fa-arrow-left"></i>
+        Volver a Lista
+      </button>
+    </div>
+  </div>
+
+  <!-- Loading State -->
+  @if (loading()) {
+    <div class="loading-container">
+      <div class="spinner"></div>
+      <p>Cargando empresas eliminadas...</p>
+    </div>
+  }
+
+  <!-- Error State -->
+  @if (error()) {
+    <div class="error-container">
+      <i class="fas fa-exclamation-triangle"></i>
+      <p>{{ error() }}</p>
+      <button class="btn btn-primary" (click)="cargarEmpresasEliminadas()">
+        Reintentar
+      </button>
+    </div>
+  }
+
+  <!-- Content -->
+  @if (!loading() && !error()) {
+    <!-- Empty State -->
+    @if (empresas().length === 0) {
+      <div class="empty-state">
+        <i class="fas fa-trash-alt"></i>
+        <h3>No hay empresas eliminadas</h3>
+        <p>No se encontraron empresas que hayan sido eliminadas del sistema.</p>
+        <button class="btn btn-primary" (click)="volverALista()">
+          Volver a la lista principal
+        </button>
+      </div>
+    }
+
+    <!-- Empresas List -->
+    @if (empresas().length > 0) {
+      <div class="empresas-list">
+        <div class="list-header">
+          <div class="info">
+            <span class="count">{{ totalEmpresas() }} empresas eliminadas</span>
+          </div>
+        </div>
+
+        <div class="empresas-grid">
+          @for (empresa of empresas(); track empresa.id) {
+            <div class="empresa-card eliminada">
+              <div class="card-header">
+                <div class="empresa-info">
+                  <h3 class="razon-social">{{ empresa.razonSocial }}</h3>
+                  <p class="ruc">RUC: {{ empresa.ruc }}</p>
+                  @if (empresa.nombreCorto) {
+                    <p class="nombre-corto">{{ empresa.nombreCorto }}</p>
+                  }
+                </div>
+                <div class="estado-badge" [class]="getEstadoClass(empresa.estado)">
+                  {{ empresa.estado }}
+                </div>
+              </div>
+
+              <div class="card-body">
+                <div class="info-row">
+                  <span class="label">Representante:</span>
+                  <span class="value">{{ empresa.representanteLegal.nombres }} {{ empresa.representanteLegal.apellidos }}</span>
+                </div>
+                <div class="info-row">
+                  <span class="label">Dirección:</span>
+                  <span class="value">{{ empresa.direccion.distrito }}, {{ empresa.direccion.provincia }}</span>
+                </div>
+                <div class="info-row">
+                  <span class="label">Teléfono:</span>
+                  <span class="value">{{ empresa.telefono }}</span>
+                </div>
+                <div class="info-row">
+                  <span class="label">Email:</span>
+                  <span class="value">{{ empresa.email }}</span>
+                </div>
+              </div>
+
+              <div class="eliminacion-info">
+                <div class="info-row">
+                  <span class="label">Eliminada por:</span>
+                  <span class="value">{{ empresa.usuarioEliminacion || 'Sistema' }}</span>
+                </div>
+                <div class="info-row">
+                  <span class="label">Fecha eliminación:</span>
+                  <span class="value">{{ empresa.fechaEliminacion | date:'dd/MM/yyyy HH:mm' }}</span>
+                </div>
+                @if (empresa.motivoEliminacion) {
+                  <div class="info-row">
+                    <span class="label">Motivo:</span>
+                    <span class="value">{{ empresa.motivoEliminacion }}</span>
+                  </div>
+                }
+              </div>
+
+              <div class="card-actions">
+                <button class="btn btn-success btn-sm" (click)="restaurarEmpresa(empresa)">
+                  <i class="fas fa-undo"></i>
+                  Restaurar
+                </button>
+                <button class="btn btn-outline btn-sm" (click)="verDetalles(empresa)">
+                  <i class="fas fa-eye"></i>
+                  Ver Detalles
+                </button>
+                <button class="btn btn-danger btn-sm" (click)="eliminarPermanentemente(empresa)">
+                  <i class="fas fa-trash"></i>
+                  Eliminar Permanentemente
+                </button>
+              </div>
+            </div>
+          }
+        </div>
+
+        <!-- Pagination -->
+        @if (totalPaginas() > 1) {
+          <div class="pagination">
+            <button 
+              class="btn btn-outline" 
+              [disabled]="paginaActual() === 1"
+              (click)="cambiarPagina(paginaActual() - 1)"
+            >
+              <i class="fas fa-chevron-left"></i>
+              Anterior
+            </button>
+            
+            <div class="page-info">
+              Página {{ paginaActual() }} de {{ totalPaginas() }}
+            </div>
+            
+            <button 
+              class="btn btn-outline" 
+              [disabled]="paginaActual() === totalPaginas()"
+              (click)="cambiarPagina(paginaActual() + 1)"
+            >
+              Siguiente
+              <i class="fas fa-chevron-right"></i>
+            </button>
+          </div>
+        }
+      </div>
+    }
+  }
+</div> 

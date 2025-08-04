@@ -1,0 +1,470 @@
+<div class="rutas-container">
+  <!-- Header -->
+  <div class="page-header">
+    <div class="header-content">
+      <h1 class="page-title">
+        <i class="fas fa-route"></i>
+        Gestión de Rutas de Transporte
+      </h1>
+      <p class="page-subtitle">
+        Administración y control de rutas registradas en DRTC Puno
+      </p>
+    </div>
+    <div class="header-actions">
+      <button class="btn btn-primary" (click)="nuevaRuta()">
+        <i class="fas fa-plus"></i>
+        Nueva Ruta
+      </button>
+      <button class="btn btn-outline" (click)="verRutasEliminadas()">
+        <i class="fas fa-trash-alt"></i>
+        Ver Eliminadas
+      </button>
+      <button class="btn btn-secondary" (click)="exportarDatos()">
+        <i class="fas fa-download"></i>
+        Exportar
+      </button>
+    </div>
+  </div>
+
+  <!-- Filtros Mejorados -->
+  <div class="filters-section">
+    <div class="filters-header">
+      <h3><i class="fas fa-filter"></i> Filtros de Búsqueda</h3>
+      <button class="btn btn-text" (click)="toggleFiltros()">
+        <i class="fas" [class]="filtrosVisibles() ? 'fa-chevron-up' : 'fa-chevron-down'"></i>
+        {{ filtrosVisibles() ? 'Ocultar' : 'Mostrar' }} filtros
+      </button>
+    </div>
+    
+    @if (filtrosVisibles()) {
+      <div class="filters-content">
+        <div class="filters-grid">
+          <div class="form-group">
+            <label for="codigoRuta">
+              <i class="fas fa-hashtag"></i>
+              Código Ruta
+            </label>
+            <input 
+              type="text" 
+              id="codigoRuta" 
+              [ngModel]="currentFiltros().codigoRuta"
+              (ngModelChange)="actualizarFiltroCodigoRuta($event)"
+              placeholder="PUN-JUL-01"
+              (keyup.enter)="aplicarFiltros()"
+              class="form-control"
+            >
+          </div>
+          <div class="form-group">
+            <label for="nombre">
+              <i class="fas fa-signature"></i>
+              Nombre
+            </label>
+            <input 
+              type="text" 
+              id="nombre" 
+              [ngModel]="currentFiltros().nombre"
+              (ngModelChange)="actualizarFiltroNombre($event)"
+              placeholder="Buscar por nombre"
+              (keyup.enter)="aplicarFiltros()"
+              class="form-control"
+            >
+          </div>
+          <div class="form-group">
+            <label for="origen">
+              <i class="fas fa-map-marker-alt"></i>
+              Origen
+            </label>
+            <input 
+              type="text" 
+              id="origen" 
+              [ngModel]="currentFiltros().origen"
+              (ngModelChange)="actualizarFiltroOrigen($event)"
+              placeholder="Filtrar por origen"
+              (keyup.enter)="aplicarFiltros()"
+              class="form-control"
+            >
+          </div>
+          <div class="form-group">
+            <label for="destino">
+              <i class="fas fa-map-marker-alt"></i>
+              Destino
+            </label>
+            <input 
+              type="text" 
+              id="destino" 
+              [ngModel]="currentFiltros().destino"
+              (ngModelChange)="actualizarFiltroDestino($event)"
+              placeholder="Filtrar por destino"
+              (keyup.enter)="aplicarFiltros()"
+              class="form-control"
+            >
+          </div>
+          <div class="form-group">
+            <label for="estado">
+              <i class="fas fa-toggle-on"></i>
+              Estado
+            </label>
+            <select 
+              id="estado" 
+              [ngModel]="currentFiltros().estado"
+              (ngModelChange)="actualizarFiltroEstado($event)"
+              (change)="aplicarFiltros()"
+              class="form-control"
+            >
+              <option value="">Todos los estados</option>
+              <option value="ACTIVA">Activa</option>
+              <option value="INACTIVA">Inactiva</option>
+              <option value="SUSPENDIDA">Suspendida</option>
+              <option value="CANCELADA">Cancelada</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label for="tipoRuta">
+              <i class="fas fa-road"></i>
+              Tipo
+            </label>
+            <select 
+              id="tipoRuta" 
+              [ngModel]="currentFiltros().tipoRuta"
+              (ngModelChange)="actualizarFiltroTipoRuta($event)"
+              (change)="aplicarFiltros()"
+              class="form-control"
+            >
+              <option value="">Todos los tipos</option>
+              <option value="URBANA">Urbana</option>
+              <option value="INTERURBANA">Interurbana</option>
+              <option value="INTERPROVINCIAL">Interprovincial</option>
+              <option value="INTERREGIONAL">Interregional</option>
+              <option value="NACIONAL">Nacional</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label for="categoria">
+              <i class="fas fa-tags"></i>
+              Categoría
+            </label>
+            <select 
+              id="categoria" 
+              [ngModel]="currentFiltros().categoria"
+              (ngModelChange)="actualizarFiltroCategoria($event)"
+              (change)="aplicarFiltros()"
+              class="form-control"
+            >
+              <option value="">Todas las categorías</option>
+              <option value="PASAJEROS">Pasajeros</option>
+              <option value="CARGA">Carga</option>
+              <option value="MIXTA">Mixta</option>
+              <option value="ESPECIAL">Especial</option>
+            </select>
+          </div>
+        </div>
+        <div class="filters-actions">
+          <button class="btn btn-primary" (click)="aplicarFiltros()">
+            <i class="fas fa-search"></i>
+            Buscar
+          </button>
+          <button class="btn btn-secondary" (click)="limpiarFiltros()">
+            <i class="fas fa-times"></i>
+            Limpiar
+          </button>
+        </div>
+      </div>
+    }
+  </div>
+
+  <!-- Tabla de Rutas Mejorada -->
+  <div class="table-section">
+    <div class="table-header">
+      <div class="table-title">
+        <h3><i class="fas fa-table"></i> Rutas Registradas</h3>
+        <div class="table-stats">
+          <span class="stat-item">
+            <i class="fas fa-route"></i>
+            {{ currentRutas().length }} rutas
+          </span>
+          <span class="stat-item">
+            <i class="fas fa-check-circle text-success"></i>
+            {{ getRutasActivas() }} activas
+          </span>
+          <span class="stat-item">
+            <i class="fas fa-exclamation-triangle text-warning"></i>
+            {{ getRutasSuspendidas() }} suspendidas
+          </span>
+        </div>
+      </div>
+      <div class="table-controls">
+        <app-column-selector 
+          [columns]="currentColumnas()" 
+          (columnsChange)="onColumnasChange($event)"
+        ></app-column-selector>
+        <div class="table-info">
+          <span>Mostrando {{ currentRutas().length }} de {{ currentTotalRutas() }} rutas</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="table-container">
+      <table class="table table-hover">
+        <thead>
+          <tr>
+            @for (columna of currentColumnas(); track columna.key) {
+              @if (columna.visible) {
+                <th class="table-header-cell">
+                  <div class="header-content">
+                    <span>{{ columna.label }}</span>
+                    @if (columna.sortable) {
+                      <button class="sort-btn" (click)="ordenarPor(columna.key)">
+                        <i class="fas fa-sort"></i>
+                      </button>
+                    }
+                  </div>
+                </th>
+              }
+            }
+            <th class="table-header-cell actions-header">
+              <i class="fas fa-cogs"></i>
+              Acciones
+            </th>
+          </tr>
+        </thead>
+        <tbody>
+          @for (ruta of currentRutas(); track ruta.id) {
+            <tr class="ruta-row" [class]="getRowClass(ruta)">
+              @for (columna of currentColumnas(); track columna.key) {
+                @if (columna.visible) {
+                  <td class="table-cell">
+                    @switch (columna.key) {
+                      @case ('codigoRuta') {
+                        <div class="codigo-cell">
+                          <strong>{{ ruta.codigoRuta }}</strong>
+                          <div class="codigo-verification">
+                            <i class="fas fa-check-circle text-success" title="Código verificado"></i>
+                          </div>
+                        </div>
+                      }
+                      @case ('nombre') {
+                        <div class="ruta-info">
+                          <div class="ruta-nombre">{{ ruta.nombre }}</div>
+                          @if (ruta.descripcion) {
+                            <div class="ruta-descripcion">
+                              <i class="fas fa-info-circle"></i>
+                              {{ ruta.descripcion }}
+                            </div>
+                          }
+                        </div>
+                      }
+                      @case ('origen') {
+                        <div class="origen-cell">
+                          <i class="fas fa-map-marker-alt"></i>
+                          {{ ruta.origen }}
+                        </div>
+                      }
+                      @case ('destino') {
+                        <div class="destino-cell">
+                          <i class="fas fa-map-marker-alt"></i>
+                          {{ ruta.destino }}
+                        </div>
+                      }
+                      @case ('tipoRuta') {
+                        <div class="tipo-cell">
+                          <span class="tipo-badge">{{ getTipoRutaText(ruta.tipoRuta) }}</span>
+                        </div>
+                      }
+                      @case ('categoria') {
+                        <div class="categoria-cell">
+                          <span class="categoria-badge">{{ getCategoriaText(ruta.categoria) }}</span>
+                        </div>
+                      }
+                      @case ('distancia') {
+                        <div class="distancia-cell">
+                          @if (ruta.distancia) {
+                            <i class="fas fa-road"></i>
+                            {{ ruta.distancia }} km
+                          } @else {
+                            <span class="no-data">-</span>
+                          }
+                        </div>
+                      }
+                      @case ('tiempoEstimado') {
+                        <div class="tiempo-cell">
+                          @if (ruta.tiempoEstimado) {
+                            <i class="fas fa-clock"></i>
+                            {{ ruta.tiempoEstimado }} min
+                          } @else {
+                            <span class="no-data">-</span>
+                          }
+                        </div>
+                      }
+                      @case ('empresasOperadoras') {
+                        <div class="empresas-cell">
+                          @if (ruta.empresasOperadoras && ruta.empresasOperadoras.length > 0) {
+                            <div class="empresas-count">
+                              <i class="fas fa-building"></i>
+                              {{ ruta.empresasOperadoras.length }} empresa{{ ruta.empresasOperadoras.length > 1 ? 's' : '' }}
+                            </div>
+                          } @else {
+                            <span class="no-data">Sin empresas</span>
+                          }
+                        </div>
+                      }
+                      @case ('vehiculosAsignados') {
+                        <div class="vehiculos-cell">
+                          @if (ruta.vehiculosAsignados && ruta.vehiculosAsignados.length > 0) {
+                            <div class="vehiculos-count">
+                              <i class="fas fa-bus"></i>
+                              {{ ruta.vehiculosAsignados.length }} vehículo{{ ruta.vehiculosAsignados.length > 1 ? 's' : '' }}
+                            </div>
+                          } @else {
+                            <span class="no-data">Sin vehículos</span>
+                          }
+                        </div>
+                      }
+                      @case ('estado') {
+                        <div class="estado-cell">
+                          <span class="badge" [class]="getEstadoClass(ruta.estado)">
+                            <i [class]="getEstadoIcon(ruta.estado)"></i>
+                            {{ getEstadoText(ruta.estado) }}
+                          </span>
+                          @if (ruta.estado === 'SUSPENDIDA') {
+                            <div class="suspension-info">
+                              <small class="text-muted">Suspensión temporal</small>
+                            </div>
+                          }
+                        </div>
+                      }
+                      @case ('fechaCreacion') {
+                        <div class="fecha-cell">
+                          <i class="fas fa-calendar-plus"></i>
+                          {{ ruta.fechaCreacion | date:'dd/MM/yyyy' }}
+                          <div class="tiempo-registro">
+                            <small class="text-muted">{{ getTiempoRegistro(ruta.fechaCreacion) }}</small>
+                          </div>
+                        </div>
+                      }
+                      @default {
+                        <div class="default-cell">
+                          {{ getNestedValue(ruta, columna.key) || '-' }}
+                        </div>
+                      }
+                    }
+                  </td>
+                }
+              }
+              <td class="table-cell actions-cell">
+                <div class="actions">
+                  <div class="action-buttons">
+                    <button class="btn btn-sm btn-primary" (click)="verRuta(ruta.id)" title="Ver detalles">
+                      <i class="fas fa-eye"></i>
+                    </button>
+                    <button class="btn btn-sm btn-secondary" (click)="editarRuta(ruta.id)" title="Editar">
+                      <i class="fas fa-edit"></i>
+                    </button>
+                    <button 
+                      class="btn btn-sm" 
+                      [class]="ruta.estado === 'ACTIVA' ? 'btn-warning' : 'btn-success'"
+                      (click)="toggleEstadoRuta(ruta)"
+                      [title]="ruta.estado === 'ACTIVA' ? 'Suspender ruta' : 'Activar ruta'"
+                    >
+                      <i [class]="ruta.estado === 'ACTIVA' ? 'fas fa-pause' : 'fas fa-play'"></i>
+                    </button>
+                    <button class="btn btn-sm btn-danger" (click)="eliminarRuta(ruta.id)" title="Eliminar">
+                      <i class="fas fa-trash"></i>
+                    </button>
+                  </div>
+                  <div class="quick-actions">
+                    <button class="btn btn-sm btn-outline" (click)="verHorarios(ruta)" title="Ver horarios">
+                      <i class="fas fa-clock"></i>
+                    </button>
+                    <button class="btn btn-sm btn-outline" (click)="verTarifas(ruta)" title="Ver tarifas">
+                      <i class="fas fa-dollar-sign"></i>
+                    </button>
+                  </div>
+                </div>
+              </td>
+            </tr>
+          }
+        </tbody>
+      </table>
+    </div>
+
+    <!-- Paginación Mejorada -->
+    @if (currentTotalPaginas() > 1) {
+      <div class="pagination-section">
+        <div class="pagination-info">
+          <span>
+            <i class="fas fa-info-circle"></i>
+            Página {{ currentPaginaActual() }} de {{ currentTotalPaginas() }}
+            ({{ currentTotalRutas() }} rutas totales)
+          </span>
+        </div>
+        <div class="pagination-controls">
+          <button 
+            class="btn btn-secondary" 
+            [disabled]="currentPaginaActual() === 1"
+            (click)="cambiarPagina(currentPaginaActual() - 1)"
+          >
+            <i class="fas fa-chevron-left"></i>
+            Anterior
+          </button>
+          <div class="page-numbers">
+            @for (pagina of getPaginas(); track pagina) {
+              <button 
+                class="btn btn-page" 
+                [class]="pagina === currentPaginaActual() ? 'btn-primary' : 'btn-secondary'"
+                (click)="cambiarPagina(pagina)"
+              >
+                {{ pagina }}
+              </button>
+            }
+          </div>
+          <button 
+            class="btn btn-secondary" 
+            [disabled]="currentPaginaActual() === currentTotalPaginas()"
+            (click)="cambiarPagina(currentPaginaActual() + 1)"
+          >
+            Siguiente
+            <i class="fas fa-chevron-right"></i>
+          </button>
+        </div>
+      </div>
+    }
+  </div>
+
+  <!-- Loading Mejorado -->
+  @if (isLoading()) {
+    <div class="loading-overlay">
+      <div class="loading-content">
+        <div class="spinner">
+          <i class="fas fa-spinner fa-spin"></i>
+        </div>
+        <div class="loading-text">
+          <h3>Cargando rutas...</h3>
+          <p>Por favor espere mientras se cargan los datos</p>
+        </div>
+      </div>
+    </div>
+  }
+
+  <!-- Mensaje sin datos mejorado -->
+  @if (!isLoading() && currentRutas().length === 0) {
+    <div class="no-data-section">
+      <div class="no-data-content">
+        <div class="no-data-icon">
+          <i class="fas fa-route"></i>
+        </div>
+        <h3>No se encontraron rutas</h3>
+        <p>No hay rutas que coincidan con los filtros aplicados.</p>
+        <div class="no-data-actions">
+          <button class="btn btn-primary" (click)="limpiarFiltros()">
+            <i class="fas fa-times"></i>
+            Limpiar filtros
+          </button>
+          <button class="btn btn-secondary" (click)="nuevaRuta()">
+            <i class="fas fa-plus"></i>
+            Crear primera ruta
+          </button>
+        </div>
+      </div>
+    </div>
+  }
+</div> 

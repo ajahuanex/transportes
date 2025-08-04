@@ -1,0 +1,563 @@
+.expediente-detail-container {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 20px;
+  background: #fff;
+  border-radius: 8px;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+}
+
+// Header del detalle
+.detail-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 30px;
+  padding-bottom: 20px;
+  border-bottom: 2px solid #f0f0f0;
+
+  .header-content {
+    .detail-title {
+      font-size: 28px;
+      font-weight: 600;
+      color: #2c3e50;
+      margin: 0 0 8px 0;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+
+      i {
+        color: #3498db;
+      }
+    }
+
+    .detail-subtitle {
+      font-size: 16px;
+      color: #7f8c8d;
+      margin: 0;
+    }
+  }
+
+  .header-actions {
+    display: flex;
+    gap: 12px;
+
+    .btn {
+      padding: 10px 20px;
+      font-size: 14px;
+      font-weight: 500;
+      border-radius: 6px;
+      border: none;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+
+      &.btn-primary {
+        background: #3498db;
+        color: white;
+
+        &:hover {
+          background: #2980b9;
+          transform: translateY(-1px);
+          box-shadow: 0 4px 12px rgba(52, 152, 219, 0.3);
+        }
+      }
+
+      &.btn-outline {
+        background: transparent;
+        color: #3498db;
+        border: 2px solid #3498db;
+
+        &:hover {
+          background: #3498db;
+          color: white;
+        }
+      }
+    }
+  }
+}
+
+// Estados de carga y error
+.loading-container, .error-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 60px 20px;
+  text-align: center;
+
+  i {
+    font-size: 32px;
+    margin-bottom: 16px;
+  }
+
+  span {
+    font-size: 16px;
+    margin-bottom: 16px;
+  }
+}
+
+.loading-container {
+  color: #7f8c8d;
+
+  i {
+    color: #3498db;
+  }
+}
+
+.error-container {
+  color: #e74c3c;
+
+  i {
+    color: #e74c3c;
+  }
+
+  .btn {
+    margin-top: 16px;
+  }
+}
+
+// Contenido del detalle
+.detail-content {
+  .detail-section {
+    background: #f8f9fa;
+    border-radius: 8px;
+    padding: 25px;
+    margin-bottom: 25px;
+    border-left: 4px solid #3498db;
+
+    .section-title {
+      font-size: 20px;
+      font-weight: 600;
+      color: #2c3e50;
+      margin: 0 0 20px 0;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+
+      i {
+        color: #3498db;
+      }
+    }
+
+    .info-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+      gap: 20px;
+
+      .info-item {
+        &.full-width {
+          grid-column: 1 / -1;
+        }
+
+        label {
+          display: block;
+          font-weight: 600;
+          color: #2c3e50;
+          margin-bottom: 8px;
+          font-size: 14px;
+        }
+
+        span {
+          display: block;
+          color: #34495e;
+          font-size: 14px;
+          line-height: 1.4;
+        }
+
+        .descripcion-content, .observaciones-content {
+          background: #fff;
+          padding: 12px;
+          border-radius: 6px;
+          border: 1px solid #e1e8ed;
+          line-height: 1.6;
+          white-space: pre-wrap;
+        }
+
+        .tags-container {
+          display: flex;
+          flex-wrap: wrap;
+          gap: 8px;
+
+          .tag {
+            background: #e3f2fd;
+            color: #1976d2;
+            padding: 4px 8px;
+            border-radius: 4px;
+            font-size: 12px;
+            font-weight: 500;
+          }
+        }
+      }
+    }
+  }
+}
+
+// Estilos específicos
+.expediente-numero {
+  font-family: 'Courier New', monospace;
+  font-weight: 600;
+  color: #3498db;
+  background: #f0f4ff;
+  padding: 4px 8px;
+  border-radius: 4px;
+  font-size: 14px;
+}
+
+.badge {
+  padding: 4px 8px;
+  border-radius: 4px;
+  font-size: 12px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+
+  &.tipo-expediente {
+    background: #e8f5e8;
+    color: #27ae60;
+  }
+
+  &.tipo-tramite {
+    background: #fff3cd;
+    color: #856404;
+  }
+
+  &.solicitante-tipo {
+    background: #e3f2fd;
+    color: #1976d2;
+  }
+
+  // Estados
+  &.estado-abierto {
+    background: #e3f2fd;
+    color: #1976d2;
+  }
+
+  &.estado-tramite {
+    background: #fff8e1;
+    color: #f57c00;
+  }
+
+  &.estado-pendiente {
+    background: #fff3e0;
+    color: #ef6c00;
+  }
+
+  &.estado-revision {
+    background: #f3e5f5;
+    color: #7b1fa2;
+  }
+
+  &.estado-aprobado {
+    background: #e8f5e8;
+    color: #2e7d32;
+  }
+
+  &.estado-rechazado {
+    background: #ffebee;
+    color: #c62828;
+  }
+
+  &.estado-cerrado {
+    background: #f5f5f5;
+    color: #424242;
+  }
+
+  &.estado-suspendido {
+    background: #fff3e0;
+    color: #ef6c00;
+  }
+
+  // Prioridades
+  &.prioridad-baja {
+    background: #e8f5e8;
+    color: #2e7d32;
+  }
+
+  &.prioridad-media {
+    background: #fff8e1;
+    color: #f57c00;
+  }
+
+  &.prioridad-alta {
+    background: #fff3e0;
+    color: #ef6c00;
+  }
+
+  &.prioridad-urgente {
+    background: #ffebee;
+    color: #c62828;
+  }
+}
+
+.solicitante-nombre {
+  font-weight: 600;
+  color: #2c3e50;
+}
+
+.documento {
+  font-family: 'Courier New', monospace;
+  font-size: 13px;
+  color: #7f8c8d;
+}
+
+.expediente-padre {
+  font-family: 'Courier New', monospace;
+  color: #3498db;
+  font-weight: 500;
+}
+
+.fecha-vencida {
+  color: #e74c3c;
+  font-weight: 600;
+}
+
+// Seguimiento
+.seguimiento-container {
+  .seguimiento-item {
+    background: #fff;
+    border: 1px solid #e1e8ed;
+    border-radius: 6px;
+    padding: 16px;
+    margin-bottom: 12px;
+
+    .seguimiento-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 12px;
+      padding-bottom: 8px;
+      border-bottom: 1px solid #f0f0f0;
+
+      .seguimiento-fecha, .seguimiento-usuario {
+        display: flex;
+        align-items: center;
+        gap: 6px;
+        font-size: 12px;
+        color: #7f8c8d;
+
+        i {
+          color: #3498db;
+        }
+      }
+    }
+
+    .seguimiento-content {
+      .seguimiento-accion {
+        margin-bottom: 8px;
+        color: #2c3e50;
+      }
+
+      .seguimiento-descripcion {
+        margin-bottom: 8px;
+        color: #34495e;
+        line-height: 1.4;
+      }
+
+      .seguimiento-observaciones {
+        margin-bottom: 8px;
+        color: #7f8c8d;
+        font-size: 13px;
+      }
+
+      .seguimiento-estados {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        font-size: 12px;
+
+        .estado-anterior {
+          background: #f5f5f5;
+          color: #666;
+          padding: 2px 6px;
+          border-radius: 3px;
+        }
+
+        .estado-nuevo {
+          background: #e8f5e8;
+          color: #2e7d32;
+          padding: 2px 6px;
+          border-radius: 3px;
+          font-weight: 500;
+        }
+
+        i {
+          color: #3498db;
+        }
+      }
+    }
+  }
+}
+
+// Documentos
+.documentos-container {
+  .documento-item {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    background: #fff;
+    border: 1px solid #e1e8ed;
+    border-radius: 6px;
+    padding: 16px;
+    margin-bottom: 12px;
+
+    .documento-icon {
+      font-size: 24px;
+      color: #e74c3c;
+      width: 40px;
+      text-align: center;
+    }
+
+    .documento-info {
+      flex: 1;
+
+      .documento-nombre {
+        font-weight: 600;
+        color: #2c3e50;
+        margin-bottom: 4px;
+      }
+
+      .documento-meta {
+        display: flex;
+        gap: 12px;
+        font-size: 12px;
+        color: #7f8c8d;
+        margin-bottom: 4px;
+
+        .documento-estado {
+          padding: 2px 6px;
+          border-radius: 3px;
+          font-weight: 500;
+
+          &.estado-pendiente {
+            background: #fff3e0;
+            color: #ef6c00;
+          }
+
+          &.estado-aprobado {
+            background: #e8f5e8;
+            color: #2e7d32;
+          }
+
+          &.estado-rechazado {
+            background: #ffebee;
+            color: #c62828;
+          }
+        }
+      }
+
+      .documento-observaciones {
+        font-size: 12px;
+        color: #7f8c8d;
+        font-style: italic;
+      }
+    }
+
+    .documento-actions {
+      display: flex;
+      gap: 8px;
+
+      .btn {
+        padding: 6px 10px;
+        font-size: 12px;
+        border-radius: 4px;
+        border: 1px solid #e1e8ed;
+        background: #fff;
+        color: #7f8c8d;
+        cursor: pointer;
+        transition: all 0.2s ease;
+
+        &:hover {
+          background: #f8f9fa;
+          border-color: #3498db;
+          color: #3498db;
+        }
+      }
+    }
+  }
+}
+
+// Responsive
+@media (max-width: 768px) {
+  .expediente-detail-container {
+    padding: 15px;
+  }
+
+  .detail-header {
+    flex-direction: column;
+    gap: 20px;
+    text-align: center;
+
+    .header-actions {
+      width: 100%;
+      justify-content: center;
+      flex-wrap: wrap;
+    }
+  }
+
+  .detail-content {
+    .detail-section {
+      padding: 20px;
+
+      .info-grid {
+        grid-template-columns: 1fr;
+        gap: 16px;
+      }
+    }
+  }
+
+  .seguimiento-container {
+    .seguimiento-item {
+      .seguimiento-header {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 8px;
+      }
+    }
+  }
+
+  .documentos-container {
+    .documento-item {
+      flex-direction: column;
+      align-items: flex-start;
+      gap: 12px;
+
+      .documento-actions {
+        width: 100%;
+        justify-content: flex-end;
+      }
+    }
+  }
+}
+
+@media (max-width: 480px) {
+  .expediente-detail-container {
+    padding: 10px;
+  }
+
+  .detail-header {
+    .header-content {
+      .detail-title {
+        font-size: 20px;
+        flex-direction: column;
+        gap: 8px;
+      }
+
+      .detail-subtitle {
+        font-size: 14px;
+      }
+    }
+  }
+
+  .detail-content {
+    .detail-section {
+      padding: 15px;
+
+      .section-title {
+        font-size: 18px;
+      }
+    }
+  }
+} 

@@ -1,0 +1,362 @@
+<div class="expediente-form-container">
+  <!-- Header -->
+  <div class="form-header">
+    <div class="header-content">
+      <h1 class="form-title">
+        <i class="fas fa-folder-open"></i>
+        {{ currentIsEditMode() ? 'Editar' : 'Nuevo' }} Expediente
+      </h1>
+      <p class="form-subtitle">
+        {{ currentIsEditMode() ? 'Modificar información del expediente' : 'Crear un nuevo expediente de trámite' }}
+      </p>
+    </div>
+  </div>
+
+  <!-- Loading -->
+  @if (currentIsLoading()) {
+    <div class="loading-container">
+      <i class="fas fa-spinner fa-spin"></i>
+      <span>Cargando expediente...</span>
+    </div>
+  }
+
+  <!-- Error -->
+  @if (currentError()) {
+    <div class="error-container">
+      <i class="fas fa-exclamation-triangle"></i>
+      <span>{{ currentError() }}</span>
+    </div>
+  }
+
+  <!-- Formulario -->
+  @if (!currentIsLoading() && !currentError()) {
+    <form [formGroup]="currentForm()" (ngSubmit)="onSubmit()" class="expediente-form">
+      <!-- Información básica del expediente -->
+      <div class="form-section">
+        <h2 class="section-title">
+          <i class="fas fa-info-circle"></i>
+          Información Básica
+        </h2>
+        
+        <div class="form-grid">
+          <div class="form-group">
+            <label for="numero">Número de Expediente *</label>
+            <div class="input-group">
+              <input 
+                type="text" 
+                id="numero" 
+                formControlName="numero"
+                placeholder="E-1234-2025"
+                [class.error]="numeroControl?.invalid && numeroControl?.touched"
+                (blur)="validarNumero()"
+              >
+              <button 
+                type="button" 
+                class="btn btn-outline btn-sm"
+                (click)="generarNumero()"
+                [disabled]="currentIsSaving()"
+              >
+                <i class="fas fa-magic"></i>
+                Generar
+              </button>
+            </div>
+            @if (numeroControl?.invalid && numeroControl?.touched) {
+              <div class="error-message">
+                @if (numeroControl?.errors?.['required']) {
+                  El número de expediente es obligatorio
+                }
+                @if (numeroControl?.errors?.['pattern']) {
+                  El formato debe ser E-1234-2025
+                }
+                @if (numeroControl?.errors?.['numeroInvalido']) {
+                  El número de expediente ya existe
+                }
+              </div>
+            }
+          </div>
+
+          <div class="form-group">
+            <label for="tipo">Tipo de Expediente *</label>
+            <select 
+              id="tipo" 
+              formControlName="tipo"
+              [class.error]="currentForm().get('tipo')?.invalid && currentForm().get('tipo')?.touched"
+            >
+              <option value="">Seleccione un tipo</option>
+              <option [value]="TipoExpediente.EMPRESA_TRANSPORTE">Empresa Transporte</option>
+              <option [value]="TipoExpediente.VEHICULO">Vehículo</option>
+              <option [value]="TipoExpediente.CONDUCTOR">Conductor</option>
+              <option [value]="TipoExpediente.RUTA">Ruta</option>
+              <option [value]="TipoExpediente.TUC">TUC</option>
+              <option [value]="TipoExpediente.RESOLUCION">Resolución</option>
+              <option [value]="TipoExpediente.OTRO">Otro</option>
+            </select>
+            @if (currentForm().get('tipo')?.invalid && currentForm().get('tipo')?.touched) {
+              <div class="error-message">
+                El tipo de expediente es obligatorio
+              </div>
+            }
+          </div>
+
+          <div class="form-group">
+            <label for="tipoTramite">Tipo de Trámite *</label>
+            <select 
+              id="tipoTramite" 
+              formControlName="tipoTramite"
+              [class.error]="currentForm().get('tipoTramite')?.invalid && currentForm().get('tipoTramite')?.touched"
+            >
+              <option value="">Seleccione un trámite</option>
+              <option [value]="TipoTramite.SOLICITUD_INICIAL">Solicitud Inicial</option>
+              <option [value]="TipoTramite.RENOVACION">Renovación</option>
+              <option [value]="TipoTramite.MODIFICACION">Modificación</option>
+              <option [value]="TipoTramite.CANCELACION">Cancelación</option>
+              <option [value]="TipoTramite.SUSPENSION">Suspensión</option>
+              <option [value]="TipoTramite.REACTIVACION">Reactivación</option>
+            </select>
+            @if (currentForm().get('tipoTramite')?.invalid && currentForm().get('tipoTramite')?.touched) {
+              <div class="error-message">
+                El tipo de trámite es obligatorio
+              </div>
+            }
+          </div>
+
+          <div class="form-group">
+            <label for="estado">Estado *</label>
+            <select 
+              id="estado" 
+              formControlName="estado"
+              [class.error]="currentForm().get('estado')?.invalid && currentForm().get('estado')?.touched"
+            >
+              <option [value]="EstadoExpediente.ABIERTO">Abierto</option>
+              <option [value]="EstadoExpediente.EN_TRAMITE">En Trámite</option>
+              <option [value]="EstadoExpediente.PENDIENTE_DOCUMENTACION">Pendiente Documentación</option>
+              <option [value]="EstadoExpediente.EN_REVISION">En Revisión</option>
+              <option [value]="EstadoExpediente.APROBADO">Aprobado</option>
+              <option [value]="EstadoExpediente.RECHAZADO">Rechazado</option>
+              <option [value]="EstadoExpediente.CERRADO">Cerrado</option>
+              <option [value]="EstadoExpediente.SUSPENDIDO">Suspendido</option>
+            </select>
+            @if (currentForm().get('estado')?.invalid && currentForm().get('estado')?.touched) {
+              <div class="error-message">
+                El estado es obligatorio
+              </div>
+            }
+          </div>
+
+          <div class="form-group">
+            <label for="prioridad">Prioridad *</label>
+            <select 
+              id="prioridad" 
+              formControlName="prioridad"
+              [class.error]="currentForm().get('prioridad')?.invalid && currentForm().get('prioridad')?.touched"
+            >
+              <option value="BAJA">Baja</option>
+              <option value="MEDIA">Media</option>
+              <option value="ALTA">Alta</option>
+              <option value="URGENTE">Urgente</option>
+            </select>
+            @if (currentForm().get('prioridad')?.invalid && currentForm().get('prioridad')?.touched) {
+              <div class="error-message">
+                La prioridad es obligatoria
+              </div>
+            }
+          </div>
+
+          <div class="form-group">
+            <label for="fechaLimite">Fecha Límite</label>
+            <input 
+              type="date" 
+              id="fechaLimite" 
+              formControlName="fechaLimite"
+            >
+          </div>
+        </div>
+      </div>
+
+      <!-- Información del solicitante -->
+      <div class="form-section" formGroupName="solicitante">
+        <h2 class="section-title">
+          <i class="fas fa-user"></i>
+          Información del Solicitante
+        </h2>
+        
+        <div class="form-grid">
+          <div class="form-group">
+            <label for="solicitanteTipo">Tipo de Solicitante *</label>
+            <select 
+              id="solicitanteTipo" 
+              formControlName="tipo"
+              [class.error]="solicitanteGroup.get('tipo')?.invalid && solicitanteGroup.get('tipo')?.touched"
+            >
+              <option value="EMPRESA">Empresa</option>
+              <option value="PERSONA_NATURAL">Persona Natural</option>
+            </select>
+            @if (solicitanteGroup.get('tipo')?.invalid && solicitanteGroup.get('tipo')?.touched) {
+              <div class="error-message">
+                El tipo de solicitante es obligatorio
+              </div>
+            }
+          </div>
+
+          <div class="form-group">
+            <label for="solicitanteId">ID del Solicitante *</label>
+            <input 
+              type="text" 
+              id="solicitanteId" 
+              formControlName="id"
+              placeholder="ID interno del solicitante"
+              [class.error]="solicitanteGroup.get('id')?.invalid && solicitanteGroup.get('id')?.touched"
+            >
+            @if (solicitanteGroup.get('id')?.invalid && solicitanteGroup.get('id')?.touched) {
+              <div class="error-message">
+                El ID del solicitante es obligatorio
+              </div>
+            }
+          </div>
+
+          <div class="form-group">
+            <label for="solicitanteNombre">Nombre/Razón Social *</label>
+            <input 
+              type="text" 
+              id="solicitanteNombre" 
+              formControlName="nombre"
+              placeholder="Nombre completo o razón social"
+              [class.error]="solicitanteGroup.get('nombre')?.invalid && solicitanteGroup.get('nombre')?.touched"
+            >
+            @if (solicitanteGroup.get('nombre')?.invalid && solicitanteGroup.get('nombre')?.touched) {
+              <div class="error-message">
+                El nombre es obligatorio
+              </div>
+            }
+          </div>
+
+          <div class="form-group">
+            <label for="solicitanteDocumento">Documento (RUC/DNI) *</label>
+            <input 
+              type="text" 
+              id="solicitanteDocumento" 
+              formControlName="documento"
+              placeholder="RUC o DNI"
+              [class.error]="solicitanteGroup.get('documento')?.invalid && solicitanteGroup.get('documento')?.touched"
+            >
+            @if (solicitanteGroup.get('documento')?.invalid && solicitanteGroup.get('documento')?.touched) {
+              <div class="error-message">
+                El documento es obligatorio
+              </div>
+            }
+          </div>
+        </div>
+      </div>
+
+      <!-- Información del trámite -->
+      <div class="form-section">
+        <h2 class="section-title">
+          <i class="fas fa-file-alt"></i>
+          Información del Trámite
+        </h2>
+        
+        <div class="form-grid">
+          <div class="form-group full-width">
+            <label for="descripcion">Descripción del Trámite *</label>
+            <textarea 
+              id="descripcion" 
+              formControlName="descripcion"
+              rows="4"
+              placeholder="Describa detalladamente el trámite a realizar..."
+              [class.error]="descripcionControl?.invalid && descripcionControl?.touched"
+            ></textarea>
+            @if (descripcionControl?.invalid && descripcionControl?.touched) {
+              <div class="error-message">
+                @if (descripcionControl?.errors?.['required']) {
+                  La descripción es obligatoria
+                }
+                @if (descripcionControl?.errors?.['minlength']) {
+                  La descripción debe tener al menos 10 caracteres
+                }
+              </div>
+            }
+          </div>
+
+          <div class="form-group full-width">
+            <label for="observaciones">Observaciones</label>
+            <textarea 
+              id="observaciones" 
+              formControlName="observaciones"
+              rows="3"
+              placeholder="Observaciones adicionales..."
+            ></textarea>
+          </div>
+
+          <div class="form-group">
+            <label for="responsable">Responsable</label>
+            <input 
+              type="text" 
+              id="responsable" 
+              formControlName="responsable"
+              placeholder="Nombre del responsable"
+            >
+          </div>
+
+          <div class="form-group">
+            <label for="tags">Etiquetas</label>
+            <input 
+              type="text" 
+              id="tags" 
+              formControlName="tags"
+              placeholder="transporte, interprovincial, carga"
+            >
+            <small class="help-text">Separadas por comas</small>
+          </div>
+
+          <div class="form-group">
+            <label for="expedientePadre">Expediente Padre</label>
+            <input 
+              type="text" 
+              id="expedientePadre" 
+              formControlName="expedientePadre"
+              placeholder="ID del expediente padre (opcional)"
+            >
+          </div>
+        </div>
+      </div>
+
+      <!-- Acciones del Formulario -->
+      <div class="form-actions">
+        <!-- Resumen de errores -->
+        @if (currentForm().invalid && currentForm().touched) {
+          <div class="form-errors-summary">
+            <i class="fas fa-exclamation-triangle"></i>
+            <span>Por favor, corrija los errores en el formulario antes de continuar</span>
+          </div>
+        }
+        
+        <div class="form-buttons">
+          <button 
+            type="button" 
+            class="btn btn-secondary" 
+            (click)="onCancel()"
+            [disabled]="currentIsSaving()"
+          >
+            <i class="fas fa-times"></i>
+            Cancelar
+          </button>
+          
+          <button 
+            type="submit" 
+            class="btn btn-primary" 
+            [disabled]="currentForm().invalid || currentIsSaving()"
+            (click)="markFormGroupTouched()"
+          >
+            @if (currentIsSaving()) {
+              <i class="fas fa-spinner fa-spin"></i>
+              Guardando...
+            } @else {
+              <i class="fas fa-save"></i>
+              {{ currentIsEditMode() ? 'Actualizar' : 'Crear' }} Expediente
+            }
+          </button>
+        </div>
+      </div>
+    </form>
+  }
+</div> 

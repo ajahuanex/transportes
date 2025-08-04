@@ -1,0 +1,140 @@
+<div class="expedientes-eliminados-container">
+  <!-- Header -->
+  <div class="page-header">
+    <div class="header-content">
+      <h1 class="page-title">
+        <i class="fas fa-trash-alt"></i>
+        Expedientes Eliminados
+      </h1>
+      <p class="page-subtitle">
+        Gestión de expedientes eliminados lógicamente
+      </p>
+    </div>
+    <div class="header-actions">
+      <button class="btn btn-outline" (click)="volverALista()">
+        <i class="fas fa-arrow-left"></i>
+        Volver a Lista
+      </button>
+    </div>
+  </div>
+
+  <!-- Loading -->
+  @if (currentIsLoading()) {
+    <div class="loading-container">
+      <i class="fas fa-spinner fa-spin"></i>
+      <span>Cargando expedientes eliminados...</span>
+    </div>
+  }
+
+  <!-- Error -->
+  @if (currentError()) {
+    <div class="error-container">
+      <i class="fas fa-exclamation-triangle"></i>
+      <span>{{ currentError() }}</span>
+      <button class="btn btn-outline" (click)="cargarExpedientesEliminados()">
+        Reintentar
+      </button>
+    </div>
+  }
+
+  <!-- Contenido principal -->
+  @if (!currentIsLoading() && !currentError()) {
+    <!-- Tabla de expedientes eliminados -->
+    <div class="table-section">
+      <div class="table-header">
+        <h3>Expedientes Eliminados</h3>
+        <div class="table-info">
+          <span>Total: {{ currentExpedientes().length }} expedientes</span>
+        </div>
+      </div>
+
+      <div class="table-container">
+        @if (currentExpedientes().length === 0) {
+          <div class="empty-state">
+            <i class="fas fa-trash-alt"></i>
+            <h4>No hay expedientes eliminados</h4>
+            <p>No se encontraron expedientes eliminados lógicamente</p>
+            <button class="btn btn-primary" (click)="volverALista()">
+              Volver a Lista Principal
+            </button>
+          </div>
+        } @else {
+          <table class="table">
+            <thead>
+              <tr>
+                <th>Número</th>
+                <th>Tipo</th>
+                <th>Trámite</th>
+                <th>Solicitante</th>
+                <th>Estado</th>
+                <th>Prioridad</th>
+                <th>Fecha Eliminación</th>
+                <th>Motivo Eliminación</th>
+                <th>Acciones</th>
+              </tr>
+            </thead>
+            <tbody>
+              @for (expediente of currentExpedientes(); track expediente.id) {
+                <tr class="expediente-row">
+                  <td>
+                    <strong class="expediente-numero">{{ expediente.numero }}</strong>
+                  </td>
+                  <td>
+                    <span class="badge tipo-expediente">{{ formatTipo(expediente.tipo) }}</span>
+                  </td>
+                  <td>
+                    <span class="badge tipo-tramite">{{ formatTipoTramite(expediente.tipoTramite) }}</span>
+                  </td>
+                  <td>
+                    <div class="solicitante-info">
+                      <div class="solicitante-nombre">{{ expediente.solicitante?.nombre || 'N/A' }}</div>
+                      <div class="solicitante-tipo">{{ expediente.solicitante?.tipo === 'EMPRESA' ? 'Empresa' : 'Persona Natural' }}</div>
+                    </div>
+                  </td>
+                  <td>
+                    <span class="badge" [class]="getEstadoClass(expediente.estado)">
+                      {{ formatEstado(expediente.estado) }}
+                    </span>
+                  </td>
+                  <td>
+                    <span class="badge" [class]="getPrioridadClass(expediente.prioridad || '')">
+                      {{ formatPrioridad(expediente.prioridad || '') }}
+                    </span>
+                  </td>
+                  <td>
+                    @if (expediente.fechaEliminacion) {
+                      <span>{{ expediente.fechaEliminacion | date:'dd/MM/yyyy HH:mm' }}</span>
+                    } @else {
+                      <span class="sin-fecha">Sin fecha</span>
+                    }
+                  </td>
+                  <td>
+                    @if (expediente.motivoEliminacion) {
+                      <div class="motivo-eliminacion" [title]="expediente.motivoEliminacion">
+                        {{ expediente.motivoEliminacion.length > 30 ? expediente.motivoEliminacion.substring(0, 30) + '...' : expediente.motivoEliminacion }}
+                      </div>
+                    } @else {
+                      <span class="sin-motivo">Sin motivo</span>
+                    }
+                  </td>
+                  <td>
+                    <div class="actions">
+                      <button class="btn btn-sm btn-success" (click)="restaurarExpediente(expediente.id)" title="Restaurar expediente">
+                        <i class="fas fa-undo"></i>
+                        Restaurar
+                      </button>
+                      <button class="btn btn-sm btn-danger" (click)="eliminarPermanentemente(expediente.id)" title="Eliminar permanentemente">
+                        <i class="fas fa-trash"></i>
+                        Eliminar
+                      </button>
+                    </div>
+                  </td>
+                </tr>
+              }
+            </tbody>
+          </table>
+        }
+      </div>
+    </div>
+  }
+</div> 

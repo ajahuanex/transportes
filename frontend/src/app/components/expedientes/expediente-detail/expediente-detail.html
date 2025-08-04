@@ -1,0 +1,302 @@
+<div class="expediente-detail-container">
+  <!-- Header -->
+  <div class="detail-header">
+    <div class="header-content">
+      <h1 class="detail-title">
+        <i class="fas fa-folder-open"></i>
+        Expediente {{ currentExpediente()?.numero }}
+      </h1>
+      <p class="detail-subtitle">
+        Detalles completos del expediente de trámite
+      </p>
+    </div>
+    <div class="header-actions">
+      <button class="btn btn-outline" (click)="volverALista()">
+        <i class="fas fa-arrow-left"></i>
+        Volver a Lista
+      </button>
+      <button class="btn btn-primary" (click)="editarExpediente()">
+        <i class="fas fa-edit"></i>
+        Editar Expediente
+      </button>
+    </div>
+  </div>
+
+  <!-- Loading -->
+  @if (currentIsLoading()) {
+    <div class="loading-container">
+      <i class="fas fa-spinner fa-spin"></i>
+      <span>Cargando expediente...</span>
+    </div>
+  }
+
+  <!-- Error -->
+  @if (currentError()) {
+    <div class="error-container">
+      <i class="fas fa-exclamation-triangle"></i>
+      <span>{{ currentError() }}</span>
+      <button class="btn btn-outline" (click)="volverALista()">
+        Volver a Lista
+      </button>
+    </div>
+  }
+
+  <!-- Contenido del expediente -->
+  @if (!currentIsLoading() && !currentError() && currentExpediente()) {
+    <div class="detail-content">
+      <!-- Información básica -->
+      <div class="detail-section">
+        <h2 class="section-title">
+          <i class="fas fa-info-circle"></i>
+          Información Básica
+        </h2>
+        <div class="info-grid">
+          <div class="info-item">
+            <label>Número de Expediente:</label>
+            <span class="expediente-numero">{{ currentExpediente()?.numero }}</span>
+          </div>
+          <div class="info-item">
+            <label>Tipo de Expediente:</label>
+            <span [class]="getTipoClass(currentExpediente()?.tipo!)">
+              {{ formatTipo(currentExpediente()?.tipo!) }}
+            </span>
+          </div>
+          <div class="info-item">
+            <label>Tipo de Trámite:</label>
+            <span [class]="getTipoTramiteClass(currentExpediente()?.tipoTramite!)">
+              {{ formatTipoTramite(currentExpediente()?.tipoTramite!) }}
+            </span>
+          </div>
+          <div class="info-item">
+            <label>Estado:</label>
+            <span [class]="getEstadoClass(currentExpediente()?.estado!)">
+              {{ formatEstado(currentExpediente()?.estado!) }}
+            </span>
+          </div>
+          <div class="info-item">
+            <label>Prioridad:</label>
+            <span [class]="getPrioridadClass(currentExpediente()?.prioridad!)">
+              {{ formatPrioridad(currentExpediente()?.prioridad!) }}
+            </span>
+          </div>
+          <div class="info-item">
+            <label>Fecha de Apertura:</label>
+            <span>{{ currentExpediente()?.fechaApertura | date:'dd/MM/yyyy' }}</span>
+          </div>
+          @if (currentExpediente()?.fechaCierre) {
+            <div class="info-item">
+              <label>Fecha de Cierre:</label>
+              <span>{{ currentExpediente()?.fechaCierre | date:'dd/MM/yyyy' }}</span>
+            </div>
+          }
+          @if (currentExpediente()?.fechaLimite) {
+            <div class="info-item">
+              <label>Fecha Límite:</label>
+              <span [class]="isFechaVencida(currentExpediente()?.fechaLimite!) ? 'fecha-vencida' : ''">
+                {{ currentExpediente()?.fechaLimite | date:'dd/MM/yyyy' }}
+              </span>
+            </div>
+          }
+          @if (currentExpediente()?.responsable) {
+            <div class="info-item">
+              <label>Responsable:</label>
+              <span>{{ currentExpediente()?.responsable }}</span>
+            </div>
+          }
+        </div>
+      </div>
+
+      <!-- Información del solicitante -->
+      <div class="detail-section">
+        <h2 class="section-title">
+          <i class="fas fa-user"></i>
+          Información del Solicitante
+        </h2>
+        <div class="info-grid">
+          <div class="info-item">
+            <label>Tipo de Solicitante:</label>
+            <span class="badge solicitante-tipo">
+              {{ currentExpediente()?.solicitante?.tipo === 'EMPRESA' ? 'Empresa' : 'Persona Natural' }}
+            </span>
+          </div>
+          <div class="info-item">
+            <label>ID del Solicitante:</label>
+            <span>{{ currentExpediente()?.solicitante?.id }}</span>
+          </div>
+          <div class="info-item">
+            <label>Nombre/Razón Social:</label>
+            <span class="solicitante-nombre">{{ currentExpediente()?.solicitante?.nombre }}</span>
+          </div>
+          <div class="info-item">
+            <label>Documento (RUC/DNI):</label>
+            <span class="documento">{{ currentExpediente()?.solicitante?.documento }}</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Información del trámite -->
+      <div class="detail-section">
+        <h2 class="section-title">
+          <i class="fas fa-file-alt"></i>
+          Información del Trámite
+        </h2>
+        <div class="info-grid">
+          <div class="info-item full-width">
+            <label>Descripción:</label>
+            <div class="descripcion-content">
+              {{ currentExpediente()?.descripcion }}
+            </div>
+          </div>
+          @if (currentExpediente()?.observaciones) {
+            <div class="info-item full-width">
+              <label>Observaciones:</label>
+              <div class="observaciones-content">
+                {{ currentExpediente()?.observaciones }}
+              </div>
+            </div>
+          }
+          @if (hasTags()) {
+            <div class="info-item full-width">
+              <label>Etiquetas:</label>
+              <div class="tags-container">
+                @for (tag of getTags(); track tag) {
+                  <span class="tag">{{ tag }}</span>
+                }
+              </div>
+            </div>
+          }
+          @if (currentExpediente()?.expedientePadre) {
+            <div class="info-item">
+              <label>Expediente Padre:</label>
+              <span class="expediente-padre">{{ currentExpediente()?.expedientePadre }}</span>
+            </div>
+          }
+        </div>
+      </div>
+
+      <!-- Seguimiento -->
+      @if (hasSeguimiento()) {
+        <div class="detail-section">
+          <h2 class="section-title">
+            <i class="fas fa-history"></i>
+            Historial de Seguimiento
+          </h2>
+          <div class="seguimiento-container">
+            @for (seguimiento of getSeguimiento(); track seguimiento.id) {
+              <div class="seguimiento-item">
+                <div class="seguimiento-header">
+                  <div class="seguimiento-fecha">
+                    <i class="fas fa-calendar"></i>
+                    {{ seguimiento.fecha | date:'dd/MM/yyyy HH:mm' }}
+                  </div>
+                  <div class="seguimiento-usuario">
+                    <i class="fas fa-user"></i>
+                    {{ seguimiento.usuario }}
+                  </div>
+                </div>
+                <div class="seguimiento-content">
+                  <div class="seguimiento-accion">
+                    <strong>{{ seguimiento.accion }}</strong>
+                  </div>
+                  <div class="seguimiento-descripcion">
+                    {{ seguimiento.descripcion }}
+                  </div>
+                  @if (seguimiento.observaciones) {
+                    <div class="seguimiento-observaciones">
+                      <em>{{ seguimiento.observaciones }}</em>
+                    </div>
+                  }
+                  @if (seguimiento.estadoAnterior || seguimiento.estadoNuevo) {
+                    <div class="seguimiento-estados">
+                      @if (seguimiento.estadoAnterior) {
+                        <span class="estado-anterior">{{ formatEstado(seguimiento.estadoAnterior) }}</span>
+                      }
+                      @if (seguimiento.estadoAnterior && seguimiento.estadoNuevo) {
+                        <i class="fas fa-arrow-right"></i>
+                      }
+                      @if (seguimiento.estadoNuevo) {
+                        <span class="estado-nuevo">{{ formatEstado(seguimiento.estadoNuevo) }}</span>
+                      }
+                    </div>
+                  }
+                </div>
+              </div>
+            }
+          </div>
+        </div>
+      }
+
+      <!-- Documentos -->
+      @if (hasDocumentos()) {
+        <div class="detail-section">
+          <h2 class="section-title">
+            <i class="fas fa-file"></i>
+            Documentos Adjuntos
+          </h2>
+          <div class="documentos-container">
+            @for (documento of getDocumentos(); track documento.id) {
+              <div class="documento-item">
+                <div class="documento-icon">
+                  <i class="fas fa-file-pdf"></i>
+                </div>
+                <div class="documento-info">
+                  <div class="documento-nombre">{{ documento.nombre }}</div>
+                  <div class="documento-meta">
+                    <span class="documento-tipo">{{ documento.tipo }}</span>
+                    <span class="documento-fecha">{{ documento.fechaSubida | date:'dd/MM/yyyy' }}</span>
+                    <span class="documento-estado" [class]="'estado-' + documento.estado.toLowerCase()">
+                      {{ documento.estado }}
+                    </span>
+                  </div>
+                  @if (documento.observaciones) {
+                    <div class="documento-observaciones">
+                      {{ documento.observaciones }}
+                    </div>
+                  }
+                </div>
+                <div class="documento-actions">
+                  <button class="btn btn-sm btn-outline" title="Descargar">
+                    <i class="fas fa-download"></i>
+                  </button>
+                  <button class="btn btn-sm btn-outline" title="Ver">
+                    <i class="fas fa-eye"></i>
+                  </button>
+                </div>
+              </div>
+            }
+          </div>
+        </div>
+      }
+
+      <!-- Información de auditoría -->
+      <div class="detail-section">
+        <h2 class="section-title">
+          <i class="fas fa-shield-alt"></i>
+          Información de Auditoría
+        </h2>
+        <div class="info-grid">
+          <div class="info-item">
+            <label>Fecha de Creación:</label>
+            <span>{{ currentExpediente()?.fechaCreacion | date:'dd/MM/yyyy HH:mm' }}</span>
+          </div>
+          <div class="info-item">
+            <label>Usuario de Creación:</label>
+            <span>{{ currentExpediente()?.usuarioCreacion }}</span>
+          </div>
+          <div class="info-item">
+            <label>Última Modificación:</label>
+            <span>{{ currentExpediente()?.fechaModificacion | date:'dd/MM/yyyy HH:mm' }}</span>
+          </div>
+          <div class="info-item">
+            <label>Usuario de Modificación:</label>
+            <span>{{ currentExpediente()?.usuarioModificacion }}</span>
+          </div>
+          <div class="info-item">
+            <label>Versión:</label>
+            <span>{{ currentExpediente()?.version }}</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  }
+</div> 
