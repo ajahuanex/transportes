@@ -1,481 +1,301 @@
 <div class="configuraciones-container">
-  <!-- Header de la página -->
-  <div class="page-header">
-    <div class="header-content">
-      <h1>Configuraciones del Sistema</h1>
-      <p>Gestiona los tipos de selecciones y configuraciones utilizadas en diferentes módulos</p>
+  <!-- Header -->
+  <div class="header">
+    <div class="header-left">
+      <h1 class="title">
+        <i class="fas fa-cogs"></i>
+        Configuraciones del Sistema
+      </h1>
+      <p class="subtitle">Gestión centralizada de configuraciones para todos los módulos</p>
     </div>
+    
     <div class="header-actions">
-      <button class="btn btn-secondary" (click)="toggleFiltros()">
-        <i class="fas fa-filter"></i>
-        Filtros
-      </button>
-      <button class="btn btn-primary" (click)="refrescarDatos()">
-        <i class="fas fa-sync-alt"></i>
-        Actualizar
-      </button>
-      <button class="btn btn-success" (click)="exportarConfiguraciones('EXCEL')">
-        <i class="fas fa-file-excel"></i>
+      <button class="btn btn-secondary" (click)="exportarConfiguraciones()">
+        <i class="fas fa-download"></i>
         Exportar
+      </button>
+      <button class="btn btn-primary" (click)="nuevaConfiguracion()">
+        <i class="fas fa-plus"></i>
+        Nueva Configuración
+      </button>
+    </div>
+  </div>
+
+  <!-- Filtros -->
+  <div class="filters-section">
+    <div class="filters-grid">
+      <!-- Módulo -->
+      <div class="filter-group">
+        <label for="modulo">Módulo</label>
+        <select 
+          id="modulo" 
+          class="form-control"
+          (change)="actualizarFiltro('modulo', $event.target.value || undefined)"
+        >
+          <option value="">Todos los módulos</option>
+          <option *ngFor="let modulo of modulos" [value]="modulo">
+            {{ obtenerTextoModulo(modulo) }}
+          </option>
+        </select>
+      </div>
+
+      <!-- Tipo -->
+      <div class="filter-group">
+        <label for="tipo">Tipo</label>
+        <select 
+          id="tipo" 
+          class="form-control"
+          (change)="actualizarFiltro('tipo', $event.target.value || undefined)"
+        >
+          <option value="">Todos los tipos</option>
+          <option *ngFor="let tipo of tipos" [value]="tipo">
+            {{ obtenerTextoTipo(tipo) }}
+          </option>
+        </select>
+      </div>
+
+      <!-- Estado -->
+      <div class="filter-group">
+        <label for="estado">Estado</label>
+        <select 
+          id="estado" 
+          class="form-control"
+          (change)="actualizarFiltro('activo', $event.target.value === 'true' ? true : $event.target.value === 'false' ? false : undefined)"
+        >
+          <option value="">Todos los estados</option>
+          <option value="true">Activo</option>
+          <option value="false">Inactivo</option>
+        </select>
+      </div>
+
+      <!-- Búsqueda -->
+      <div class="filter-group">
+        <label for="busqueda">Buscar</label>
+        <input 
+          type="text" 
+          id="busqueda" 
+          class="form-control"
+          placeholder="Buscar por nombre..."
+          (input)="actualizarFiltro('nombre', $event.target.value)"
+        >
+      </div>
+    </div>
+
+    <div class="filter-actions">
+      <button class="btn btn-outline-secondary" (click)="limpiarFiltros()">
+        <i class="fas fa-times"></i>
+        Limpiar
+      </button>
+      <button class="btn btn-primary" (click)="aplicarFiltros()">
+        <i class="fas fa-search"></i>
+        Aplicar
       </button>
     </div>
   </div>
 
   <!-- Estadísticas -->
-  <div class="stats-section" *ngIf="!cargandoEstadisticas()">
-    <div class="stat-card">
-      <div class="stat-icon">
-        <i class="fas fa-list"></i>
-      </div>
-      <div class="stat-content">
-        <h3>{{ estadisticas().totalEnums }}</h3>
-        <p>Configuraciones Enum</p>
-      </div>
-    </div>
-    <div class="stat-card">
-      <div class="stat-icon">
-        <i class="fas fa-cogs"></i>
-      </div>
-      <div class="stat-content">
-        <h3>{{ estadisticas().totalSistema }}</h3>
-        <p>Configuraciones Sistema</p>
-      </div>
-    </div>
-    <div class="stat-card">
-      <div class="stat-icon">
-        <i class="fas fa-check-circle"></i>
-      </div>
-      <div class="stat-content">
-        <h3>{{ estadisticas().activos }}</h3>
-        <p>Activos</p>
-      </div>
-    </div>
-    <div class="stat-card">
-      <div class="stat-icon">
-        <i class="fas fa-pause-circle"></i>
-      </div>
-      <div class="stat-content">
-        <h3>{{ estadisticas().inactivos }}</h3>
-        <p>Inactivos</p>
-      </div>
-    </div>
-  </div>
-
-  <!-- Filtros -->
-  <div class="filters-section" *ngIf="mostrarFiltros()">
-    <div class="filters-container">
-      <!-- Filtros para Enums -->
-      <form [formGroup]="filtroForm" class="filter-form" *ngIf="tabActivo() === 'enums'">
-        <div class="form-row">
-          <div class="form-group">
-            <label for="categoria">Categoría</label>
-            <select id="categoria" formControlName="categoria" class="form-control">
-              @for (categoria of categoriasDisponibles(); track categoria.value) {
-                <option [value]="categoria.value">{{ categoria.label }}</option>
-              }
-            </select>
-          </div>
-          <div class="form-group">
-            <label for="estaActivo">Estado</label>
-            <select id="estaActivo" formControlName="estaActivo" class="form-control">
-              <option [value]="null">Todos</option>
-              <option [value]="true">Activo</option>
-              <option [value]="false">Inactivo</option>
-            </select>
-          </div>
-          <div class="form-group">
-            <label for="busqueda">Búsqueda</label>
-            <input 
-              type="text" 
-              id="busqueda" 
-              formControlName="busqueda" 
-              class="form-control" 
-              placeholder="Buscar por nombre, código o descripción..."
-            >
-          </div>
+  <div class="stats-section">
+    <div class="stats-grid">
+      <div class="stat-card">
+        <div class="stat-icon">
+          <i class="fas fa-cogs"></i>
         </div>
-      </form>
-
-      <!-- Filtros para Sistema -->
-      <form [formGroup]="filtroSistemaForm" class="filter-form" *ngIf="tabActivo() === 'sistema'">
-        <div class="form-row">
-          <div class="form-group">
-            <label for="categoriaSistema">Categoría</label>
-            <select id="categoriaSistema" formControlName="categoria" class="form-control">
-              @for (categoria of categoriasSistemaDisponibles(); track categoria.value) {
-                <option [value]="categoria.value">{{ categoria.label }}</option>
-              }
-            </select>
-          </div>
-          <div class="form-group">
-            <label for="busquedaSistema">Búsqueda</label>
-            <input 
-              type="text" 
-              id="busquedaSistema" 
-              formControlName="busqueda" 
-              class="form-control" 
-              placeholder="Buscar por clave, valor o descripción..."
-            >
-          </div>
+        <div class="stat-content">
+          <div class="stat-value">{{ currentTotal() }}</div>
+          <div class="stat-label">Total Configuraciones</div>
         </div>
-      </form>
+      </div>
 
-      <div class="filter-actions">
-        <button class="btn btn-outline-secondary" (click)="limpiarFiltros()">
-          <i class="fas fa-times"></i>
-          Limpiar
-        </button>
+      <div class="stat-card">
+        <div class="stat-icon active">
+          <i class="fas fa-check-circle"></i>
+        </div>
+        <div class="stat-content">
+          <div class="stat-value">{{ obtenerEstadisticas().activas }}</div>
+          <div class="stat-label">Activas</div>
+        </div>
+      </div>
+
+      <div class="stat-card">
+        <div class="stat-icon inactive">
+          <i class="fas fa-times-circle"></i>
+        </div>
+        <div class="stat-content">
+          <div class="stat-value">{{ obtenerEstadisticas().inactivas }}</div>
+          <div class="stat-label">Inactivas</div>
+        </div>
       </div>
     </div>
   </div>
 
-  <!-- Tabs de navegación -->
-  <div class="tabs-container">
-    <div class="tabs">
-      <button 
-        class="tab-btn" 
-        [class.active]="tabActivo() === 'enums'"
-        (click)="cambiarTab('enums')"
-      >
-        <i class="fas fa-list"></i>
-        Configuraciones Enum
-        <span class="badge badge-light">{{ totalConfiguracionesEnum() }}</span>
-      </button>
-      <button 
-        class="tab-btn" 
-        [class.active]="tabActivo() === 'sistema'"
-        (click)="cambiarTab('sistema')"
-      >
-        <i class="fas fa-cogs"></i>
-        Configuraciones Sistema
-        <span class="badge badge-light">{{ totalConfiguracionesSistema() }}</span>
-      </button>
+  <!-- Tabla de Configuraciones -->
+  <div class="table-section">
+    <div class="table-header">
+      <div class="table-info">
+        <span class="results-count">
+          Mostrando {{ (currentPaginaActual() - 1) * currentPorPagina() + 1 }} - 
+          {{ Math.min(currentPaginaActual() * currentPorPagina(), currentTotal()) }} 
+          de {{ currentTotal() }} configuraciones
+        </span>
+      </div>
+      
+      <div class="table-actions">
+        <label for="porPagina">Por página:</label>
+        <select 
+          id="porPagina" 
+          class="form-control-sm"
+          [value]="currentPorPagina()"
+          (change)="cambiarElementosPorPagina($event)"
+        >
+          <option value="5">5</option>
+          <option value="10">10</option>
+          <option value="20">20</option>
+          <option value="50">50</option>
+        </select>
+      </div>
     </div>
-  </div>
 
-  <!-- Contenido de Enums -->
-  <div class="content-section" *ngIf="tabActivo() === 'enums'">
-    <!-- Loading -->
-    <div class="loading-overlay" *ngIf="cargandoEnum()">
+    <!-- Loading State -->
+    <div *ngIf="isLoading()" class="loading-state">
       <div class="spinner"></div>
       <p>Cargando configuraciones...</p>
     </div>
 
-    <!-- Error -->
-    <div class="error-message" *ngIf="hasErrorEnum()">
-      <i class="fas fa-exclamation-triangle"></i>
-      <p>{{ errorEnum() }}</p>
-      <button class="btn btn-outline-primary" (click)="cargarConfiguracionesEnum()">
-        Reintentar
+    <!-- Empty State -->
+    <div *ngIf="!isLoading() && currentConfiguraciones().length === 0" class="empty-state">
+      <i class="fas fa-cogs empty-icon"></i>
+      <h3>No se encontraron configuraciones</h3>
+      <p>No hay configuraciones que coincidan con los filtros aplicados.</p>
+      <button class="btn btn-primary" (click)="limpiarFiltros()">
+        Limpiar Filtros
       </button>
     </div>
 
-    <!-- Contenido principal -->
-    <div class="content-main" *ngIf="!cargandoEnum() && !hasErrorEnum()">
-      <!-- Acciones -->
-      <div class="actions-bar">
-        <div class="actions-left">
-          <button class="btn btn-primary" (click)="nuevaConfiguracionEnum()">
-            <i class="fas fa-plus"></i>
-            Nueva Configuración
-          </button>
-          <button class="btn btn-outline-secondary" (click)="verEliminadasEnum()">
-            <i class="fas fa-trash"></i>
-            Ver Eliminadas
-          </button>
-        </div>
-        <div class="actions-right">
-          <select class="form-control" (change)="cambiarElementosPorPagina($event)">
-            <option value="10">10 por página</option>
-            <option value="25">25 por página</option>
-            <option value="50">50 por página</option>
-          </select>
-        </div>
-      </div>
+    <!-- Table -->
+    <div *ngIf="!isLoading() && currentConfiguraciones().length > 0" class="table-container">
+      <table class="table">
+        <thead>
+          <tr>
+            <th>Nombre</th>
+            <th>Módulo</th>
+            <th>Tipo</th>
+            <th>Items</th>
+            <th>Estado</th>
+            <th>Editable</th>
+            <th>Acciones</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr *ngFor="let configuracion of currentConfiguraciones()" class="table-row">
+            <td class="config-name">
+              <div class="name-content">
+                <strong>{{ configuracion.nombre }}</strong>
+                <small *ngIf="configuracion.descripcion" class="description">
+                  {{ configuracion.descripcion }}
+                </small>
+              </div>
+            </td>
+            
+            <td>
+              <span class="badge badge-module">
+                {{ obtenerTextoModulo(configuracion.modulo) }}
+              </span>
+            </td>
+            
+            <td>
+              <span class="badge badge-type">
+                {{ obtenerTextoTipo(configuracion.tipo) }}
+              </span>
+            </td>
+            
+            <td>
+              <span class="items-count">
+                {{ obtenerCantidadItems(configuracion) }} items
+              </span>
+            </td>
+            
+            <td>
+              <span class="badge" [class]="obtenerClaseEstado(configuracion.activo)">
+                {{ obtenerTextoEstado(configuracion.activo) }}
+              </span>
+            </td>
+            
+            <td>
+              <span class="badge" [class]="configuracion.editable ? 'badge-success' : 'badge-warning'">
+                {{ configuracion.editable ? 'Sí' : 'No' }}
+              </span>
+            </td>
+            
+            <td class="actions">
+              <div class="action-buttons">
+                <button 
+                  class="btn btn-sm btn-outline-primary" 
+                  (click)="verConfiguracion(configuracion.id)"
+                  title="Ver detalles"
+                >
+                  <i class="fas fa-eye"></i>
+                </button>
+                
+                <button 
+                  *ngIf="configuracion.editable"
+                  class="btn btn-sm btn-outline-secondary" 
+                  (click)="editarConfiguracion(configuracion.id)"
+                  title="Editar"
+                >
+                  <i class="fas fa-edit"></i>
+                </button>
+                
+                <button 
+                  class="btn btn-sm btn-outline-danger" 
+                  (click)="eliminarConfiguracion(configuracion.id)"
+                  title="Eliminar"
+                >
+                  <i class="fas fa-trash"></i>
+                </button>
+              </div>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
 
-      <!-- Tabla de datos -->
-      <div class="data-table-container">
-        <table class="data-table">
-          <thead>
-            <tr>
-              <th>Código</th>
-              <th>Nombre</th>
-              <th>Descripción</th>
-              <th>Categoría</th>
-              <th>Valor</th>
-              <th>Estado</th>
-              <th>Orden</th>
-              <th>Acciones</th>
-            </tr>
-          </thead>
-          <tbody>
-            @for (config of configuracionesEnum(); track config.id) {
-              <tr>
-                <td>
-                  <strong>{{ config.codigo }}</strong>
-                </td>
-                <td>{{ config.nombre }}</td>
-                <td>{{ config.descripcion }}</td>
-                <td>
-                  <span class="badge" [class]="obtenerClaseCategoria(config.categoria)">
-                    {{ obtenerNombreCategoria(config.categoria) }}
-                  </span>
-                </td>
-                <td>
-                  <code>{{ config.valor }}</code>
-                </td>
-                <td>
-                  <span class="badge" [class]="obtenerClaseEstado(config.estaActivo)">
-                    {{ config.estaActivo ? 'Activo' : 'Inactivo' }}
-                  </span>
-                </td>
-                <td>{{ config.orden }}</td>
-                <td>
-                  <div class="action-buttons">
-                    <button 
-                      class="btn btn-sm btn-outline-primary" 
-                      (click)="verConfiguracionEnum(config.id)"
-                      title="Ver detalles"
-                    >
-                      <i class="fas fa-eye"></i>
-                    </button>
-                    <button 
-                      class="btn btn-sm btn-outline-warning" 
-                      (click)="editarConfiguracionEnum(config.id)"
-                      title="Editar"
-                    >
-                      <i class="fas fa-edit"></i>
-                    </button>
-                    <button 
-                      class="btn btn-sm btn-outline-danger" 
-                      (click)="eliminarConfiguracionEnum(config.id)"
-                      title="Eliminar"
-                    >
-                      <i class="fas fa-trash"></i>
-                    </button>
-                  </div>
-                </td>
-              </tr>
-            }
-          </tbody>
-        </table>
+    <!-- Paginación -->
+    <div *ngIf="!isLoading() && currentConfiguraciones().length > 0" class="pagination-section">
+      <div class="pagination-info">
+        <span>
+          Página {{ currentPaginaActual() }} de {{ Math.ceil(currentTotal() / currentPorPagina()) }}
+        </span>
       </div>
-
-      <!-- Estado vacío -->
-      <div class="empty-state" *ngIf="configuracionesEnum().length === 0 && !cargandoEnum()">
-        <i class="fas fa-list-alt"></i>
-        <h3>No hay configuraciones</h3>
-        <p>No se encontraron configuraciones que coincidan con los filtros aplicados.</p>
-        <button class="btn btn-primary" (click)="nuevaConfiguracionEnum()">
-          <i class="fas fa-plus"></i>
-          Crear Primera Configuración
+      
+      <div class="pagination-controls">
+        <button 
+          class="btn btn-sm btn-outline-secondary"
+          [disabled]="currentPaginaActual() === 1"
+          (click)="cambiarPagina(currentPaginaActual() - 1)"
+        >
+          <i class="fas fa-chevron-left"></i>
+          Anterior
         </button>
-      </div>
-
-      <!-- Paginación -->
-      <div class="pagination-section" *ngIf="totalPaginasEnum() > 1">
-        <div class="pagination-info">
-          Mostrando {{ (paginaActualEnum() - 1) * porPaginaEnum() + 1 }} - 
-          {{ Math.min(paginaActualEnum() * porPaginaEnum(), totalConfiguracionesEnum()) }} 
-          de {{ totalConfiguracionesEnum() }} configuraciones
-        </div>
-        <div class="pagination-controls">
+        
+        <div class="page-numbers">
           <button 
-            class="btn btn-outline-primary" 
-            [disabled]="paginaActualEnum() === 1"
-            (click)="cambiarPaginaEnum(paginaActualEnum() - 1)"
+            *ngFor="let pagina of generarArrayPaginas()"
+            class="btn btn-sm"
+            [class]="pagina === currentPaginaActual() ? 'btn-primary' : 'btn-outline-secondary'"
+            (click)="cambiarPagina(pagina)"
           >
-            <i class="fas fa-chevron-left"></i>
-            Anterior
-          </button>
-          
-          @for (page of getPageNumbersEnum(); track page) {
-            <button 
-              class="btn" 
-              [class]="page === paginaActualEnum() ? 'btn-primary' : 'btn-outline-primary'"
-              (click)="cambiarPaginaEnum(page)"
-            >
-              {{ page }}
-            </button>
-          }
-          
-          <button 
-            class="btn btn-outline-primary" 
-            [disabled]="paginaActualEnum() === totalPaginasEnum()"
-            (click)="cambiarPaginaEnum(paginaActualEnum() + 1)"
-          >
-            Siguiente
-            <i class="fas fa-chevron-right"></i>
+            {{ pagina }}
           </button>
         </div>
-      </div>
-    </div>
-  </div>
-
-  <!-- Contenido de Sistema -->
-  <div class="content-section" *ngIf="tabActivo() === 'sistema'">
-    <!-- Loading -->
-    <div class="loading-overlay" *ngIf="cargandoSistema()">
-      <div class="spinner"></div>
-      <p>Cargando configuraciones de sistema...</p>
-    </div>
-
-    <!-- Error -->
-    <div class="error-message" *ngIf="hasErrorSistema()">
-      <i class="fas fa-exclamation-triangle"></i>
-      <p>{{ errorSistema() }}</p>
-      <button class="btn btn-outline-primary" (click)="cargarConfiguracionesSistema()">
-        Reintentar
-      </button>
-    </div>
-
-    <!-- Contenido principal -->
-    <div class="content-main" *ngIf="!cargandoSistema() && !hasErrorSistema()">
-      <!-- Acciones -->
-      <div class="actions-bar">
-        <div class="actions-left">
-          <button class="btn btn-primary" (click)="nuevaConfiguracionSistema()">
-            <i class="fas fa-plus"></i>
-            Nueva Configuración Sistema
-          </button>
-          <button class="btn btn-outline-secondary" (click)="verEliminadasSistema()">
-            <i class="fas fa-trash"></i>
-            Ver Eliminadas
-          </button>
-        </div>
-        <div class="actions-right">
-                      <select class="form-control" (change)="cambiarElementosPorPagina($event)">
-            <option value="10">10 por página</option>
-            <option value="25">25 por página</option>
-            <option value="50">50 por página</option>
-          </select>
-        </div>
-      </div>
-
-      <!-- Tabla de datos -->
-      <div class="data-table-container">
-        <table class="data-table">
-          <thead>
-            <tr>
-              <th>Clave</th>
-              <th>Valor</th>
-              <th>Descripción</th>
-              <th>Tipo</th>
-              <th>Categoría</th>
-              <th>Editable</th>
-              <th>Visible</th>
-              <th>Acciones</th>
-            </tr>
-          </thead>
-          <tbody>
-            @for (config of configuracionesSistema(); track config.id) {
-              <tr>
-                <td>
-                  <strong>{{ config.clave }}</strong>
-                </td>
-                <td>
-                  <code>{{ config.valor }}</code>
-                </td>
-                <td>{{ config.descripcion }}</td>
-                <td>
-                  <span class="badge" [class]="obtenerClaseTipoSistema(config.tipo)">
-                    {{ config.tipo }}
-                  </span>
-                </td>
-                <td>
-                  <span class="badge badge-info">
-                    {{ obtenerNombreCategoria(config.categoria) }}
-                  </span>
-                </td>
-                <td>
-                  <span class="badge" [class]="config.editable ? 'badge-success' : 'badge-secondary'">
-                    {{ config.editable ? 'Sí' : 'No' }}
-                  </span>
-                </td>
-                <td>
-                  <span class="badge" [class]="config.visible ? 'badge-success' : 'badge-secondary'">
-                    {{ config.visible ? 'Sí' : 'No' }}
-                  </span>
-                </td>
-                <td>
-                  <div class="action-buttons">
-                    <button 
-                      class="btn btn-sm btn-outline-primary" 
-                      (click)="verConfiguracionSistema(config.id)"
-                      title="Ver detalles"
-                    >
-                      <i class="fas fa-eye"></i>
-                    </button>
-                    <button 
-                      class="btn btn-sm btn-outline-warning" 
-                      (click)="editarConfiguracionSistema(config.id)"
-                      title="Editar"
-                      [disabled]="!config.editable"
-                    >
-                      <i class="fas fa-edit"></i>
-                    </button>
-                    <button 
-                      class="btn btn-sm btn-outline-danger" 
-                      (click)="eliminarConfiguracionSistema(config.id)"
-                      title="Eliminar"
-                    >
-                      <i class="fas fa-trash"></i>
-                    </button>
-                  </div>
-                </td>
-              </tr>
-            }
-          </tbody>
-        </table>
-      </div>
-
-      <!-- Estado vacío -->
-      <div class="empty-state" *ngIf="configuracionesSistema().length === 0 && !cargandoSistema()">
-        <i class="fas fa-cogs"></i>
-        <h3>No hay configuraciones de sistema</h3>
-        <p>No se encontraron configuraciones de sistema que coincidan con los filtros aplicados.</p>
-        <button class="btn btn-primary" (click)="nuevaConfiguracionSistema()">
-          <i class="fas fa-plus"></i>
-          Crear Primera Configuración
+        
+        <button 
+          class="btn btn-sm btn-outline-secondary"
+          [disabled]="currentPaginaActual() >= Math.ceil(currentTotal() / currentPorPagina())"
+          (click)="cambiarPagina(currentPaginaActual() + 1)"
+        >
+          Siguiente
+          <i class="fas fa-chevron-right"></i>
         </button>
-      </div>
-
-      <!-- Paginación -->
-      <div class="pagination-section" *ngIf="totalPaginasSistema() > 1">
-        <div class="pagination-info">
-          Mostrando {{ (paginaActualSistema() - 1) * porPaginaSistema() + 1 }} - 
-          {{ Math.min(paginaActualSistema() * porPaginaSistema(), totalConfiguracionesSistema()) }} 
-          de {{ totalConfiguracionesSistema() }} configuraciones
-        </div>
-        <div class="pagination-controls">
-          <button 
-            class="btn btn-outline-primary" 
-            [disabled]="paginaActualSistema() === 1"
-            (click)="cambiarPaginaSistema(paginaActualSistema() - 1)"
-          >
-            <i class="fas fa-chevron-left"></i>
-            Anterior
-          </button>
-          
-          @for (page of getPageNumbersSistema(); track page) {
-            <button 
-              class="btn" 
-              [class]="page === paginaActualSistema() ? 'btn-primary' : 'btn-outline-primary'"
-              (click)="cambiarPaginaSistema(page)"
-            >
-              {{ page }}
-            </button>
-          }
-          
-          <button 
-            class="btn btn-outline-primary" 
-            [disabled]="paginaActualSistema() === totalPaginasSistema()"
-            (click)="cambiarPaginaSistema(paginaActualSistema() + 1)"
-          >
-            Siguiente
-            <i class="fas fa-chevron-right"></i>
-          </button>
-        </div>
       </div>
     </div>
   </div>

@@ -4,6 +4,8 @@ import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angula
 import { ActivatedRoute, Router } from '@angular/router';
 import { VehiculoService } from '../../../services/vehiculo';
 import { EmpresaService } from '../../../services/empresa';
+import { NotificationService } from '../../../services/notification.service';
+import { ValidationService } from '../../../services/validation.service';
 import { Vehiculo, TipoVehiculo } from '../../../models/vehiculo.model';
 import { EmpresaTransporte } from '../../../models/empresa.model';
 import { Resolucion } from '../../../models/resolucion.model'; // NUEVO: Importar Resolucion
@@ -23,6 +25,7 @@ export class VehiculoFormComponent implements OnInit {
   private route = inject(ActivatedRoute);
   private vehiculoService = inject(VehiculoService);
   private empresaService = inject(EmpresaService);
+  private notificationService = inject(NotificationService);
   private resolucionService = inject(ResolucionService);  // NUEVO: Servicio de resoluciones
   private fb = inject(FormBuilder);
   
@@ -58,15 +61,16 @@ export class VehiculoFormComponent implements OnInit {
     this.vehiculoForm = this.fb.group({
       placa: ['', [
         Validators.required, 
-        Validators.minLength(7), 
-        Validators.maxLength(7),
-        Validators.pattern(/^[A-Z0-9]{3}-\d{3}$/)
+        ValidationService.placaValidator
       ]],
       resolucionId: ['', [Validators.required]],  // CAMPO REQUERIDO - Relación directa
       empresaId: ['', []],                        // CAMPO DERIVADO - Se auto-completa
       marca: ['', [Validators.required, Validators.minLength(2), Validators.maxLength(50)]],
       modelo: ['', [Validators.required, Validators.minLength(2), Validators.maxLength(50)]],
-      anioFabricacion: ['', [Validators.required, Validators.min(1900), Validators.max(new Date().getFullYear() + 1)]],
+      anioFabricacion: ['', [
+        Validators.required, 
+        ValidationService.anioFabricacionValidator
+      ]],
       color: ['', [Validators.required, Validators.minLength(2), Validators.maxLength(30)]],
       categoria: ['', [Validators.required]],
       tipo: ['', [Validators.required]],
@@ -137,19 +141,12 @@ export class VehiculoFormComponent implements OnInit {
   guardarVehiculo(): void {
     if (this.vehiculoForm.invalid) {
       this.marcarCamposInvalidos();
-      this.mostrarNotificacion('Por favor, corrija los errores en el formulario', 'error');
+      this.notificationService.errorValidacion('formulario');
       return;
     }
 
     this.guardando.set(true);
     const vehiculoData = this.vehiculoForm.value;
-
-    // Validaciones adicionales
-    if (!this.validarPlaca(vehiculoData.placa)) {
-      this.guardando.set(false);
-      this.mostrarNotificacion('El formato de placa no es válido', 'error');
-      return;
-    }
 
     if (this.isEditMode()) {
       // Actualizar vehículo existente
@@ -161,13 +158,13 @@ export class VehiculoFormComponent implements OnInit {
       this.vehiculoService.updateVehiculo(this.currentVehiculoId()!, vehiculoActualizado).subscribe({
         next: (vehiculoActualizado) => {
           this.guardando.set(false);
-          this.mostrarNotificacion('Vehículo actualizado exitosamente', 'success');
+          this.notificationService.vehiculoActualizado(vehiculoActualizado.placa);
           this.router.navigate(['/vehiculos', vehiculoActualizado.id]);
         },
         error: (error: any) => {
           console.error('Error al actualizar vehículo:', error);
           this.guardando.set(false);
-          this.mostrarNotificacion('Error al actualizar el vehículo', 'error');
+          this.notificationService.error('Error al Actualizar', 'No se pudo actualizar el vehículo. Intente nuevamente.');
         }
       });
     } else {
@@ -175,99 +172,75 @@ export class VehiculoFormComponent implements OnInit {
       this.vehiculoService.createVehiculo(vehiculoData).subscribe({
         next: (nuevoVehiculo) => {
           this.guardando.set(false);
-          this.mostrarNotificacion('Vehículo creado exitosamente', 'success');
+          this.notificationService.vehiculoRegistrado(nuevoVehiculo.placa);
           this.router.navigate(['/vehiculos', nuevoVehiculo.id]);
         },
         error: (error: any) => {
           console.error('Error al crear vehículo:', error);
           this.guardando.set(false);
-          this.mostrarNotificacion('Error al crear el vehículo', 'error');
+          this.notificationService.error('Error al Registrar', 'No se pudo registrar el vehículo. Intente nuevamente.');
         }
       });
     }
   }
 
   private marcarCamposInvalidos(): void {
-    Object.keys(this.vehiculoForm.controls).forEach(key => {
-      const control = this.vehiculoForm.get(key);
-      if (control?.invalid) {
-        control.markAsTouched();
-      }
-    });
+    ValidationService.markInvalidFieldsAsTouched(this.vehiculoForm);
   }
 
   cancelar(): void {
     this.router.navigate(['/vehiculos']);
   }
 
-  // Métodos para validación de campos
+  // Métodos para validación de campos usando el nuevo servicio
   esCampoInvalido(campo: string): boolean {
     const control = this.vehiculoForm.get(campo);
-    return control ? (control.invalid && control.touched) : false;
+    return ValidationService.isFieldInvalid(control!);
   }
 
   obtenerMensajeError(campo: string): string {
     const control = this.vehiculoForm.get(campo);
-    if (!control || !control.errors) return '';
-
-    if (control.errors['required']) {
-      return 'Este campo es requerido';
-    }
-    if (control.errors['minlength']) {
-      return `Mínimo ${control.errors['minlength'].requiredLength} caracteres`;
-    }
-    if (control.errors['maxlength']) {
-      return `Máximo ${control.errors['maxlength'].requiredLength} caracteres`;
-    }
-    if (control.errors['min']) {
-      return `Valor mínimo: ${control.errors['min'].min}`;
-    }
-    if (control.errors['max']) {
-      return `Valor máximo: ${control.errors['max'].max}`;
-    }
-    if (control.errors['pattern']) {
-      if (campo === 'placa') {
-        return 'El formato de placa debe ser XXX-NNN (XXX alfanumérico en mayúsculas, NNN 3 dígitos)';
-      }
-      return 'Formato inválido';
-    }
-
-    return 'Campo inválido';
+    if (!control) return '';
+    
+    const fieldNames: { [key: string]: string } = {
+      placa: 'Placa',
+      resolucionId: 'Resolución',
+      empresaId: 'Empresa',
+      marca: 'Marca',
+      modelo: 'Modelo',
+      anioFabricacion: 'Año de Fabricación',
+      color: 'Color',
+      categoria: 'Categoría',
+      tipo: 'Tipo',
+      estado: 'Estado'
+    };
+    
+    return ValidationService.getErrorMessage(control, fieldNames[campo] || campo);
   }
 
-  // Validación personalizada para placa
-  private validarPlaca(placa: string): boolean {
-    // Formato: XXX-NNN donde XXX es alfanumérico en mayúsculas y NNN es exactamente 3 dígitos
-    const placaRegex = /^[A-Z0-9]{3}-\d{3}$/;
-    return placaRegex.test(placa.toUpperCase());
-  }
 
-  // Método para mostrar notificaciones
+
+  // Método para mostrar notificaciones usando el nuevo servicio
   private mostrarNotificacion(mensaje: string, tipo: 'success' | 'error' | 'warning' | 'info'): void {
-    // TODO: Implementar sistema de notificaciones
-    console.log(`${tipo.toUpperCase()}: ${mensaje}`);
-    
-    // Por ahora usamos alert temporal
-    if (tipo === 'error') {
-      alert(`Error: ${mensaje}`);
-    } else if (tipo === 'success') {
-      alert(`Éxito: ${mensaje}`);
-    } else {
-      alert(`${mensaje}`);
+    switch (tipo) {
+      case 'success':
+        this.notificationService.success('Éxito', mensaje);
+        break;
+      case 'error':
+        this.notificationService.error('Error', mensaje);
+        break;
+      case 'warning':
+        this.notificationService.warning('Advertencia', mensaje);
+        break;
+      case 'info':
+        this.notificationService.info('Información', mensaje);
+        break;
     }
   }
 
-  // Método para formatear placa automáticamente
+  // Método para formatear placa automáticamente usando el nuevo servicio
   formatearPlaca(event: any): void {
-    let placa = event.target.value.toUpperCase();
-    // Remover todos los caracteres que no sean alfanuméricos
-    placa = placa.replace(/[^A-Z0-9]/g, '');
-    
-    // Aplicar formato XXX-NNN
-    if (placa.length >= 3) {
-      placa = placa.slice(0, 3) + '-' + placa.slice(3, 6);
-    }
-    
+    const placa = ValidationService.formatearPlaca(event.target.value);
     this.vehiculoForm.patchValue({ placa });
   }
 

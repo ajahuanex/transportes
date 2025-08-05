@@ -1,463 +1,249 @@
-import { Component, inject, signal, computed, OnInit } from '@angular/core';
+import { Component, OnInit, signal, computed, inject, ChangeDetectionStrategy } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { Router } from '@angular/router';
-import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
-import { ConfiguracionService } from '../../services/configuracion';
-import {
-  ConfiguracionEnum,
-  ConfiguracionSistema,
-  CATEGORIAS_CONFIGURACION
-} from '../../shared/models/configuracion.model';
+import { ConfiguracionService } from '../../services/configuracion.service';
+import { NotificationService } from '../../services/notification.service';
+import { 
+  ConfiguracionSistema, 
+  ModuloSistema, 
+  TipoConfiguracion,
+  ConfiguracionFilter,
+  ConfiguracionHelper
+} from '../../models/configuracion.model';
 
 @Component({
   selector: 'app-configuraciones',
   standalone: true,
-  imports: [CommonModule, ReactiveFormsModule],
+  imports: [CommonModule],
   templateUrl: './configuraciones.html',
-  styleUrls: ['./configuraciones.scss']
+  styleUrls: ['./configuraciones.scss'],
+  changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class ConfiguracionesComponent implements OnInit {
-  private configuracionService = inject(ConfiguracionService);
+  
   private router = inject(Router);
-  private fb = inject(FormBuilder);
-
-  // ============================================================================
-  // SIGNALS
-  // ============================================================================
-
-  // Configuraciones de Enum
-  configuracionesEnum = signal<ConfiguracionEnum[]>([]);
-  totalConfiguracionesEnum = signal<number>(0);
-  paginaActualEnum = signal<number>(1);
-  porPaginaEnum = signal<number>(10);
-  totalPaginasEnum = signal<number>(0);
-  cargandoEnum = signal<boolean>(false);
-  errorEnum = signal<string>('');
-
-  // Configuraciones de Sistema
-  configuracionesSistema = signal<ConfiguracionSistema[]>([]);
-  totalConfiguracionesSistema = signal<number>(0);
-  paginaActualSistema = signal<number>(1);
-  porPaginaSistema = signal<number>(10);
-  totalPaginasSistema = signal<number>(0);
-  cargandoSistema = signal<boolean>(false);
-  errorSistema = signal<string>('');
-
+  private configuracionService = inject(ConfiguracionService);
+  private notificationService = inject(NotificationService);
+  
+  // Signals para el estado del componente
+  configuraciones = signal<ConfiguracionSistema[]>([]);
+  cargando = signal(false);
+  paginaActual = signal(1);
+  porPagina = signal(10);
+  total = signal(0);
+  
   // Filtros
-  filtrosEnum = signal<{
-    categoria?: string;
-    estaActivo?: boolean;
-    busqueda?: string;
-  }>({});
-
-  filtrosSistema = signal<{
-    categoria?: string;
-    busqueda?: string;
-  }>({});
-
-  // Estadísticas
-  estadisticas = signal<{
-    totalEnums: number;
-    totalSistema: number;
-    porCategoria: Record<string, number>;
-    activos: number;
-    inactivos: number;
-  }>({
-    totalEnums: 0,
-    totalSistema: 0,
-    porCategoria: {},
-    activos: 0,
-    inactivos: 0
+  filtros = signal<ConfiguracionFilter>({
+    modulo: undefined,
+    tipo: undefined,
+    activo: undefined,
+    nombre: ''
   });
 
-  // Formularios
-  filtroForm = this.fb.group({
-    categoria: [''],
-    estaActivo: [null],
-    busqueda: ['']
-  });
+  // Computed properties
+  currentConfiguraciones = computed(() => this.configuraciones());
+  isLoading = computed(() => this.cargando());
+  currentPaginaActual = computed(() => this.paginaActual());
+  currentPorPagina = computed(() => this.porPagina());
+  currentTotal = computed(() => this.total());
+  currentFiltros = computed(() => this.filtros());
 
-  filtroSistemaForm = this.fb.group({
-    categoria: [''],
-    busqueda: ['']
-  });
-
-  // UI State
-  tabActivo = signal<'enums' | 'sistema'>('enums');
-  mostrarFiltros = signal<boolean>(false);
-  cargandoEstadisticas = signal<boolean>(false);
-
+  // Opciones para filtros
+  modulos = Object.values(ModuloSistema);
+  tipos = Object.values(TipoConfiguracion);
+  
   // Utilidades
   Math = Math;
 
-  // ============================================================================
-  // COMPUTED PROPERTIES
-  // ============================================================================
-
-  hasErrorEnum = computed(() => this.errorEnum().length > 0);
-  hasErrorSistema = computed(() => this.errorSistema().length > 0);
-
-  categoriasDisponibles = computed(() => [
-    { value: '', label: 'Todas las categorías' },
-    { value: CATEGORIAS_CONFIGURACION.ESTADOS.EMPRESA, label: 'Estados de Empresa' },
-    { value: CATEGORIAS_CONFIGURACION.ESTADOS.VEHICULO, label: 'Estados de Vehículo' },
-    { value: CATEGORIAS_CONFIGURACION.ESTADOS.CONDUCTOR, label: 'Estados de Conductor' },
-    { value: CATEGORIAS_CONFIGURACION.ESTADOS.TUC, label: 'Estados de TUC' },
-    { value: CATEGORIAS_CONFIGURACION.ESTADOS.EXPEDIENTE, label: 'Estados de Expediente' },
-    { value: CATEGORIAS_CONFIGURACION.TIPOS.RESOLUCION, label: 'Tipos de Resolución' },
-    { value: CATEGORIAS_CONFIGURACION.TIPOS.TRAMITE, label: 'Tipos de Trámite' },
-    { value: CATEGORIAS_CONFIGURACION.TIPOS.DOCUMENTO, label: 'Tipos de Documento' }
-  ]);
-
-  categoriasSistemaDisponibles = computed(() => [
-    { value: '', label: 'Todas las categorías' },
-    { value: CATEGORIAS_CONFIGURACION.SISTEMA.GENERAL, label: 'Sistema General' },
-    { value: CATEGORIAS_CONFIGURACION.SISTEMA.NOTIFICACIONES, label: 'Notificaciones' },
-    { value: CATEGORIAS_CONFIGURACION.SISTEMA.REPORTES, label: 'Reportes' },
-    { value: CATEGORIAS_CONFIGURACION.SISTEMA.SEGURIDAD, label: 'Seguridad' }
-  ]);
-
-  // ============================================================================
-  // LIFECYCLE
-  // ============================================================================
-
   ngOnInit(): void {
-    this.cargarDatos();
-    this.setupFormListeners();
+    this.cargarConfiguraciones();
   }
 
-  // ============================================================================
-  // MÉTODOS DE CARGA DE DATOS
-  // ============================================================================
-
-  cargarDatos(): void {
-    this.cargarConfiguracionesEnum();
-    this.cargarConfiguracionesSistema();
-    this.cargarEstadisticas();
-  }
-
-  cargarConfiguracionesEnum(): void {
-    this.cargandoEnum.set(true);
-    this.errorEnum.set('');
-
-    this.configuracionService.getConfiguracionesEnum(
-      this.paginaActualEnum(),
-      this.porPaginaEnum(),
-      this.filtrosEnum()
+  cargarConfiguraciones(): void {
+    this.cargando.set(true);
+    
+    this.configuracionService.getConfiguraciones(
+      this.currentPaginaActual(),
+      this.currentPorPagina(),
+      this.currentFiltros()
     ).subscribe({
       next: (response) => {
-        this.configuracionesEnum.set(response.configuraciones);
-        this.totalConfiguracionesEnum.set(response.total);
-        this.totalPaginasEnum.set(response.totalPaginas);
-        this.cargandoEnum.set(false);
+        this.configuraciones.set(response.configuraciones);
+        this.total.set(response.total);
+        this.cargando.set(false);
       },
-      error: (error) => {
-        this.errorEnum.set('Error al cargar configuraciones: ' + error.message);
-        this.cargandoEnum.set(false);
+      error: (error: any) => {
+        console.error('Error al cargar configuraciones:', error);
+        this.notificationService.error('Error', 'No se pudieron cargar las configuraciones');
+        this.cargando.set(false);
       }
     });
   }
 
-  cargarConfiguracionesSistema(): void {
-    this.cargandoSistema.set(true);
-    this.errorSistema.set('');
-
-    this.configuracionService.getConfiguracionesSistema(
-      this.paginaActualSistema(),
-      this.porPaginaSistema(),
-      this.filtrosSistema()
-    ).subscribe({
-      next: (response) => {
-        this.configuracionesSistema.set(response.configuraciones);
-        this.totalConfiguracionesSistema.set(response.total);
-        this.totalPaginasSistema.set(response.totalPaginas);
-        this.cargandoSistema.set(false);
-      },
-      error: (error) => {
-        this.errorSistema.set('Error al cargar configuraciones de sistema: ' + error.message);
-        this.cargandoSistema.set(false);
-      }
-    });
+  cambiarPagina(pagina: number): void {
+    this.paginaActual.set(pagina);
+    this.cargarConfiguraciones();
   }
 
-  cargarEstadisticas(): void {
-    this.cargandoEstadisticas.set(true);
-
-    this.configuracionService.getEstadisticasConfiguraciones().subscribe({
-      next: (stats) => {
-        this.estadisticas.set(stats);
-        this.cargandoEstadisticas.set(false);
-      },
-      error: (error) => {
-        console.error('Error al cargar estadísticas:', error);
-        this.cargandoEstadisticas.set(false);
-      }
-    });
-  }
-
-  // ============================================================================
-  // MÉTODOS DE FILTRADO
-  // ============================================================================
-
-  setupFormListeners(): void {
-    this.filtroForm.valueChanges.subscribe(values => {
-      this.filtrosEnum.set({
-        categoria: values.categoria || undefined,
-        estaActivo: values.estaActivo !== null ? values.estaActivo : undefined,
-        busqueda: values.busqueda || undefined
-      });
-      this.paginaActualEnum.set(1);
-      this.cargarConfiguracionesEnum();
-    });
-
-    this.filtroSistemaForm.valueChanges.subscribe(values => {
-      this.filtrosSistema.set({
-        categoria: values.categoria || undefined,
-        busqueda: values.busqueda || undefined
-      });
-      this.paginaActualSistema.set(1);
-      this.cargarConfiguracionesSistema();
-    });
+  cambiarElementosPorPagina(event: Event): void {
+    const select = event.target as HTMLSelectElement;
+    const nuevoValor = parseInt(select.value);
+    this.porPagina.set(nuevoValor);
+    this.paginaActual.set(1);
+    this.cargarConfiguraciones();
   }
 
   aplicarFiltros(): void {
-    this.paginaActualEnum.set(1);
-    this.paginaActualSistema.set(1);
-    this.cargarDatos();
+    this.paginaActual.set(1);
+    this.cargarConfiguraciones();
   }
 
   limpiarFiltros(): void {
-    this.filtroForm.reset();
-    this.filtroSistemaForm.reset();
-    this.filtrosEnum.set({});
-    this.filtrosSistema.set({});
-    this.paginaActualEnum.set(1);
-    this.paginaActualSistema.set(1);
-    this.cargarDatos();
+    this.filtros.set({
+      modulo: undefined,
+      tipo: undefined,
+      activo: undefined,
+      nombre: ''
+    });
+    this.paginaActual.set(1);
+    this.cargarConfiguraciones();
   }
 
-  // ============================================================================
-  // MÉTODOS DE PAGINACIÓN
-  // ============================================================================
-
-  cambiarPaginaEnum(pagina: number): void {
-    if (pagina >= 1 && pagina <= this.totalPaginasEnum()) {
-      this.paginaActualEnum.set(pagina);
-      this.cargarConfiguracionesEnum();
-    }
+  actualizarFiltro(campo: keyof ConfiguracionFilter, valor: any): void {
+    this.filtros.update(filtros => ({
+      ...filtros,
+      [campo]: valor
+    }));
   }
 
-  cambiarPaginaSistema(pagina: number): void {
-    if (pagina >= 1 && pagina <= this.totalPaginasSistema()) {
-      this.paginaActualSistema.set(pagina);
-      this.cargarConfiguracionesSistema();
-    }
+  editarConfiguracion(id: string): void {
+    this.router.navigate(['/configuraciones', id, 'editar']);
   }
 
-  getPageNumbersEnum(): number[] {
-    const total = this.totalPaginasEnum();
-    const actual = this.paginaActualEnum();
-    const pages: number[] = [];
-
-    const start = Math.max(1, actual - 2);
-    const end = Math.min(total, actual + 2);
-
-    for (let i = start; i <= end; i++) {
-      pages.push(i);
-    }
-
-    return pages;
+  verConfiguracion(id: string): void {
+    this.router.navigate(['/configuraciones', id]);
   }
 
-  getPageNumbersSistema(): number[] {
-    const total = this.totalPaginasSistema();
-    const actual = this.paginaActualSistema();
-    const pages: number[] = [];
-
-    const start = Math.max(1, actual - 2);
-    const end = Math.min(total, actual + 2);
-
-    for (let i = start; i <= end; i++) {
-      pages.push(i);
-    }
-
-    return pages;
+  eliminarConfiguracion(id: string): void {
+    this.notificationService.confirm(
+      'Eliminar Configuración',
+      '¿Está seguro de que desea eliminar esta configuración?'
+    ).then(confirmado => {
+      if (confirmado) {
+        this.configuracionService.deleteConfiguracion(id).subscribe({
+          next: () => {
+            this.notificationService.success('Configuración Eliminada', 'La configuración ha sido eliminada exitosamente');
+            this.cargarConfiguraciones();
+          },
+          error: (error: any) => {
+            console.error('Error al eliminar configuración:', error);
+            this.notificationService.error('Error', 'No se pudo eliminar la configuración');
+          }
+        });
+      }
+    });
   }
 
-  // ============================================================================
-  // MÉTODOS DE NAVEGACIÓN
-  // ============================================================================
-
-  verConfiguracionEnum(id: string): void {
-    this.router.navigate(['/configuraciones/enum', id]);
-  }
-
-  editarConfiguracionEnum(id: string): void {
-    this.router.navigate(['/configuraciones/enum', id, 'editar']);
-  }
-
-  nuevaConfiguracionEnum(): void {
-    this.router.navigate(['/configuraciones/enum/nuevo']);
-  }
-
-  verConfiguracionSistema(id: string): void {
-    this.router.navigate(['/configuraciones/sistema', id]);
-  }
-
-  editarConfiguracionSistema(id: string): void {
-    this.router.navigate(['/configuraciones/sistema', id, 'editar']);
-  }
-
-  nuevaConfiguracionSistema(): void {
-    this.router.navigate(['/configuraciones/sistema/nuevo']);
-  }
-
-  verEliminadasEnum(): void {
-    this.router.navigate(['/configuraciones/enum/eliminadas']);
-  }
-
-  verEliminadasSistema(): void {
-    this.router.navigate(['/configuraciones/sistema/eliminadas']);
-  }
-
-  // ============================================================================
-  // MÉTODOS DE ACCIÓN
-  // ============================================================================
-
-  eliminarConfiguracionEnum(id: string): void {
-    if (confirm('¿Está seguro de que desea eliminar esta configuración?')) {
-      this.configuracionService.deleteConfiguracionEnum(id).subscribe({
-        next: () => {
-          this.mostrarNotificacion('Configuración eliminada correctamente', 'success');
-          this.cargarDatos();
-        },
-        error: (error) => {
-          this.mostrarNotificacion('Error al eliminar configuración: ' + error.message, 'error');
-        }
-      });
-    }
-  }
-
-  eliminarConfiguracionSistema(id: string): void {
-    if (confirm('¿Está seguro de que desea eliminar esta configuración de sistema?')) {
-      this.configuracionService.deleteConfiguracionSistema(id).subscribe({
-        next: () => {
-          this.mostrarNotificacion('Configuración de sistema eliminada correctamente', 'success');
-          this.cargarDatos();
-        },
-        error: (error) => {
-          this.mostrarNotificacion('Error al eliminar configuración: ' + error.message, 'error');
-        }
-      });
-    }
-  }
-
-  exportarConfiguraciones(tipo: 'EXCEL' | 'PDF' | 'CSV'): void {
-    const filtros = this.tabActivo() === 'enums' ? this.filtrosEnum() : this.filtrosSistema();
-    
-    this.configuracionService.exportarConfiguraciones(tipo, filtros).subscribe({
+  exportarConfiguraciones(): void {
+    this.configuracionService.exportarConfiguraciones(this.currentFiltros()).subscribe({
       next: (blob) => {
         const url = window.URL.createObjectURL(blob);
         const a = document.createElement('a');
         a.href = url;
-        a.download = `configuraciones_${tipo.toLowerCase()}_${new Date().toISOString().split('T')[0]}.${tipo.toLowerCase()}`;
+        a.download = `configuraciones_${new Date().toISOString().split('T')[0]}.csv`;
+        document.body.appendChild(a);
         a.click();
         window.URL.revokeObjectURL(url);
-        this.mostrarNotificacion(`Configuraciones exportadas en formato ${tipo}`, 'success');
+        document.body.removeChild(a);
+        this.notificationService.success('Exportación Completada', 'Las configuraciones han sido exportadas exitosamente');
       },
-      error: (error) => {
-        this.mostrarNotificacion('Error al exportar configuraciones: ' + error.message, 'error');
+      error: (error: any) => {
+        console.error('Error al exportar configuraciones:', error);
+        this.notificationService.error('Error', 'No se pudieron exportar las configuraciones');
       }
     });
   }
 
-  // ============================================================================
-  // MÉTODOS DE UTILIDAD
-  // ============================================================================
-
-  cambiarTab(tab: 'enums' | 'sistema'): void {
-    this.tabActivo.set(tab);
+  nuevaConfiguracion(): void {
+    this.router.navigate(['/configuraciones', 'nueva']);
   }
 
-  toggleFiltros(): void {
-    this.mostrarFiltros.update(value => !value);
-  }
-
-  obtenerClaseEstado(estaActivo: boolean): string {
-    return estaActivo ? 'badge-success' : 'badge-secondary';
-  }
-
-  obtenerClaseCategoria(categoria: string): string {
-    const clases: Record<string, string> = {
-      [CATEGORIAS_CONFIGURACION.ESTADOS.EMPRESA]: 'badge-primary',
-      [CATEGORIAS_CONFIGURACION.ESTADOS.VEHICULO]: 'badge-info',
-      [CATEGORIAS_CONFIGURACION.ESTADOS.CONDUCTOR]: 'badge-warning',
-      [CATEGORIAS_CONFIGURACION.ESTADOS.TUC]: 'badge-success',
-      [CATEGORIAS_CONFIGURACION.ESTADOS.EXPEDIENTE]: 'badge-secondary',
-      [CATEGORIAS_CONFIGURACION.TIPOS.RESOLUCION]: 'badge-primary',
-      [CATEGORIAS_CONFIGURACION.TIPOS.TRAMITE]: 'badge-info',
-      [CATEGORIAS_CONFIGURACION.TIPOS.DOCUMENTO]: 'badge-warning'
+  // Métodos de utilidad
+  obtenerTextoModulo(modulo: ModuloSistema): string {
+    const textos: { [key in ModuloSistema]: string } = {
+      [ModuloSistema.EMPRESAS]: 'Empresas',
+      [ModuloSistema.VEHICULOS]: 'Vehículos',
+      [ModuloSistema.CONDUCTORES]: 'Conductores',
+      [ModuloSistema.RUTAS]: 'Rutas',
+      [ModuloSistema.EXPEDIENTES]: 'Expedientes',
+      [ModuloSistema.RESOLUCIONES]: 'Resoluciones',
+      [ModuloSistema.TUCS]: 'TUCs',
+      [ModuloSistema.REPORTES]: 'Reportes',
+      [ModuloSistema.SISTEMA]: 'Sistema'
     };
-    return clases[categoria] || 'badge-secondary';
+    return textos[modulo] || modulo;
   }
 
-  obtenerClaseTipoSistema(tipo: string): string {
-    const clases: Record<string, string> = {
-      'STRING': 'badge-primary',
-      'NUMBER': 'badge-info',
-      'BOOLEAN': 'badge-success',
-      'JSON': 'badge-warning'
+  obtenerTextoTipo(tipo: TipoConfiguracion): string {
+    const textos: { [key in TipoConfiguracion]: string } = {
+      [TipoConfiguracion.ESTADO]: 'Estado',
+      [TipoConfiguracion.CATEGORIA]: 'Categoría',
+      [TipoConfiguracion.TIPO]: 'Tipo',
+      [TipoConfiguracion.CLASIFICACION]: 'Clasificación',
+      [TipoConfiguracion.PARAMETRO]: 'Parámetro'
     };
-    return clases[tipo] || 'badge-secondary';
+    return textos[tipo] || tipo;
   }
 
-  formatearFecha(fecha: Date | string): string {
-    if (!fecha) return '';
-    const date = new Date(fecha);
-    return date.toLocaleDateString('es-ES', {
-      year: 'numeric',
-      month: '2-digit',
-      day: '2-digit',
-      hour: '2-digit',
-      minute: '2-digit'
-    });
+  obtenerClaseEstado(activo: boolean): string {
+    return activo ? 'badge-success' : 'badge-danger';
   }
 
-  obtenerNombreCategoria(categoria: string): string {
-    const nombres: Record<string, string> = {
-      [CATEGORIAS_CONFIGURACION.ESTADOS.EMPRESA]: 'Estados de Empresa',
-      [CATEGORIAS_CONFIGURACION.ESTADOS.VEHICULO]: 'Estados de Vehículo',
-      [CATEGORIAS_CONFIGURACION.ESTADOS.CONDUCTOR]: 'Estados de Conductor',
-      [CATEGORIAS_CONFIGURACION.ESTADOS.TUC]: 'Estados de TUC',
-      [CATEGORIAS_CONFIGURACION.ESTADOS.EXPEDIENTE]: 'Estados de Expediente',
-      [CATEGORIAS_CONFIGURACION.TIPOS.RESOLUCION]: 'Tipos de Resolución',
-      [CATEGORIAS_CONFIGURACION.TIPOS.TRAMITE]: 'Tipos de Trámite',
-      [CATEGORIAS_CONFIGURACION.TIPOS.DOCUMENTO]: 'Tipos de Documento',
-      [CATEGORIAS_CONFIGURACION.SISTEMA.GENERAL]: 'Sistema General',
-      [CATEGORIAS_CONFIGURACION.SISTEMA.NOTIFICACIONES]: 'Notificaciones',
-      [CATEGORIAS_CONFIGURACION.SISTEMA.REPORTES]: 'Reportes',
-      [CATEGORIAS_CONFIGURACION.SISTEMA.SEGURIDAD]: 'Seguridad'
+  obtenerTextoEstado(activo: boolean): string {
+    return activo ? 'Activo' : 'Inactivo';
+  }
+
+  obtenerCantidadItems(configuracion: ConfiguracionSistema): number {
+    return configuracion.items.filter(item => item.activo).length;
+  }
+
+  obtenerEstadisticas(): any {
+    const configuraciones = this.currentConfiguraciones();
+    const total = configuraciones.length;
+    const activas = configuraciones.filter(c => c.activo).length;
+    const inactivas = total - activas;
+    
+    const porModulo = this.modulos.reduce((acc, modulo) => {
+      acc[modulo] = configuraciones.filter(c => c.modulo === modulo).length;
+      return acc;
+    }, {} as { [key: string]: number });
+
+    const porTipo = this.tipos.reduce((acc, tipo) => {
+      acc[tipo] = configuraciones.filter(c => c.tipo === tipo).length;
+      return acc;
+    }, {} as { [key: string]: number });
+
+    return {
+      total,
+      activas,
+      inactivas,
+      porModulo,
+      porTipo
     };
-    return nombres[categoria] || categoria;
   }
 
-  mostrarNotificacion(mensaje: string, tipo: 'success' | 'error' | 'warning' = 'success'): void {
-    // Placeholder para sistema de notificaciones
-    console.log(`${tipo.toUpperCase()}: ${mensaje}`);
-    // En producción, aquí se integraría con un servicio de notificaciones
-  }
+  generarArrayPaginas(): number[] {
+    const totalPaginas = Math.ceil(this.currentTotal() / this.currentPorPagina());
+    const paginaActual = this.currentPaginaActual();
+    const paginas: number[] = [];
 
-  refrescarDatos(): void {
-    this.cargarDatos();
-  }
+    const inicio = Math.max(1, paginaActual - 2);
+    const fin = Math.min(totalPaginas, paginaActual + 2);
 
-  cambiarElementosPorPagina(event: Event): void {
-    const target = event.target as HTMLSelectElement;
-    const porPagina = parseInt(target.value, 10);
-    this.porPaginaEnum.set(porPagina);
-    this.porPaginaSistema.set(porPagina);
-    this.paginaActualEnum.set(1);
-    this.paginaActualSistema.set(1);
-    this.cargarDatos();
+    for (let i = inicio; i <= fin; i++) {
+      paginas.push(i);
+    }
+
+    return paginas;
   }
 } 
