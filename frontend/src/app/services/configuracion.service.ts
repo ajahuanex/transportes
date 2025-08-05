@@ -117,11 +117,7 @@ export class ConfiguracionService {
             orden: index + 1
           })),
           activo: true,
-          editable: request.editable ?? true,
-          createdAt: new Date(),
-          updatedAt: new Date(),
-          createdBy: 'admin',
-          updatedBy: 'admin'
+          editable: request.editable ?? true
         };
 
         observer.next(nuevaConfiguracion);
