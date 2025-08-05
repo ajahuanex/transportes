@@ -27,6 +27,8 @@ Sistema web moderno para la gestión integral de empresas de transporte, expedie
 - **Gestión de documentos** y licencias
 - **Historial de mantenimiento**
 - **Asociación con empresas** y conductores
+- **Validación de formato de placa** (XXX-NNN)
+- **Jerarquía de relaciones** (Empresa → Resolución → Vehículo)
 
 ### 👨‍💼 Módulo de Conductores
 - **Registro de conductores** con datos personales
@@ -62,7 +64,13 @@ frontend/
 │   │   │   │   ├── expediente-detail/  # Detalle de expediente
 │   │   │   │   └── expedientes-eliminados/ # Expedientes eliminados
 │   │   │   ├── vehiculos/          # Módulo de vehículos
+│   │   │   │   ├── vehiculo-form/  # Formulario de vehículo
+│   │   │   │   ├── vehiculo-detail/ # Detalle de vehículo
+│   │   │   │   └── vehiculos-eliminados/ # Vehículos eliminados
 │   │   │   ├── conductores/        # Módulo de conductores
+│   │   │   │   ├── conductor-form/ # Formulario de conductor
+│   │   │   │   ├── conductor-detail/ # Detalle de conductor
+│   │   │   │   └── conductores-eliminados/ # Conductores eliminados
 │   │   │   ├── layout/             # Layout principal
 │   │   │   └── shared/             # Componentes compartidos
 │   │   ├── models/                 # Interfaces TypeScript
@@ -71,6 +79,14 @@ frontend/
 │   └── styles.scss                 # Estilos globales
 ├── package.json
 └── angular.json
+
+backend/
+├── app/
+│   ├── api/                        # API endpoints
+│   ├── core/                       # Configuración y utilidades
+│   └── main.py                     # Punto de entrada
+├── requirements.txt
+└── Dockerfile
 ```
 
 ## 🚀 Instalación y Configuración
@@ -78,41 +94,43 @@ frontend/
 ### Prerrequisitos
 - Node.js 18+ 
 - npm 9+
+- Python 3.8+ (para backend)
 
 ### Instalación
 
 1. **Clonar el repositorio:**
 ```bash
-git clone <url-del-repositorio>
-cd frontend
+git clone https://github.com/ajahuanex/transportes.git
+cd transportes
 ```
 
-2. **Instalar dependencias:**
+2. **Instalar dependencias del frontend:**
 ```bash
+cd frontend
 npm install
 ```
 
-3. **Ejecutar en modo desarrollo:**
-
-**Opción A - Scripts automáticos (Recomendado):**
+3. **Instalar dependencias del backend:**
 ```bash
-# Para Windows (Command Prompt)
-start-angular.bat
-
-# Para Git Bash/Linux
-./start-angular.sh
+cd ../backend
+pip install -r requirements.txt
 ```
 
-**Opción B - Manual:**
-```bash
-# Configurar PATH (solo la primera vez)
-export PATH="$PATH:/c/Users/MTC-PUNO/AppData/Roaming/npm"
+4. **Ejecutar en modo desarrollo:**
 
-# Ejecutar servidor
-ng serve
+**Frontend:**
+```bash
+cd frontend
+npm start
 ```
 
-4. **Abrir en el navegador:**
+**Backend:**
+```bash
+cd backend
+python main.py
+```
+
+5. **Abrir en el navegador:**
 ```
 http://localhost:4200
 ```
@@ -172,18 +190,20 @@ El sistema incluye datos mock completos para:
 - [x] Arquitectura base del proyecto
 - [x] Módulo de Empresas (CRUD completo)
 - [x] Módulo de Expedientes (CRUD completo)
+- [x] Módulo de Vehículos (CRUD completo)
+- [x] Módulo de Conductores (CRUD completo)
 - [x] Sistema de filtros y búsqueda
 - [x] Exportación de datos
 - [x] Soft delete y auditoría
 - [x] Diseño responsive
 - [x] Formularios reactivos
+- [x] Validaciones de formato
+- [x] Jerarquía de relaciones
 
 ### 🚧 En Desarrollo
-- [ ] Módulo de Vehículos (CRUD completo)
-- [ ] Módulo de Conductores (CRUD completo)
 - [ ] Sistema de notificaciones
 - [ ] Autenticación y autorización
-- [ ] Integración con backend
+- [ ] Integración completa con backend
 
 ### 📋 Pendiente
 - [ ] Tests unitarios y de integración
@@ -208,7 +228,7 @@ Este proyecto está bajo la licencia [MIT](LICENSE).
 
 - [Arquitectura del Sistema](docs/ARQUITECTURA_SISTEMA.md) - Documentación técnica y arquitectura del proyecto
 - [Reglas del Proyecto DRTC](docs/REGLAS_PROYECTO_DRTC.md) - Reglas de negocio, modelos de datos y convenciones del proyecto
-- [Guía de Desarrollo](docs/GUIA_DESARROLLO.md) - Guía para continuar el desarrollo del proyecto
+- [Guía de Desarrollo](CONTINUAR_DESARROLLO.md) - Guía para continuar el desarrollo del proyecto
 
 ## 📞 Contacto
 
@@ -216,6 +236,6 @@ Este proyecto está bajo la licencia [MIT](LICENSE).
 
 ---
 
-**Versión:** 1.0.0  
-**Última actualización:** Diciembre 2024  
-**Estado:** En desarrollo activo 
+**Versión:** 1.2.2  
+**Última actualización:** Enero 2025  
+**Estado:** En desarrollo activo
