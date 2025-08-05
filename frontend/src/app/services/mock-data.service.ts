@@ -1,5 +1,6 @@
 import { Injectable } from '@angular/core';
-import { Observable, of, delay } from 'rxjs';
+import { Observable, of } from 'rxjs';
+import { delay } from 'rxjs/operators';
 import { 
   EmpresaTransporte, 
   EmpresaListResponse, 
@@ -32,8 +33,7 @@ import {
   ExpedienteAuditLog,
   ExpedienteStats,
   EstadoExpediente,
-  TipoExpediente,
-  TipoTramite
+  TipoExpediente
 } from '../models/expediente.model';
 import {
   Ruta,
@@ -48,6 +48,33 @@ import {
   TipoRuta,
   CategoriaRuta
 } from '../models/ruta.model';
+import {
+  Resolucion,
+  ResolucionListResponse,
+  TipoTramite
+} from '../models/resolucion.model';
+import {
+  TUC,
+  TUCListResponse,
+  EstadoTUC
+} from '../models/tuc.model';
+import {
+  ConfiguracionEnum,
+  ConfiguracionSistema,
+  CreateConfiguracionEnumRequest,
+  UpdateConfiguracionEnumRequest,
+  CreateConfiguracionSistemaRequest,
+  UpdateConfiguracionSistemaRequest,
+  ConfiguracionListResponse,
+  ConfiguracionSistemaListResponse,
+  CATEGORIAS_CONFIGURACION,
+  obtenerEstadosEmpresa,
+  obtenerEstadosVehiculo,
+  obtenerEstadosConductor,
+  obtenerEstadosTUC,
+  obtenerTiposResolucion,
+  obtenerTiposTramite
+} from '../shared/models/configuracion.model';
 
 @Injectable({
   providedIn: 'root'
@@ -286,11 +313,17 @@ export class MockDataService {
       version: 1,
       // Datos del vehículo según nuevas reglas
       placa: 'V1A-123',
+      resolucionId: '1',  // NUEVO: Relación directa con resolución
       empresaActualId: '1',
+      empresaId: '1',
+      empresaNombre: 'Transportes Puno SAC',
       rutaId: '1',
       categoria: 'M3',
       marca: 'Mercedes-Benz',
+      modelo: 'Sprinter',
       anioFabricacion: 2018,
+      color: 'Blanco',
+      tipo: TipoVehiculo.BUS,
       estado: 'ACTIVO',
       estaActivo: true,
       tuc: { 
@@ -299,7 +332,7 @@ export class MockDataService {
       },
       datosTecnicos: {
         motor: 'Diesel Euro 4',
-        chasis: 'A123-B456-C789',
+        chasis: 'MB123-B456-C789',
         ejes: 2,
         asientos: 30,
         pesoNeto: 5000,
@@ -368,6 +401,324 @@ export class MockDataService {
         costo: 2500,
         observaciones: ['Cambio de aceite', 'Filtros'],
         documentos: ['mantenimiento_abc123.pdf']
+      },
+      historial: []
+    },
+    {
+      id: '2',
+      // Campos de soft delete
+      eliminado: false,
+      fechaEliminacion: undefined,
+      usuarioEliminacion: undefined,
+      motivoEliminacion: undefined,
+      // Campos de auditoría
+      fechaCreacion: new Date('2021-03-20'),
+      usuarioCreacion: 'admin',
+      fechaModificacion: new Date('2024-12-01'),
+      usuarioModificacion: 'admin',
+      version: 1,
+      // Datos del vehículo según nuevas reglas
+      placa: 'V2B-456',
+      resolucionId: '2',  // NUEVO: Relación directa con resolución
+      empresaActualId: '1',
+      empresaId: '2',
+      empresaNombre: 'Transportes Juliaca SAC',
+      rutaId: '2',
+      categoria: 'M2',
+      marca: 'Toyota',
+      modelo: 'Hiace',
+      anioFabricacion: 2019,
+      color: 'Gris',
+      tipo: TipoVehiculo.MICROBUS,
+      estado: 'ACTIVO',
+      estaActivo: true,
+      tuc: { 
+        nroTuc: 'T-234567-2025', 
+        fechaEmision: new Date('2024-02-20') 
+      },
+      datosTecnicos: {
+        motor: 'Gasolina Euro 5',
+        chasis: 'TY123-B456-C789',
+        ejes: 2,
+        asientos: 15,
+        pesoNeto: 3000,
+        pesoBruto: 8000,
+        medidas: { largo: 8.5, ancho: 2.2, alto: 2.8 }
+      },
+      documentos: {
+        tarjetaPropiedad: {
+          numero: 'TP-2019-002345',
+          fechaEmision: new Date('2019-03-20'),
+          fechaVencimiento: new Date('2029-03-20'),
+          estado: 'VIGENTE',
+          documento: 'tarjeta_propiedad_def456.pdf'
+        },
+        revisionTecnica: {
+          numero: 'RT-2024-002345',
+          fechaEmision: new Date('2024-02-15'),
+          fechaVencimiento: new Date('2025-02-15'),
+          estado: 'VIGENTE',
+          documento: 'revision_tecnica_def456.pdf'
+        },
+        seguroVehicular: {
+          numero: 'SV-2024-002345',
+          aseguradora: 'Mapfre Seguros',
+          fechaEmision: new Date('2024-02-01'),
+          fechaVencimiento: new Date('2025-02-01'),
+          estado: 'VIGENTE',
+          documento: 'seguro_vehicular_def456.pdf'
+        },
+        certificadoOperacion: {
+          numero: 'CO-2024-002345',
+          fechaEmision: new Date('2024-02-15'),
+          fechaVencimiento: new Date('2025-02-15'),
+          estado: 'VIGENTE',
+          documento: 'certificado_operacion_def456.pdf'
+        }
+      },
+      informacionTecnica: {
+        numeroMotor: 'TY123456789',
+        numeroChasis: 'TYCH123456789',
+        cilindrada: 2500,
+        combustible: TipoCombustible.GASOLINA,
+        transmision: TipoTransmision.MANUAL,
+        traccion: TipoTraccion.DELANTERA,
+        pesoBruto: 8000,
+        pesoNeto: 5000,
+        kilometraje: 120000,
+        ultimaRevision: new Date('2024-11-20')
+      },
+      informacionSeguro: {
+        poliza: 'POL-2024-002345',
+        aseguradora: 'Mapfre Seguros',
+        tipoCobertura: 'Todo Riesgo',
+        montoAsegurado: 150000,
+        fechaInicio: new Date('2024-02-01'),
+        fechaFin: new Date('2025-02-01'),
+        estado: 'VIGENTE',
+        documento: 'poliza_seguro_def456.pdf'
+      },
+      mantenimiento: {
+        ultimoMantenimiento: new Date('2024-10-20'),
+        proximoMantenimiento: new Date('2025-01-20'),
+        kilometrajeUltimoMantenimiento: 115000,
+        tipoUltimoMantenimiento: 'Preventivo',
+        taller: 'Taller Toyota Puno',
+        costo: 1800,
+        observaciones: ['Cambio de aceite', 'Filtros', 'Frenos'],
+        documentos: ['mantenimiento_def456.pdf']
+      },
+      historial: []
+    },
+    {
+      id: '3',
+      // Campos de soft delete
+      eliminado: false,
+      fechaEliminacion: undefined,
+      usuarioEliminacion: undefined,
+      motivoEliminacion: undefined,
+      // Campos de auditoría
+      fechaCreacion: new Date('2021-06-10'),
+      usuarioCreacion: 'admin',
+      fechaModificacion: new Date('2024-12-01'),
+      usuarioModificacion: 'admin',
+      version: 1,
+      // Datos del vehículo según nuevas reglas
+      placa: 'V3C-789',
+      resolucionId: '3',  // NUEVO: Relación directa con resolución
+      empresaActualId: '2',
+      empresaId: '2',
+      empresaNombre: 'Transportes Juliaca SAC',
+      rutaId: '3',
+      categoria: 'M2',
+      marca: 'Nissan',
+      modelo: 'Urvan',
+      anioFabricacion: 2020,
+      color: 'Verde',
+      tipo: TipoVehiculo.MICROBUS,
+      estado: 'ACTIVO',
+      estaActivo: true,
+      tuc: { 
+        nroTuc: 'T-345678-2025', 
+        fechaEmision: new Date('2024-03-15') 
+      },
+      datosTecnicos: {
+        motor: 'Diesel Euro 5',
+        chasis: 'N123-B456-C789',
+        ejes: 2,
+        asientos: 18,
+        pesoNeto: 3500,
+        pesoBruto: 9000,
+        medidas: { largo: 9.0, ancho: 2.3, alto: 2.9 }
+      },
+      documentos: {
+        tarjetaPropiedad: {
+          numero: 'TP-2020-003456',
+          fechaEmision: new Date('2020-06-10'),
+          fechaVencimiento: new Date('2030-06-10'),
+          estado: 'VIGENTE',
+          documento: 'tarjeta_propiedad_ghi789.pdf'
+        },
+        revisionTecnica: {
+          numero: 'RT-2024-003456',
+          fechaEmision: new Date('2024-03-15'),
+          fechaVencimiento: new Date('2025-03-15'),
+          estado: 'VIGENTE',
+          documento: 'revision_tecnica_ghi789.pdf'
+        },
+        seguroVehicular: {
+          numero: 'SV-2024-003456',
+          aseguradora: 'La Positiva',
+          fechaEmision: new Date('2024-03-01'),
+          fechaVencimiento: new Date('2025-03-01'),
+          estado: 'VIGENTE',
+          documento: 'seguro_vehicular_ghi789.pdf'
+        },
+        certificadoOperacion: {
+          numero: 'CO-2024-003456',
+          fechaEmision: new Date('2024-03-15'),
+          fechaVencimiento: new Date('2025-03-15'),
+          estado: 'VIGENTE',
+          documento: 'certificado_operacion_ghi789.pdf'
+        }
+      },
+      informacionTecnica: {
+        numeroMotor: 'NS123456789',
+        numeroChasis: 'NSCH123456789',
+        cilindrada: 2800,
+        combustible: TipoCombustible.DIESEL,
+        transmision: TipoTransmision.MANUAL,
+        traccion: TipoTraccion.DELANTERA,
+        pesoBruto: 9000,
+        pesoNeto: 6000,
+        kilometraje: 95000,
+        ultimaRevision: new Date('2024-10-15')
+      },
+      informacionSeguro: {
+        poliza: 'POL-2024-003456',
+        aseguradora: 'La Positiva',
+        tipoCobertura: 'Todo Riesgo',
+        montoAsegurado: 180000,
+        fechaInicio: new Date('2024-03-01'),
+        fechaFin: new Date('2025-03-01'),
+        estado: 'VIGENTE',
+        documento: 'poliza_seguro_ghi789.pdf'
+      },
+      mantenimiento: {
+        ultimoMantenimiento: new Date('2024-09-15'),
+        proximoMantenimiento: new Date('2025-01-15'),
+        kilometrajeUltimoMantenimiento: 90000,
+        tipoUltimoMantenimiento: 'Preventivo',
+        taller: 'Taller Nissan Juliaca',
+        costo: 2200,
+        observaciones: ['Cambio de aceite', 'Filtros', 'Frenos', 'Suspensión'],
+        documentos: ['mantenimiento_ghi789.pdf']
+      },
+      historial: []
+    },
+    {
+      id: '4',
+      // Campos de soft delete
+      eliminado: false,
+      fechaEliminacion: undefined,
+      usuarioEliminacion: undefined,
+      motivoEliminacion: undefined,
+      // Campos de auditoría
+      fechaCreacion: new Date('2022-09-20'),
+      usuarioCreacion: 'admin',
+      fechaModificacion: new Date('2024-12-01'),
+      usuarioModificacion: 'admin',
+      version: 1,
+      // Datos del vehículo según nuevas reglas
+      placa: 'V4D-012',
+      resolucionId: '1',  // NUEVO: Relación directa con resolución
+      empresaActualId: '1',
+      empresaId: '1',
+      empresaNombre: 'Transportes Puno SAC',
+      rutaId: '4',
+      categoria: 'M3',
+      marca: 'Mercedes-Benz',
+      modelo: 'Sprinter',
+      anioFabricacion: 2021,
+      color: 'Gris',
+      tipo: TipoVehiculo.BUS,
+      estado: 'MANTENIMIENTO',
+      estaActivo: true,
+      tuc: { 
+        nroTuc: 'T-567890-2025', 
+        fechaEmision: new Date('2024-04-20') 
+      },
+      datosTecnicos: {
+        motor: 'Diesel Euro 6',
+        chasis: 'MB123-B456-C789',
+        ejes: 2,
+        asientos: 35,
+        pesoNeto: 5500,
+        pesoBruto: 13000,
+        medidas: { largo: 11.0, ancho: 2.6, alto: 3.3 }
+      },
+      documentos: {
+        tarjetaPropiedad: {
+          numero: 'TP-2021-004567',
+          fechaEmision: new Date('2021-09-20'),
+          fechaVencimiento: new Date('2031-09-20'),
+          estado: 'VIGENTE',
+          documento: 'tarjeta_propiedad_jkl012.pdf'
+        },
+        revisionTecnica: {
+          numero: 'RT-2024-004567',
+          fechaEmision: new Date('2024-04-20'),
+          fechaVencimiento: new Date('2025-04-20'),
+          estado: 'VIGENTE',
+          documento: 'revision_tecnica_jkl012.pdf'
+        },
+        seguroVehicular: {
+          numero: 'SV-2024-004567',
+          aseguradora: 'Rimac Seguros',
+          fechaEmision: new Date('2024-04-01'),
+          fechaVencimiento: new Date('2025-04-01'),
+          estado: 'VIGENTE',
+          documento: 'seguro_vehicular_jkl012.pdf'
+        },
+        certificadoOperacion: {
+          numero: 'CO-2024-004567',
+          fechaEmision: new Date('2024-04-20'),
+          fechaVencimiento: new Date('2025-04-20'),
+          estado: 'VIGENTE',
+          documento: 'certificado_operacion_jkl012.pdf'
+        }
+      },
+      informacionTecnica: {
+        numeroMotor: 'MB123456789',
+        numeroChasis: 'MBCH123456789',
+        cilindrada: 7000,
+        combustible: TipoCombustible.DIESEL,
+        transmision: TipoTransmision.AUTOMATICA,
+        traccion: TipoTraccion.TRASERA,
+        pesoBruto: 13000,
+        pesoNeto: 9000,
+        kilometraje: 75000,
+        ultimaRevision: new Date('2024-11-20')
+      },
+      informacionSeguro: {
+        poliza: 'POL-2024-004567',
+        aseguradora: 'Rimac Seguros',
+        tipoCobertura: 'Todo Riesgo',
+        montoAsegurado: 250000,
+        fechaInicio: new Date('2024-04-01'),
+        fechaFin: new Date('2025-04-01'),
+        estado: 'VIGENTE',
+        documento: 'poliza_seguro_jkl012.pdf'
+      },
+      mantenimiento: {
+        ultimoMantenimiento: new Date('2024-12-01'),
+        proximoMantenimiento: new Date('2025-03-01'),
+        kilometrajeUltimoMantenimiento: 75000,
+        tipoUltimoMantenimiento: 'Correctivo',
+        taller: 'Taller Mercedes-Benz Puno',
+        costo: 3500,
+        observaciones: ['Reparación de motor', 'Cambio de aceite', 'Filtros'],
+        documentos: ['mantenimiento_jkl012.pdf']
       },
       historial: []
     }
@@ -545,6 +896,197 @@ export class MockDataService {
         }
       ],
       expedientesHijos: []
+    }
+  ];
+
+  // Datos mock de resoluciones
+  private resoluciones: Resolucion[] = [
+    {
+      id: '1',
+      nroResolucion: 'R-1234-2025-DRTC-PUNO',
+      empresaId: '1',
+      empresaNombre: 'Transportes Puno SAC',
+      fechaEmision: new Date('2025-01-15'),
+      fechaVigenciaInicio: new Date('2025-01-15'),
+      fechaVigenciaFin: new Date('2027-01-15'),
+      tipoResolucion: 'PADRE',
+      resolucionPadreId: undefined,
+      tipoTramite: TipoTramite.HABILITACION_VEHICULAR,
+      descripcion: 'Habilitación vehicular para Transportes Puno SAC',
+      expedienteId: '1',
+      expedienteNumero: 'E-1234-2025',
+      documentoId: 'doc1',
+      estaActivo: true,
+      eliminado: false,
+      fechaCreacion: new Date('2025-01-15'),
+      usuarioCreacion: 'admin',
+      fechaModificacion: new Date('2025-01-15'),
+      usuarioModificacion: 'admin',
+      version: 1
+    },
+    {
+      id: '2',
+      nroResolucion: 'R-1235-2025-DRTC-PUNO',
+      empresaId: '2',
+      empresaNombre: 'Transportes Juliaca SAC',
+      fechaEmision: new Date('2025-01-20'),
+      fechaVigenciaInicio: new Date('2025-01-20'),
+      fechaVigenciaFin: new Date('2027-01-20'),
+      tipoResolucion: 'PADRE',
+      resolucionPadreId: undefined,
+      tipoTramite: TipoTramite.HABILITACION_VEHICULAR,
+      descripcion: 'Habilitación vehicular para Transportes Juliaca SAC',
+      expedienteId: '2',
+      expedienteNumero: 'E-1235-2025',
+      documentoId: 'doc2',
+      estaActivo: true,
+      eliminado: false,
+      fechaCreacion: new Date('2025-01-20'),
+      usuarioCreacion: 'admin',
+      fechaModificacion: new Date('2025-01-20'),
+      usuarioModificacion: 'admin',
+      version: 1
+    },
+    {
+      id: '3',
+      nroResolucion: 'R-1236-2025-DRTC-PUNO',
+      empresaId: '1',
+      empresaNombre: 'Transportes Puno SAC',
+      fechaEmision: new Date('2025-02-01'),
+      fechaVigenciaInicio: new Date('2025-02-01'),
+      fechaVigenciaFin: new Date('2027-02-01'),
+      tipoResolucion: 'HIJO',
+      resolucionPadreId: '1',
+      tipoTramite: TipoTramite.INCREMENTO,
+      descripcion: 'Incremento de flota para Transportes Puno SAC',
+      expedienteId: '3',
+      expedienteNumero: 'E-1236-2025',
+      documentoId: 'doc3',
+      estaActivo: true,
+      eliminado: false,
+      fechaCreacion: new Date('2025-02-01'),
+      usuarioCreacion: 'admin',
+      fechaModificacion: new Date('2025-02-01'),
+      usuarioModificacion: 'admin',
+      version: 1
+    }
+  ];
+
+  // Datos ficticios de TUCs
+  private tucs: TUC[] = [
+    {
+      id: '1',
+      // Campos de soft delete
+      eliminado: false,
+      fechaEliminacion: undefined,
+      usuarioEliminacion: undefined,
+      motivoEliminacion: undefined,
+      // Campos de auditoría
+      fechaCreacion: new Date('2024-01-15'),
+      usuarioCreacion: 'admin',
+      fechaModificacion: new Date('2024-12-01'),
+      usuarioModificacion: 'admin',
+      version: 1,
+      // Datos del TUC
+      nroTuc: 'T-123456-2025',
+      vehiculoId: '1',
+      vehiculoPlaca: 'V1B-123',
+      vehiculoMarca: 'Toyota',
+      vehiculoModelo: 'Hiace',
+      empresaId: '1',
+      empresaNombre: 'Transportes El Veloz S.A.C.',
+      resolucionPadreId: '1',
+      resolucionNumero: 'R-1234-2025-DRTC-PUNO',
+      fechaEmision: new Date('2025-01-15'),
+      fechaVencimiento: new Date('2026-01-15'),
+      estado: EstadoTUC.VIGENTE,
+      razonDescarte: undefined,
+      estaActivo: true,
+      documentoId: 'DOC-TUC-001',
+      qrVerificationUrl: 'https://drtc-puno.gob.pe/verificar/tuc/T-123456-2025',
+      auditoria: {
+        fechaCreacion: new Date('2024-01-15'),
+        usuarioCreacion: 'admin',
+        fechaModificacion: new Date('2024-12-01'),
+        usuarioModificacion: 'admin',
+        version: 1
+      }
+    },
+    {
+      id: '2',
+      // Campos de soft delete
+      eliminado: false,
+      fechaEliminacion: undefined,
+      usuarioEliminacion: undefined,
+      motivoEliminacion: undefined,
+      // Campos de auditoría
+      fechaCreacion: new Date('2024-02-20'),
+      usuarioCreacion: 'admin',
+      fechaModificacion: new Date('2024-12-01'),
+      usuarioModificacion: 'admin',
+      version: 1,
+      // Datos del TUC
+      nroTuc: 'T-234567-2025',
+      vehiculoId: '2',
+      vehiculoPlaca: 'V1B-456',
+      vehiculoMarca: 'Nissan',
+      vehiculoModelo: 'Urvan',
+      empresaId: '2',
+      empresaNombre: 'Empresa de Transportes Puno S.A.C.',
+      resolucionPadreId: '2',
+      resolucionNumero: 'R-5678-2025-DRTC-PUNO',
+      fechaEmision: new Date('2025-02-20'),
+      fechaVencimiento: new Date('2026-02-20'),
+      estado: EstadoTUC.VIGENTE,
+      razonDescarte: undefined,
+      estaActivo: true,
+      documentoId: 'DOC-TUC-002',
+      qrVerificationUrl: 'https://drtc-puno.gob.pe/verificar/tuc/T-234567-2025',
+      auditoria: {
+        fechaCreacion: new Date('2024-02-20'),
+        usuarioCreacion: 'admin',
+        fechaModificacion: new Date('2024-12-01'),
+        usuarioModificacion: 'admin',
+        version: 1
+      }
+    },
+    {
+      id: '3',
+      // Campos de soft delete
+      eliminado: false,
+      fechaEliminacion: undefined,
+      usuarioEliminacion: undefined,
+      motivoEliminacion: undefined,
+      // Campos de auditoría
+      fechaCreacion: new Date('2024-03-10'),
+      usuarioCreacion: 'admin',
+      fechaModificacion: new Date('2024-12-01'),
+      usuarioModificacion: 'admin',
+      version: 1,
+      // Datos del TUC
+      nroTuc: 'T-345678-2025',
+      vehiculoId: '3',
+      vehiculoPlaca: 'V1B-789',
+      vehiculoMarca: 'Mercedes-Benz',
+      vehiculoModelo: 'Sprinter',
+      empresaId: '1',
+      empresaNombre: 'Transportes El Veloz S.A.C.',
+      resolucionPadreId: '1',
+      resolucionNumero: 'R-1234-2025-DRTC-PUNO',
+      fechaEmision: new Date('2025-03-10'),
+      fechaVencimiento: new Date('2026-03-10'),
+      estado: EstadoTUC.VENCIDA,
+      razonDescarte: 'Vencimiento de plazo',
+      estaActivo: true,
+      documentoId: 'DOC-TUC-003',
+      qrVerificationUrl: 'https://drtc-puno.gob.pe/verificar/tuc/T-345678-2025',
+      auditoria: {
+        fechaCreacion: new Date('2024-03-10'),
+        usuarioCreacion: 'admin',
+        fechaModificacion: new Date('2024-12-01'),
+        usuarioModificacion: 'admin',
+        version: 1
+      }
     }
   ];
 
@@ -1947,5 +2489,554 @@ export class MockDataService {
     const regex = /^[A-Z]{3}-[A-Z]{3}-\d{2}$/;
     const existe = this.rutas.some(r => r.codigoRuta === codigo);
     return of(regex.test(codigo) && !existe).pipe(delay(100));
+  }
+
+  // Métodos para Resoluciones
+  getResoluciones(): Observable<ResolucionListResponse> {
+    return of({
+      resoluciones: this.resoluciones.filter(r => r.estaActivo),
+      total: this.resoluciones.filter(r => r.estaActivo).length,
+      pagina: 1,
+      porPagina: 10,
+      totalPaginas: 1
+    }).pipe(delay(300));
+  }
+
+  getResolucionesEliminadas(): Observable<ResolucionListResponse> {
+    return of({
+      resoluciones: this.resoluciones.filter(r => !r.estaActivo),
+      total: this.resoluciones.filter(r => !r.estaActivo).length,
+      pagina: 1,
+      porPagina: 10,
+      totalPaginas: 1
+    }).pipe(delay(300));
+  }
+
+  // Métodos para TUCs
+  getTUCs(): Observable<TUCListResponse> {
+    return of({
+      tucs: this.tucs,
+      total: this.tucs.length,
+      totalPaginas: Math.ceil(this.tucs.length / 10)
+    }).pipe(delay(300));
+  }
+
+  // ============================================================================
+  // DATOS MOCK PARA CONFIGURACIONES
+  // ============================================================================
+
+  private configuracionesEnum: ConfiguracionEnum[] = [
+    ...obtenerEstadosEmpresa(),
+    ...obtenerEstadosVehiculo(),
+    ...obtenerEstadosConductor(),
+    ...obtenerEstadosTUC(),
+    ...obtenerTiposResolucion(),
+    ...obtenerTiposTramite()
+  ];
+
+  private configuracionesSistema: ConfiguracionSistema[] = [
+    {
+      id: 'config-1',
+      clave: 'SISTEMA_NOMBRE',
+      valor: 'DRTC Puno',
+      descripcion: 'Nombre del sistema',
+      tipo: 'STRING',
+      categoria: CATEGORIAS_CONFIGURACION.SISTEMA.GENERAL,
+      editable: true,
+      visible: true,
+      eliminado: false,
+      fechaEliminacion: undefined,
+      usuarioEliminacion: undefined,
+      motivoEliminacion: undefined,
+      createdAt: new Date('2024-01-01'),
+      updatedAt: new Date('2024-12-01'),
+      createdBy: 'admin',
+      updatedBy: 'admin',
+      version: 1
+    },
+    {
+      id: 'config-2',
+      clave: 'SISTEMA_VERSION',
+      valor: '1.0.0',
+      descripcion: 'Versión del sistema',
+      tipo: 'STRING',
+      categoria: CATEGORIAS_CONFIGURACION.SISTEMA.GENERAL,
+      editable: false,
+      visible: true,
+      eliminado: false,
+      fechaEliminacion: undefined,
+      usuarioEliminacion: undefined,
+      motivoEliminacion: undefined,
+      createdAt: new Date('2024-01-01'),
+      updatedAt: new Date('2024-12-01'),
+      createdBy: 'admin',
+      updatedBy: 'admin',
+      version: 1
+    },
+    {
+      id: 'config-3',
+      clave: 'NOTIFICACIONES_EMAIL',
+      valor: 'true',
+      descripcion: 'Habilitar notificaciones por email',
+      tipo: 'BOOLEAN',
+      categoria: CATEGORIAS_CONFIGURACION.SISTEMA.NOTIFICACIONES,
+      editable: true,
+      visible: true,
+      eliminado: false,
+      fechaEliminacion: undefined,
+      usuarioEliminacion: undefined,
+      motivoEliminacion: undefined,
+      createdAt: new Date('2024-01-01'),
+      updatedAt: new Date('2024-12-01'),
+      createdBy: 'admin',
+      updatedBy: 'admin',
+      version: 1
+    },
+    {
+      id: 'config-4',
+      clave: 'REPORTES_PAGINA_SIZE',
+      valor: '50',
+      descripcion: 'Tamaño de página por defecto para reportes',
+      tipo: 'NUMBER',
+      categoria: CATEGORIAS_CONFIGURACION.SISTEMA.REPORTES,
+      editable: true,
+      visible: true,
+      eliminado: false,
+      fechaEliminacion: undefined,
+      usuarioEliminacion: undefined,
+      motivoEliminacion: undefined,
+      createdAt: new Date('2024-01-01'),
+      updatedAt: new Date('2024-12-01'),
+      createdBy: 'admin',
+      updatedBy: 'admin',
+      version: 1
+    }
+  ];
+
+  // ============================================================================
+  // MÉTODOS PARA CONFIGURACIONES DE ENUM
+  // ============================================================================
+
+  getConfiguracionesEnum(
+    pagina: number = 1,
+    porPagina: number = 10,
+    filtros?: {
+      categoria?: string;
+      estaActivo?: boolean;
+      busqueda?: string;
+    }
+  ): Observable<ConfiguracionListResponse> {
+    let configuraciones = this.configuracionesEnum.filter(c => !c.eliminado);
+
+    // Aplicar filtros
+    if (filtros?.categoria) {
+      configuraciones = configuraciones.filter(c => c.categoria === filtros.categoria);
+    }
+
+    if (filtros?.estaActivo !== undefined) {
+      configuraciones = configuraciones.filter(c => c.estaActivo === filtros.estaActivo);
+    }
+
+    if (filtros?.busqueda) {
+      const busqueda = filtros.busqueda.toLowerCase();
+      configuraciones = configuraciones.filter(c =>
+        c.nombre.toLowerCase().includes(busqueda) ||
+        c.descripcion.toLowerCase().includes(busqueda) ||
+        c.codigo.toLowerCase().includes(busqueda)
+      );
+    }
+
+    const total = configuraciones.length;
+    const inicio = (pagina - 1) * porPagina;
+    const fin = inicio + porPagina;
+    const configuracionesPaginadas = configuraciones.slice(inicio, fin);
+
+    return of({
+      configuraciones: configuracionesPaginadas,
+      total,
+      pagina,
+      porPagina,
+      totalPaginas: Math.ceil(total / porPagina)
+    }).pipe(delay(300));
+  }
+
+  getConfiguracionEnum(id: string): Observable<ConfiguracionEnum> {
+    const configuracion = this.configuracionesEnum.find(c => c.id === id && !c.eliminado);
+    if (!configuracion) {
+      throw new Error('Configuración no encontrada');
+    }
+    return of(configuracion).pipe(delay(200));
+  }
+
+  createConfiguracionEnum(request: CreateConfiguracionEnumRequest): Observable<ConfiguracionEnum> {
+    const nuevaConfiguracion: ConfiguracionEnum = {
+      id: `config-enum-${Date.now()}`,
+      ...request,
+      estaActivo: true,
+      eliminado: false,
+      fechaEliminacion: undefined,
+      usuarioEliminacion: undefined,
+      motivoEliminacion: undefined,
+      createdAt: new Date(),
+      updatedAt: new Date(),
+      createdBy: 'admin',
+      updatedBy: 'admin',
+      version: 1
+    };
+
+    this.configuracionesEnum.push(nuevaConfiguracion);
+    return of(nuevaConfiguracion).pipe(delay(500));
+  }
+
+  updateConfiguracionEnum(id: string, request: UpdateConfiguracionEnumRequest): Observable<ConfiguracionEnum> {
+    const index = this.configuracionesEnum.findIndex(c => c.id === id && !c.eliminado);
+    if (index === -1) {
+      throw new Error('Configuración no encontrada');
+    }
+
+    this.configuracionesEnum[index] = {
+      ...this.configuracionesEnum[index],
+      ...request,
+      updatedAt: new Date(),
+      updatedBy: 'admin',
+      version: this.configuracionesEnum[index].version + 1
+    };
+
+    return of(this.configuracionesEnum[index]).pipe(delay(300));
+  }
+
+  deleteConfiguracionEnum(id: string): Observable<boolean> {
+    const index = this.configuracionesEnum.findIndex(c => c.id === id && !c.eliminado);
+    if (index === -1) {
+      throw new Error('Configuración no encontrada');
+    }
+
+    this.configuracionesEnum[index] = {
+      ...this.configuracionesEnum[index],
+      eliminado: true,
+      fechaEliminacion: new Date(),
+      usuarioEliminacion: 'admin',
+      motivoEliminacion: 'Eliminación lógica'
+    };
+
+    return of(true).pipe(delay(300));
+  }
+
+  restoreConfiguracionEnum(id: string): Observable<ConfiguracionEnum> {
+    const index = this.configuracionesEnum.findIndex(c => c.id === id && c.eliminado);
+    if (index === -1) {
+      throw new Error('Configuración no encontrada');
+    }
+
+    this.configuracionesEnum[index] = {
+      ...this.configuracionesEnum[index],
+      eliminado: false,
+      fechaEliminacion: undefined,
+      usuarioEliminacion: undefined,
+      motivoEliminacion: undefined,
+      updatedAt: new Date(),
+      updatedBy: 'admin',
+      version: this.configuracionesEnum[index].version + 1
+    };
+
+    return of(this.configuracionesEnum[index]).pipe(delay(300));
+  }
+
+  getConfiguracionesEnumEliminadas(
+    pagina: number = 1,
+    porPagina: number = 10
+  ): Observable<ConfiguracionListResponse> {
+    const configuraciones = this.configuracionesEnum.filter(c => c.eliminado);
+    const total = configuraciones.length;
+    const inicio = (pagina - 1) * porPagina;
+    const fin = inicio + porPagina;
+    const configuracionesPaginadas = configuraciones.slice(inicio, fin);
+
+    return of({
+      configuraciones: configuracionesPaginadas,
+      total,
+      pagina,
+      porPagina,
+      totalPaginas: Math.ceil(total / porPagina)
+    }).pipe(delay(300));
+  }
+
+  // ============================================================================
+  // MÉTODOS PARA CONFIGURACIONES DE SISTEMA
+  // ============================================================================
+
+  getConfiguracionesSistema(
+    pagina: number = 1,
+    porPagina: number = 10,
+    filtros?: {
+      categoria?: string;
+      estaActivo?: boolean;
+      busqueda?: string;
+    }
+  ): Observable<ConfiguracionSistemaListResponse> {
+    let configuraciones = this.configuracionesSistema.filter(c => !c.eliminado);
+
+    // Aplicar filtros
+    if (filtros?.categoria) {
+      configuraciones = configuraciones.filter(c => c.categoria === filtros.categoria);
+    }
+
+    if (filtros?.busqueda) {
+      const busqueda = filtros.busqueda.toLowerCase();
+      configuraciones = configuraciones.filter(c =>
+        c.clave.toLowerCase().includes(busqueda) ||
+        c.descripcion.toLowerCase().includes(busqueda) ||
+        c.valor.toLowerCase().includes(busqueda)
+      );
+    }
+
+    const total = configuraciones.length;
+    const inicio = (pagina - 1) * porPagina;
+    const fin = inicio + porPagina;
+    const configuracionesPaginadas = configuraciones.slice(inicio, fin);
+
+    return of({
+      configuraciones: configuracionesPaginadas,
+      total,
+      pagina,
+      porPagina,
+      totalPaginas: Math.ceil(total / porPagina)
+    }).pipe(delay(300));
+  }
+
+  getConfiguracionSistema(id: string): Observable<ConfiguracionSistema> {
+    const configuracion = this.configuracionesSistema.find(c => c.id === id && !c.eliminado);
+    if (!configuracion) {
+      throw new Error('Configuración no encontrada');
+    }
+    return of(configuracion).pipe(delay(200));
+  }
+
+  createConfiguracionSistema(request: CreateConfiguracionSistemaRequest): Observable<ConfiguracionSistema> {
+    const nuevaConfiguracion: ConfiguracionSistema = {
+      id: `config-sistema-${Date.now()}`,
+      ...request,
+      eliminado: false,
+      fechaEliminacion: undefined,
+      usuarioEliminacion: undefined,
+      motivoEliminacion: undefined,
+      createdAt: new Date(),
+      createdBy: 'admin',
+      updatedAt: new Date(),
+      updatedBy: 'admin',
+      version: 1
+    };
+
+    this.configuracionesSistema.push(nuevaConfiguracion);
+    return of(nuevaConfiguracion).pipe(delay(500));
+  }
+
+  updateConfiguracionSistema(id: string, request: UpdateConfiguracionSistemaRequest): Observable<ConfiguracionSistema> {
+    const index = this.configuracionesSistema.findIndex(c => c.id === id && !c.eliminado);
+    if (index === -1) {
+      throw new Error('Configuración no encontrada');
+    }
+
+    this.configuracionesSistema[index] = {
+      ...this.configuracionesSistema[index],
+      ...request,
+      updatedAt: new Date(),
+      updatedBy: 'admin',
+      version: this.configuracionesSistema[index].version + 1
+    };
+
+    return of(this.configuracionesSistema[index]).pipe(delay(300));
+  }
+
+  deleteConfiguracionSistema(id: string): Observable<boolean> {
+    const index = this.configuracionesSistema.findIndex(c => c.id === id && !c.eliminado);
+    if (index === -1) {
+      throw new Error('Configuración no encontrada');
+    }
+
+    this.configuracionesSistema[index] = {
+      ...this.configuracionesSistema[index],
+      eliminado: true,
+      fechaEliminacion: new Date(),
+      usuarioEliminacion: 'admin',
+      motivoEliminacion: 'Eliminación lógica'
+    };
+
+    return of(true).pipe(delay(300));
+  }
+
+  restoreConfiguracionSistema(id: string): Observable<ConfiguracionSistema> {
+    const index = this.configuracionesSistema.findIndex(c => c.id === id && c.eliminado);
+    if (index === -1) {
+      throw new Error('Configuración no encontrada');
+    }
+
+    this.configuracionesSistema[index] = {
+      ...this.configuracionesSistema[index],
+      eliminado: false,
+      fechaEliminacion: undefined,
+      usuarioEliminacion: undefined,
+      motivoEliminacion: undefined,
+      updatedAt: new Date(),
+      updatedBy: 'admin',
+      version: this.configuracionesSistema[index].version + 1
+    };
+
+    return of(this.configuracionesSistema[index]).pipe(delay(300));
+  }
+
+  getConfiguracionesSistemaEliminadas(
+    pagina: number = 1,
+    porPagina: number = 10
+  ): Observable<ConfiguracionSistemaListResponse> {
+    const configuraciones = this.configuracionesSistema.filter(c => c.eliminado);
+    const total = configuraciones.length;
+    const inicio = (pagina - 1) * porPagina;
+    const fin = inicio + porPagina;
+    const configuracionesPaginadas = configuraciones.slice(inicio, fin);
+
+    return of({
+      configuraciones: configuracionesPaginadas,
+      total,
+      pagina,
+      porPagina,
+      totalPaginas: Math.ceil(total / porPagina)
+    }).pipe(delay(300));
+  }
+
+  // ============================================================================
+  // MÉTODOS DE UTILIDAD PARA CONFIGURACIONES
+  // ============================================================================
+
+  getEstadisticasConfiguraciones(): Observable<{
+    totalEnums: number;
+    totalSistema: number;
+    porCategoria: Record<string, number>;
+    activos: number;
+    inactivos: number;
+  }> {
+    const totalEnums = this.configuracionesEnum.filter(c => !c.eliminado).length;
+    const totalSistema = this.configuracionesSistema.filter(c => !c.eliminado).length;
+    const activos = this.configuracionesEnum.filter(c => !c.eliminado && c.estaActivo).length;
+    const inactivos = this.configuracionesEnum.filter(c => !c.eliminado && !c.estaActivo).length;
+
+    const porCategoria: Record<string, number> = {};
+    this.configuracionesEnum.filter(c => !c.eliminado).forEach(c => {
+      porCategoria[c.categoria] = (porCategoria[c.categoria] || 0) + 1;
+    });
+
+    return of({
+      totalEnums,
+      totalSistema,
+      porCategoria,
+      activos,
+      inactivos
+    }).pipe(delay(200));
+  }
+
+  exportarConfiguraciones(
+    tipo: 'EXCEL' | 'PDF' | 'CSV',
+    filtros?: {
+      categoria?: string;
+      estaActivo?: boolean;
+      busqueda?: string;
+    }
+  ): Observable<Blob> {
+    // Simular exportación
+    const contenido = `Configuraciones exportadas en formato ${tipo}`;
+    const blob = new Blob([contenido], { type: 'text/plain' });
+    return of(blob).pipe(delay(1000));
+  }
+
+  verificarDisponibilidadCodigo(codigo: string, excludeId?: string): Observable<boolean> {
+    const existe = this.configuracionesEnum.some(c => 
+      c.codigo === codigo && !c.eliminado && c.id !== excludeId
+    );
+    return of(!existe).pipe(delay(200));
+  }
+
+  getConfiguracionPorClave(clave: string): Observable<ConfiguracionSistema | null> {
+    const configuracion = this.configuracionesSistema.find(c => 
+      c.clave === clave && !c.eliminado
+    );
+    return of(configuracion || null).pipe(delay(200));
+  }
+
+  updateConfiguracionPorClave(clave: string, valor: string): Observable<ConfiguracionSistema> {
+    const index = this.configuracionesSistema.findIndex(c => c.clave === clave && !c.eliminado);
+    if (index === -1) {
+      throw new Error('Configuración no encontrada');
+    }
+
+    this.configuracionesSistema[index] = {
+      ...this.configuracionesSistema[index],
+      valor,
+      updatedAt: new Date(),
+      updatedBy: 'admin',
+      version: this.configuracionesSistema[index].version + 1
+    };
+
+    return of(this.configuracionesSistema[index]).pipe(delay(300));
+  }
+
+  getConfiguracionesVisibles(): Observable<ConfiguracionSistema[]> {
+    const configuraciones = this.configuracionesSistema.filter(c => 
+      !c.eliminado && c.visible
+    );
+    return of(configuraciones).pipe(delay(200));
+  }
+
+  inicializarConfiguracionesSistema(): Observable<boolean> {
+    // Simular inicialización
+    return of(true).pipe(delay(1000));
+  }
+
+  resetearConfiguraciones(categoria?: string): Observable<boolean> {
+    // Simular reset
+    return of(true).pipe(delay(500));
+  }
+
+  getHistorialConfiguracion(id: string): Observable<any[]> {
+    // Simular historial
+    return of([
+      {
+        fecha: new Date('2024-12-01'),
+        usuario: 'admin',
+        accion: 'MODIFICACION',
+        detalles: 'Configuración actualizada'
+      }
+    ]).pipe(delay(300));
+  }
+
+  buscarConfiguraciones(texto: string, categoria?: string): Observable<ConfiguracionEnum[]> {
+    let configuraciones = this.configuracionesEnum.filter(c => !c.eliminado);
+
+    if (categoria) {
+      configuraciones = configuraciones.filter(c => c.categoria === categoria);
+    }
+
+    const busqueda = texto.toLowerCase();
+    const resultados = configuraciones.filter(c =>
+      c.nombre.toLowerCase().includes(busqueda) ||
+      c.descripcion.toLowerCase().includes(busqueda) ||
+      c.codigo.toLowerCase().includes(busqueda)
+    );
+
+    return of(resultados).pipe(delay(300));
+  }
+
+  getConfiguracionesRelacionadas(id: string): Observable<ConfiguracionEnum[]> {
+    const configuracion = this.configuracionesEnum.find(c => c.id === id);
+    if (!configuracion) {
+      return of([]);
+    }
+
+    const relacionadas = this.configuracionesEnum.filter(c => 
+      c.id !== id && 
+      !c.eliminado && 
+      c.categoria === configuracion.categoria
+    );
+
+    return of(relacionadas.slice(0, 5)).pipe(delay(300));
   }
 } 

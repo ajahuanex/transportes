@@ -11,6 +11,114 @@ Desarrollar un sistema de gestión integral para la DRTC Puno. El proyecto const
 - **Front-end Web**: Angular 20 (personal de oficina)
 - **Front-end Móvil**: Flutter (fiscalizadores en campo)
 
+## Jerarquía de Relaciones entre Entidades
+
+### Estructura Jerárquica Correcta
+```
+EMPRESA
+  ↓
+RESOLUCIÓN (PADRE)
+  ↓
+RESOLUCIÓN (HIJO) - OPCIONAL
+  ↓
+VEHÍCULO
+  ↓
+TUC
+```
+
+### Reglas de Relación Jerárquica
+
+#### 1. **Empresa → Resolución**
+- Una empresa puede tener múltiples resoluciones
+- Las resoluciones pueden ser de tipo `PADRE` o `HIJO`
+- La resolución `PADRE` establece la relación principal con la empresa
+
+#### 2. **Resolución → Vehículo**
+- **CRÍTICO**: Los vehículos están **directamente relacionados** con una resolución
+- Si la resolución es `PADRE`, el vehículo se asocia directamente a esa resolución
+- Si la resolución es `HIJO`, el vehículo se asocia a la resolución `HIJO`, pero mantiene referencia a la resolución `PADRE`
+- **NO** se debe asociar directamente vehículo → empresa
+
+#### 3. **Vehículo → TUC**
+- Cada vehículo puede tener múltiples TUCs a lo largo del tiempo
+- La TUC se genera basándose en la resolución asociada al vehículo
+- La vigencia de la TUC depende de la `fechaVigenciaFin` de la resolución
+
+#### 4. **Flujo de Asociación Correcto**
+```
+1. Se identifica la EMPRESA
+2. Se crea/identifica la RESOLUCIÓN PADRE para esa empresa
+3. Se asocia el VEHÍCULO a la resolución (padre o hijo)
+4. Se genera la TUC basada en la resolución del vehículo
+5. Solo entonces se puede mostrar la empresa asociada al vehículo
+```
+
+### Implementación en el Frontend
+
+#### Módulo de Vehículos
+- **Campo requerido**: `resolucionId` (NO `empresaId`)
+- **Campo derivado**: `empresaId` se obtiene a través de la resolución
+- **Validación**: Un vehículo debe estar asociado a una resolución antes de poder mostrar la empresa
+
+#### Módulo de Resoluciones
+- **Tipo de Resolución**: `PADRE` o `HIJO`
+- **Resolución Padre**: Si es `HIJO`, debe referenciar a una resolución `PADRE`
+- **Empresa**: Solo las resoluciones `PADRE` tienen `empresaId` directo
+
+#### Consultas y Filtros
+- Para obtener la empresa de un vehículo: `vehiculo.resolucionId → resolucion.empresaId`
+- Para obtener vehículos de una empresa: `empresa.id → resoluciones.empresaId → vehiculos.resolucionId`
+
+### Reglas de Implementación en Frontend
+
+#### Formulario de Vehículos
+```typescript
+// ESTRUCTURA CORRECTA DEL FORMULARIO
+interface VehiculoForm {
+  placa: string;
+  resolucionId: string;        // REQUERIDO - Relación directa
+  empresaId?: string;          // DERIVADO - Se obtiene de la resolución
+  marca: string;
+  modelo: string;
+  // ... otros campos
+}
+
+// VALIDACIÓN CORRECTA
+- El campo resolucionId es OBLIGATORIO
+- El campo empresaId se auto-completa basado en la resolución seleccionada
+- NO se permite seleccionar empresa directamente
+```
+
+#### Servicio de Vehículos
+```typescript
+// MÉTODOS CORRECTOS
+getVehiculo(id: string): Observable<Vehiculo> {
+  // Debe incluir la resolución asociada
+  // Debe derivar la empresa de la resolución
+}
+
+createVehiculo(vehiculo: Partial<Vehiculo>): Observable<Vehiculo> {
+  // Validar que resolucionId esté presente
+  // NO permitir empresaId directo
+}
+
+// CONSULTA CORRECTA PARA OBTENER EMPRESA
+getEmpresaByVehiculo(vehiculoId: string): Observable<Empresa> {
+  return this.getVehiculo(vehiculoId).pipe(
+    switchMap(vehiculo => this.getResolucion(vehiculo.resolucionId)),
+    switchMap(resolucion => this.getEmpresa(resolucion.empresaId))
+  );
+}
+```
+
+#### Componente de Lista de Vehículos
+```typescript
+// DISPLAY CORRECTO
+- Mostrar: Placa, Marca, Modelo, Empresa (derivada), Estado
+- Filtros: Por empresa (a través de resoluciones), por estado, por placa
+- Ordenamiento: Por empresa, por placa, por fecha de registro
+```
+
 ## Reglas de Negocio Clave
 
 ### 1. Borrado Lógico
@@ -75,7 +183,8 @@ Desarrollar un sistema de gestión integral para la DRTC Puno. El proyecto const
 {
   "_id": "ObjectId",
   "placa": "V1A-123",
-  "empresaActualId": "ObjectId",
+  "resolucionId": "ObjectId",           // RELACIÓN DIRECTA CON RESOLUCIÓN
+  "empresaId": "ObjectId",              // DERIVADO: se obtiene de resolucion.empresaId
   "rutaId": "ObjectId",
   "categoria": "M3",
   "marca": "Mercedes-Benz",
@@ -158,8 +267,9 @@ Desarrollar un sistema de gestión integral para la DRTC Puno. El proyecto const
 {
   "_id": "ObjectId",
   "vehiculoId": "ObjectId",
-  "empresaId": "ObjectId",
-  "resolucionPadreId": "ObjectId",
+  "resolucionId": "ObjectId",           // RESOLUCIÓN ASOCIADA AL VEHÍCULO
+  "empresaId": "ObjectId",              // DERIVADO: se obtiene de resolucion.empresaId
+  "resolucionPadreId": "ObjectId",      // REFERENCIA A RESOLUCIÓN PADRE
   "nroTuc": "T-123456-2025",
   "fechaEmision": "Date",
   "estado": "VIGENTE" | "DADA_DE_BAJA" | "DESECHADA",

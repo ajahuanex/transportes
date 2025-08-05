@@ -1,0 +1,207 @@
+<div class="vehiculo-form-container">
+  <div class="form-header">
+    <h2>{{ isEditMode() ? 'Editar Vehículo' : 'Nuevo Vehículo' }}</h2>
+    <button type="button" class="btn btn-secondary" (click)="cancelar()">
+      <i class="fas fa-arrow-left"></i> Volver
+    </button>
+  </div>
+
+  <div class="loading-overlay" *ngIf="isLoading()">
+    <div class="spinner"></div>
+    <p>Cargando...</p>
+  </div>
+
+  <form [formGroup]="vehiculoForm" (ngSubmit)="guardarVehiculo()" class="vehiculo-form" *ngIf="!isLoading()">
+    
+    <div class="form-row">
+      <div class="form-group">
+        <label for="placa">Placa *</label>
+        <input 
+          type="text" 
+          id="placa" 
+          formControlName="placa" 
+          class="form-control"
+          [class.is-invalid]="esCampoInvalido('placa')"
+          placeholder="Ej: ABC-123"
+          (input)="formatearPlaca($event)"
+          maxlength="7"
+        >
+        <div class="invalid-feedback" *ngIf="esCampoInvalido('placa')">
+          {{ obtenerMensajeError('placa') }}
+        </div>
+      </div>
+
+      <div class="form-group">
+        <label for="marca">Marca *</label>
+        <input 
+          type="text" 
+          id="marca" 
+          formControlName="marca" 
+          class="form-control"
+          [class.is-invalid]="esCampoInvalido('marca')"
+          placeholder="Ej: Toyota"
+        >
+        <div class="invalid-feedback" *ngIf="esCampoInvalido('marca')">
+          {{ obtenerMensajeError('marca') }}
+        </div>
+      </div>
+    </div>
+
+    <div class="form-row">
+      <div class="form-group">
+        <label for="modelo">Modelo *</label>
+        <input 
+          type="text" 
+          id="modelo" 
+          formControlName="modelo" 
+          class="form-control"
+          [class.is-invalid]="esCampoInvalido('modelo')"
+          placeholder="Ej: Corolla"
+        >
+        <div class="invalid-feedback" *ngIf="esCampoInvalido('modelo')">
+          {{ obtenerMensajeError('modelo') }}
+        </div>
+      </div>
+
+      <div class="form-group">
+        <label for="anioFabricacion">Año de Fabricación *</label>
+        <input 
+          type="number" 
+          id="anioFabricacion" 
+          formControlName="anioFabricacion" 
+          class="form-control"
+          [class.is-invalid]="esCampoInvalido('anioFabricacion')"
+          placeholder="Ej: 2020"
+        >
+        <div class="invalid-feedback" *ngIf="esCampoInvalido('anioFabricacion')">
+          {{ obtenerMensajeError('anioFabricacion') }}
+        </div>
+      </div>
+    </div>
+
+    <div class="form-row">
+      <div class="form-group">
+        <label for="color">Color *</label>
+        <input 
+          type="text" 
+          id="color" 
+          formControlName="color" 
+          class="form-control"
+          [class.is-invalid]="esCampoInvalido('color')"
+          placeholder="Ej: Blanco"
+        >
+        <div class="invalid-feedback" *ngIf="esCampoInvalido('color')">
+          {{ obtenerMensajeError('color') }}
+        </div>
+      </div>
+
+      <div class="form-group">
+        <label for="categoria">Categoría *</label>
+        <select 
+          id="categoria" 
+          formControlName="categoria" 
+          class="form-control"
+          [class.is-invalid]="esCampoInvalido('categoria')"
+        >
+          <option value="">Seleccione una categoría</option>
+          <option value="M1">M1 - Vehículo de pasajeros hasta 8 asientos</option>
+          <option value="M2">M2 - Vehículo de pasajeros de 9 a 16 asientos</option>
+          <option value="M3">M3 - Vehículo de pasajeros más de 16 asientos</option>
+          <option value="N1">N1 - Vehículo de carga hasta 3.5 toneladas</option>
+          <option value="N2">N2 - Vehículo de carga de 3.5 a 12 toneladas</option>
+          <option value="N3">N3 - Vehículo de carga más de 12 toneladas</option>
+        </select>
+        <div class="invalid-feedback" *ngIf="esCampoInvalido('categoria')">
+          {{ obtenerMensajeError('categoria') }}
+        </div>
+      </div>
+    </div>
+
+    <div class="form-row">
+      <div class="form-group">
+        <label for="tipo">Tipo de Vehículo *</label>
+        <select 
+          id="tipo" 
+          formControlName="tipo" 
+          class="form-control"
+          [class.is-invalid]="esCampoInvalido('tipo')"
+        >
+          <option value="">Seleccione un tipo</option>
+          <option value="BUS">Bus</option>
+          <option value="MICROBUS">Microbús</option>
+          <option value="COMBIS">Combis</option>
+          <option value="CAMION">Camión</option>
+          <option value="CAMIONETA">Camioneta</option>
+          <option value="MOTOTAXI">Mototaxi</option>
+          <option value="TAXI">Taxi</option>
+          <option value="OTRO">Otro</option>
+        </select>
+        <div class="invalid-feedback" *ngIf="esCampoInvalido('tipo')">
+          {{ obtenerMensajeError('tipo') }}
+        </div>
+      </div>
+
+      <div class="form-group">
+        <label for="empresaId">Empresa *</label>
+        <select 
+          id="empresaId" 
+          formControlName="empresaId" 
+          class="form-control"
+          [class.is-invalid]="esCampoInvalido('empresaId')"
+        >
+          <option value="">Seleccione una empresa</option>
+          <option 
+            *ngFor="let empresa of currentEmpresas()" 
+            [value]="empresa.id"
+          >
+            {{ empresa.razonSocial }}
+          </option>
+        </select>
+        <div class="invalid-feedback" *ngIf="esCampoInvalido('empresaId')">
+          {{ obtenerMensajeError('empresaId') }}
+        </div>
+      </div>
+    </div>
+
+    <div class="form-row">
+      <div class="form-group">
+        <label for="estado">Estado *</label>
+        <select 
+          id="estado" 
+          formControlName="estado" 
+          class="form-control"
+          [class.is-invalid]="esCampoInvalido('estado')"
+        >
+          <option value="ACTIVO">Activo</option>
+          <option value="MANTENIMIENTO">En Mantenimiento</option>
+          <option value="SUSPENDIDO">Suspendido</option>
+          <option value="BAJA">Baja</option>
+        </select>
+        <div class="invalid-feedback" *ngIf="esCampoInvalido('estado')">
+          {{ obtenerMensajeError('estado') }}
+        </div>
+      </div>
+    </div>
+
+
+
+    <div class="form-actions">
+      <button 
+        type="button" 
+        class="btn btn-secondary" 
+        (click)="cancelar()"
+        [disabled]="isSaving()"
+      >
+        Cancelar
+      </button>
+      <button 
+        type="submit" 
+        class="btn btn-primary" 
+        [disabled]="vehiculoForm.invalid || isSaving()"
+      >
+        <span *ngIf="isSaving()" class="spinner-border spinner-border-sm me-2"></span>
+        {{ isSaving() ? 'Guardando...' : (isEditMode() ? 'Actualizar' : 'Crear') }}
+      </button>
+    </div>
+  </form>
+</div> 

@@ -1,0 +1,201 @@
+<div class="vehiculos-eliminados-container">
+  <div class="page-header">
+    <div class="header-content">
+      <h2>Vehículos Eliminados</h2>
+      <div class="header-actions">
+        <button type="button" class="btn btn-secondary" (click)="volver()">
+          <i class="fas fa-arrow-left"></i> Volver
+        </button>
+        <button type="button" class="btn btn-success" (click)="exportarDatos()">
+          <i class="fas fa-download"></i> Exportar
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <div class="filters-section">
+    <div class="filters-grid">
+      <div class="filter-group">
+        <label for="placa">Placa</label>
+        <input 
+          type="text" 
+          id="placa" 
+          [(ngModel)]="currentFiltros().placa"
+          (input)="actualizarFiltroPlaca($any($event.target).value)"
+          class="form-control"
+          placeholder="Buscar por placa..."
+        >
+      </div>
+
+      <div class="filter-group">
+        <label for="marca">Marca</label>
+        <input 
+          type="text" 
+          id="marca" 
+          [(ngModel)]="currentFiltros().marca"
+          (input)="actualizarFiltroMarca($any($event.target).value)"
+          class="form-control"
+          placeholder="Buscar por marca..."
+        >
+      </div>
+
+      <div class="filter-group">
+        <label for="modelo">Modelo</label>
+        <input 
+          type="text" 
+          id="modelo" 
+          [(ngModel)]="currentFiltros().modelo"
+          (input)="actualizarFiltroModelo($any($event.target).value)"
+          class="form-control"
+          placeholder="Buscar por modelo..."
+        >
+      </div>
+
+      <div class="filter-group">
+        <label for="empresa">Empresa</label>
+        <input 
+          type="text" 
+          id="empresa" 
+          [(ngModel)]="currentFiltros().empresa"
+          (input)="actualizarFiltroEmpresa($any($event.target).value)"
+          class="form-control"
+          placeholder="Buscar por empresa..."
+        >
+      </div>
+    </div>
+
+    <div class="filter-actions">
+      <button type="button" class="btn btn-primary" (click)="aplicarFiltros()">
+        <i class="fas fa-search"></i> Buscar
+      </button>
+      <button type="button" class="btn btn-outline-secondary" (click)="limpiarFiltros()">
+        <i class="fas fa-times"></i> Limpiar
+      </button>
+    </div>
+  </div>
+
+  <div class="loading-overlay" *ngIf="isLoading()">
+    <div class="spinner"></div>
+    <p>Cargando vehículos eliminados...</p>
+  </div>
+
+  <div class="content-section" *ngIf="!isLoading()">
+    <div class="results-info">
+      <p>Mostrando {{ currentVehiculosEliminados().length }} de {{ currentTotalVehiculos() }} vehículos eliminados</p>
+    </div>
+
+    <div class="table-container">
+      <table class="data-table">
+        <thead>
+          <tr>
+            <th>Placa</th>
+            <th>Marca</th>
+            <th>Modelo</th>
+            <th>Año</th>
+            <th>Tipo</th>
+            <th>Empresa</th>
+            <th>Eliminado</th>
+            <th>Acciones</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr *ngFor="let vehiculo of currentVehiculosEliminados()" class="table-row">
+            <td class="placa-cell">
+              <strong>{{ vehiculo.placa }}</strong>
+            </td>
+            <td>{{ vehiculo.marca }}</td>
+            <td>{{ vehiculo.modelo }}</td>
+            <td>{{ vehiculo.anioFabricacion }}</td>
+            <td>
+              <span class="badge badge-info">
+                {{ obtenerTipoVehiculoTexto(vehiculo.tipo) }}
+              </span>
+            </td>
+            <td>{{ vehiculo.empresaNombre || vehiculo.empresaId }}</td>
+            <td class="fecha-cell">
+              {{ formatearFecha(vehiculo.fechaEliminacion) }}
+            </td>
+            <td class="actions-cell">
+              <div class="action-buttons">
+                <button 
+                  type="button" 
+                  class="btn btn-sm btn-info" 
+                  (click)="verVehiculo(vehiculo.id)"
+                  title="Ver detalles"
+                >
+                  <i class="fas fa-eye"></i>
+                </button>
+                <button 
+                  type="button" 
+                  class="btn btn-sm btn-success" 
+                  (click)="restaurarVehiculo(vehiculo.id)"
+                  title="Restaurar vehículo"
+                >
+                  <i class="fas fa-undo"></i>
+                </button>
+                <button 
+                  type="button" 
+                  class="btn btn-sm btn-danger" 
+                  (click)="eliminarPermanentemente(vehiculo.id)"
+                  title="Eliminar permanentemente"
+                >
+                  <i class="fas fa-trash-alt"></i>
+                </button>
+              </div>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <div class="pagination-section" *ngIf="currentTotalPaginas() > 1">
+      <div class="pagination-info">
+        <span>Página {{ currentPaginaActual() }} de {{ currentTotalPaginas() }}</span>
+      </div>
+      
+      <div class="pagination-controls">
+        <button 
+          type="button" 
+          class="btn btn-outline-primary" 
+          [disabled]="currentPaginaActual() === 1"
+          (click)="cambiarPagina(currentPaginaActual() - 1)"
+        >
+          <i class="fas fa-chevron-left"></i> Anterior
+        </button>
+        
+        <div class="page-numbers">
+          <button 
+            *ngFor="let pagina of getPageNumbers()" 
+            type="button" 
+            class="btn"
+            [class.btn-primary]="pagina === currentPaginaActual()"
+            [class.btn-outline-primary]="pagina !== currentPaginaActual()"
+            (click)="cambiarPagina(pagina)"
+          >
+            {{ pagina }}
+          </button>
+        </div>
+        
+        <button 
+          type="button" 
+          class="btn btn-outline-primary" 
+          [disabled]="currentPaginaActual() === currentTotalPaginas()"
+          (click)="cambiarPagina(currentPaginaActual() + 1)"
+        >
+          Siguiente <i class="fas fa-chevron-right"></i>
+        </button>
+      </div>
+    </div>
+
+    <div class="empty-state" *ngIf="currentVehiculosEliminados().length === 0 && !isLoading()">
+      <div class="empty-content">
+        <i class="fas fa-trash-alt"></i>
+        <h3>No hay vehículos eliminados</h3>
+        <p>No se encontraron vehículos eliminados con los filtros aplicados.</p>
+        <button type="button" class="btn btn-primary" (click)="limpiarFiltros()">
+          Limpiar filtros
+        </button>
+      </div>
+    </div>
+  </div>
+</div> 

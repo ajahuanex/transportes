@@ -1,0 +1,285 @@
+<div class="conductor-form-container">
+  <div class="form-header">
+    <h2>{{ isEditMode() ? 'Editar Conductor' : 'Nuevo Conductor' }}</h2>
+    <button type="button" class="btn btn-secondary" (click)="cancelar()">
+      <i class="fas fa-arrow-left"></i> Volver
+    </button>
+  </div>
+
+  <div class="loading-overlay" *ngIf="isLoading()">
+    <div class="spinner"></div>
+    <p>Cargando...</p>
+  </div>
+
+  <form [formGroup]="conductorForm" (ngSubmit)="guardarConductor()" class="conductor-form" *ngIf="!isLoading()">
+    
+    <div class="form-section">
+      <h3>Información Personal</h3>
+      
+      <div class="form-row">
+        <div class="form-group">
+          <label for="dni">DNI *</label>
+          <input 
+            type="text" 
+            id="dni" 
+            formControlName="dni" 
+            class="form-control"
+            [class.is-invalid]="esCampoInvalido('dni')"
+            placeholder="Ej: 12345678"
+            maxlength="8"
+          >
+          <div class="invalid-feedback" *ngIf="esCampoInvalido('dni')">
+            {{ obtenerMensajeError('dni') }}
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label for="fechaNacimiento">Fecha de Nacimiento *</label>
+          <input 
+            type="date" 
+            id="fechaNacimiento" 
+            formControlName="fechaNacimiento" 
+            class="form-control"
+            [class.is-invalid]="esCampoInvalido('fechaNacimiento')"
+          >
+          <div class="invalid-feedback" *ngIf="esCampoInvalido('fechaNacimiento')">
+            {{ obtenerMensajeError('fechaNacimiento') }}
+          </div>
+        </div>
+      </div>
+
+      <div class="form-row">
+        <div class="form-group">
+          <label for="nombres">Nombres *</label>
+          <input 
+            type="text" 
+            id="nombres" 
+            formControlName="nombres" 
+            class="form-control"
+            [class.is-invalid]="esCampoInvalido('nombres')"
+            placeholder="Ej: Juan Carlos"
+          >
+          <div class="invalid-feedback" *ngIf="esCampoInvalido('nombres')">
+            {{ obtenerMensajeError('nombres') }}
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label for="apellidos">Apellidos *</label>
+          <input 
+            type="text" 
+            id="apellidos" 
+            formControlName="apellidos" 
+            class="form-control"
+            [class.is-invalid]="esCampoInvalido('apellidos')"
+            placeholder="Ej: Pérez García"
+          >
+          <div class="invalid-feedback" *ngIf="esCampoInvalido('apellidos')">
+            {{ obtenerMensajeError('apellidos') }}
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="form-section">
+      <h3>Información de Licencia</h3>
+      
+      <div class="form-row">
+        <div class="form-group">
+          <label for="licencia">Número de Licencia *</label>
+          <input 
+            type="text" 
+            id="licencia" 
+            formControlName="licencia" 
+            class="form-control"
+            [class.is-invalid]="esCampoInvalido('licencia')"
+            placeholder="Ej: A12345678"
+            maxlength="9"
+          >
+          <div class="invalid-feedback" *ngIf="esCampoInvalido('licencia')">
+            {{ obtenerMensajeError('licencia') }}
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label for="categoriaLicencia">Categoría de Licencia *</label>
+          <select 
+            id="categoriaLicencia" 
+            formControlName="categoriaLicencia" 
+            class="form-control"
+            [class.is-invalid]="esCampoInvalido('categoriaLicencia')"
+          >
+            <option value="">Seleccione una categoría</option>
+            <option value="A1">A1 - Motocicletas</option>
+            <option value="A2">A2 - Motocicletas y Triciclos</option>
+            <option value="A3">A3 - Motocicletas, Triciclos y Cuatrimotos</option>
+            <option value="B1">B1 - Vehículos menores</option>
+            <option value="B2">B2 - Vehículos particulares</option>
+            <option value="C1">C1 - Vehículos de carga hasta 3.5 ton</option>
+            <option value="C2">C2 - Vehículos de carga hasta 8 ton</option>
+            <option value="C3">C3 - Vehículos de carga hasta 15 ton</option>
+            <option value="C4">C4 - Vehículos de carga hasta 25 ton</option>
+            <option value="C5">C5 - Vehículos de carga sin límite</option>
+            <option value="D1">D1 - Vehículos de pasajeros hasta 15 personas</option>
+            <option value="D2">D2 - Vehículos de pasajeros hasta 25 personas</option>
+            <option value="D3">D3 - Vehículos de pasajeros hasta 35 personas</option>
+            <option value="D4">D4 - Vehículos de pasajeros sin límite</option>
+            <option value="E1">E1 - Remolques hasta 3.5 ton</option>
+            <option value="E2">E2 - Remolques hasta 8 ton</option>
+            <option value="E3">E3 - Remolques sin límite</option>
+          </select>
+          <div class="invalid-feedback" *ngIf="esCampoInvalido('categoriaLicencia')">
+            {{ obtenerMensajeError('categoriaLicencia') }}
+          </div>
+        </div>
+      </div>
+
+      <div class="form-row">
+        <div class="form-group">
+          <label for="fechaVencimientoLicencia">Fecha de Vencimiento de Licencia *</label>
+          <input 
+            type="date" 
+            id="fechaVencimientoLicencia" 
+            formControlName="fechaVencimientoLicencia" 
+            class="form-control"
+            [class.is-invalid]="esCampoInvalido('fechaVencimientoLicencia')"
+          >
+          <div class="invalid-feedback" *ngIf="esCampoInvalido('fechaVencimientoLicencia')">
+            {{ obtenerMensajeError('fechaVencimientoLicencia') }}
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="form-section">
+      <h3>Información de Contacto</h3>
+      
+      <div class="form-row">
+        <div class="form-group">
+          <label for="telefono">Teléfono *</label>
+          <input 
+            type="tel" 
+            id="telefono" 
+            formControlName="telefono" 
+            class="form-control"
+            [class.is-invalid]="esCampoInvalido('telefono')"
+            placeholder="Ej: 987654321"
+            maxlength="9"
+          >
+          <div class="invalid-feedback" *ngIf="esCampoInvalido('telefono')">
+            {{ obtenerMensajeError('telefono') }}
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label for="email">Email</label>
+          <input 
+            type="email" 
+            id="email" 
+            formControlName="email" 
+            class="form-control"
+            [class.is-invalid]="esCampoInvalido('email')"
+            placeholder="Ej: juan.perez@email.com"
+          >
+          <div class="invalid-feedback" *ngIf="esCampoInvalido('email')">
+            {{ obtenerMensajeError('email') }}
+          </div>
+        </div>
+      </div>
+
+      <div class="form-group">
+        <label for="direccion">Dirección *</label>
+        <textarea 
+          id="direccion" 
+          formControlName="direccion" 
+          class="form-control"
+          [class.is-invalid]="esCampoInvalido('direccion')"
+          placeholder="Dirección completa..."
+          rows="3"
+        ></textarea>
+        <div class="invalid-feedback" *ngIf="esCampoInvalido('direccion')">
+          {{ obtenerMensajeError('direccion') }}
+        </div>
+      </div>
+    </div>
+
+    <div class="form-section">
+      <h3>Información Laboral</h3>
+      
+      <div class="form-row">
+        <div class="form-group">
+          <label for="empresaId">Empresa *</label>
+          <select 
+            id="empresaId" 
+            formControlName="empresaId" 
+            class="form-control"
+            [class.is-invalid]="esCampoInvalido('empresaId')"
+          >
+            <option value="">Seleccione una empresa</option>
+            <option 
+              *ngFor="let empresa of currentEmpresas()" 
+              [value]="empresa.id"
+            >
+              {{ empresa.razonSocial }}
+            </option>
+          </select>
+          <div class="invalid-feedback" *ngIf="esCampoInvalido('empresaId')">
+            {{ obtenerMensajeError('empresaId') }}
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label for="estado">Estado *</label>
+          <select 
+            id="estado" 
+            formControlName="estado" 
+            class="form-control"
+            [class.is-invalid]="esCampoInvalido('estado')"
+          >
+            <option value="ACTIVO">Activo</option>
+            <option value="INACTIVO">Inactivo</option>
+            <option value="SUSPENDIDO">Suspendido</option>
+            <option value="VACACIONES">En Vacaciones</option>
+          </select>
+          <div class="invalid-feedback" *ngIf="esCampoInvalido('estado')">
+            {{ obtenerMensajeError('estado') }}
+          </div>
+        </div>
+      </div>
+
+      <div class="form-group">
+        <label for="observaciones">Observaciones</label>
+        <textarea 
+          id="observaciones" 
+          formControlName="observaciones" 
+          class="form-control"
+          [class.is-invalid]="esCampoInvalido('observaciones')"
+          placeholder="Observaciones adicionales..."
+          rows="4"
+        ></textarea>
+        <div class="invalid-feedback" *ngIf="esCampoInvalido('observaciones')">
+          {{ obtenerMensajeError('observaciones') }}
+        </div>
+      </div>
+    </div>
+
+    <div class="form-actions">
+      <button 
+        type="button" 
+        class="btn btn-secondary" 
+        (click)="cancelar()"
+        [disabled]="isSaving()"
+      >
+        Cancelar
+      </button>
+      <button 
+        type="submit" 
+        class="btn btn-primary" 
+        [disabled]="conductorForm.invalid || isSaving()"
+      >
+        <span *ngIf="isSaving()" class="spinner-border spinner-border-sm me-2"></span>
+        {{ isSaving() ? 'Guardando...' : (isEditMode() ? 'Actualizar' : 'Crear') }}
+      </button>
+    </div>
+  </form>
+</div> 

@@ -1,0 +1,320 @@
+<div class="tucs-container">
+  <!-- Header -->
+  <div class="page-header">
+    <div class="header-content">
+      <h1><i class="fas fa-id-card"></i> Gestión de TUCs</h1>
+      <p>Administra las Tarjetas Únicas de Circulación del DRTC Puno</p>
+    </div>
+    <div class="header-actions">
+      <button class="btn btn-outline-secondary" (click)="verEliminados()">
+        <i class="fas fa-trash"></i> Eliminados
+      </button>
+      <button class="btn btn-primary" (click)="nuevoTUC()">
+        <i class="fas fa-plus"></i> Nuevo TUC
+      </button>
+    </div>
+  </div>
+
+  <!-- Estadísticas -->
+  @if (estadisticas()) {
+    <div class="stats-section">
+      <div class="stats-grid">
+        <div class="stat-card">
+          <div class="stat-icon">
+            <i class="fas fa-id-card"></i>
+          </div>
+          <div class="stat-content">
+            <h3>{{ estadisticas().total }}</h3>
+            <p>Total</p>
+          </div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-icon">
+            <i class="fas fa-check-circle"></i>
+          </div>
+          <div class="stat-content">
+            <h3>{{ estadisticas().vigentes }}</h3>
+            <p>Vigentes</p>
+          </div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-icon">
+            <i class="fas fa-clock"></i>
+          </div>
+          <div class="stat-content">
+            <h3>{{ estadisticas().vencidos }}</h3>
+            <p>Vencidos</p>
+          </div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-icon">
+            <i class="fas fa-ban"></i>
+          </div>
+          <div class="stat-content">
+            <h3>{{ estadisticas().dadosDeBaja }}</h3>
+            <p>Dados de Baja</p>
+          </div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-icon">
+            <i class="fas fa-times-circle"></i>
+          </div>
+          <div class="stat-content">
+            <h3>{{ estadisticas().desechados }}</h3>
+            <p>Desechados</p>
+          </div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-icon">
+            <i class="fas fa-pause-circle"></i>
+          </div>
+          <div class="stat-content">
+            <h3>{{ estadisticas().suspendidos }}</h3>
+            <p>Suspendidos</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  }
+
+  <!-- Filtros -->
+  <div class="filters-section">
+    <div class="filters-grid">
+      <div class="filter-group">
+        <label for="nroTuc">Nro. TUC</label>
+        <input 
+          type="text" 
+          id="nroTuc" 
+          [(ngModel)]="currentFiltros().nroTuc"
+          (input)="actualizarFiltroNroTUC($any($event.target).value)"
+          class="form-control"
+          placeholder="Buscar por número..."
+        >
+      </div>
+      <div class="filter-group">
+        <label for="vehiculo">Vehículo</label>
+        <input 
+          type="text" 
+          id="vehiculo" 
+          [(ngModel)]="currentFiltros().vehiculo"
+          (input)="actualizarFiltroVehiculo($any($event.target).value)"
+          class="form-control"
+          placeholder="Buscar por placa, marca, modelo..."
+        >
+      </div>
+      <div class="filter-group">
+        <label for="empresa">Empresa</label>
+        <input 
+          type="text" 
+          id="empresa" 
+          [(ngModel)]="currentFiltros().empresa"
+          (input)="actualizarFiltroEmpresa($any($event.target).value)"
+          class="form-control"
+          placeholder="Buscar por empresa..."
+        >
+      </div>
+      <div class="filter-group">
+        <label for="estado">Estado</label>
+        <select 
+          id="estado" 
+          [(ngModel)]="currentFiltros().estado"
+          (change)="actualizarFiltroEstado($any($event.target).value)"
+          class="form-control"
+        >
+          <option value="">Todos los estados</option>
+          <option value="VIGENTE">Vigente</option>
+          <option value="VENCIDA">Vencido</option>
+          <option value="DADA_DE_BAJA">Dado de Baja</option>
+          <option value="DESECHADA">Desechado</option>
+          <option value="SUSPENDIDA">Suspendido</option>
+        </select>
+      </div>
+      <div class="filter-group">
+        <label for="fechaDesde">Fecha Desde</label>
+        <input 
+          type="date" 
+          id="fechaDesde" 
+          [(ngModel)]="currentFiltros().fechaDesde"
+          (change)="actualizarFiltroFechaDesde($any($event.target).value)"
+          class="form-control"
+        >
+      </div>
+      <div class="filter-group">
+        <label for="fechaHasta">Fecha Hasta</label>
+        <input 
+          type="date" 
+          id="fechaHasta" 
+          [(ngModel)]="currentFiltros().fechaHasta"
+          (change)="actualizarFiltroFechaHasta($any($event.target).value)"
+          class="form-control"
+        >
+      </div>
+    </div>
+    <div class="filter-actions">
+      <button type="button" class="btn btn-primary" (click)="aplicarFiltros()">
+        <i class="fas fa-search"></i> Buscar
+      </button>
+      <button type="button" class="btn btn-outline-secondary" (click)="limpiarFiltros()">
+        <i class="fas fa-times"></i> Limpiar
+      </button>
+      <button type="button" class="btn btn-success" (click)="exportarTUCs()">
+        <i class="fas fa-download"></i> Exportar
+      </button>
+    </div>
+  </div>
+
+  <!-- Loading Overlay -->
+  @if (isLoading()) {
+    <div class="loading-overlay">
+      <div class="spinner"></div>
+      <p>Cargando TUCs...</p>
+    </div>
+  }
+
+  <!-- Error Message -->
+  @if (hasError()) {
+    <div class="error-message">
+      <i class="fas fa-exclamation-triangle"></i>
+      <span>{{ hasError() }}</span>
+    </div>
+  }
+
+  <!-- Content Section -->
+  @if (!isLoading() && !hasError()) {
+    <div class="content-section">
+      <!-- Results Info -->
+      <div class="results-info">
+        <p>Mostrando {{ currentTUCs().length }} de {{ currentTotalTUCs() }} TUCs</p>
+      </div>
+
+      <!-- Data Table -->
+      <div class="table-container">
+        <table class="data-table">
+          <thead>
+            <tr>
+              <th>Nro. TUC</th>
+              <th>Vehículo</th>
+              <th>Empresa</th>
+              <th>Resolución</th>
+              <th>Estado</th>
+              <th>Fecha Emisión</th>
+              <th>Fecha Vencimiento</th>
+              <th>QR</th>
+              <th>Acciones</th>
+            </tr>
+          </thead>
+          <tbody>
+            @for (tuc of currentTUCs(); track tuc.id) {
+              <tr>
+                <td>
+                  <strong>{{ tuc.nroTuc }}</strong>
+                </td>
+                <td>
+                  <div class="vehiculo-info">
+                    <div><strong>{{ tuc.vehiculoPlaca }}</strong></div>
+                    <div>{{ tuc.vehiculoMarca }} {{ tuc.vehiculoModelo }}</div>
+                  </div>
+                </td>
+                <td>{{ tuc.empresaNombre }}</td>
+                <td>
+                  <span class="badge badge-info">
+                    {{ tuc.resolucionNumero }}
+                  </span>
+                </td>
+                <td>
+                  <span class="badge" [class]="obtenerClaseEstado(tuc.estado)">
+                    {{ obtenerEstadoTexto(tuc.estado) }}
+                  </span>
+                </td>
+                <td>{{ formatearFecha(tuc.fechaEmision) }}</td>
+                <td>{{ formatearFecha(tuc.fechaVencimiento) }}</td>
+                <td>
+                  <div class="qr-actions">
+                    <button 
+                      class="btn btn-sm btn-outline-info" 
+                      (click)="copiarQR(tuc.qrVerificationUrl || '')"
+                      title="Copiar URL QR"
+                    >
+                      <i class="fas fa-qrcode"></i>
+                    </button>
+                    <button 
+                      class="btn btn-sm btn-outline-primary" 
+                      (click)="verificarTUC(tuc.nroTuc)"
+                      title="Verificar TUC"
+                    >
+                      <i class="fas fa-search"></i>
+                    </button>
+                  </div>
+                </td>
+                <td>
+                  <div class="action-buttons">
+                    <button class="btn btn-sm btn-outline-primary" (click)="verTUC(tuc.id)" title="Ver detalles">
+                      <i class="fas fa-eye"></i>
+                    </button>
+                    <button class="btn btn-sm btn-outline-warning" (click)="editarTUC(tuc.id)" title="Editar">
+                      <i class="fas fa-edit"></i>
+                    </button>
+                    <button class="btn btn-sm btn-outline-danger" (click)="eliminarTUC(tuc.id)" title="Eliminar">
+                      <i class="fas fa-trash"></i>
+                    </button>
+                  </div>
+                </td>
+              </tr>
+            }
+          </tbody>
+        </table>
+      </div>
+
+      <!-- Pagination -->
+      @if (currentTotalPaginas() > 1) {
+        <div class="pagination-section">
+          <div class="pagination-info">
+            <p>Página {{ currentPaginaActual() }} de {{ currentTotalPaginas() }}</p>
+          </div>
+          <div class="pagination-controls">
+            <button 
+              class="btn btn-outline-primary" 
+              [disabled]="currentPaginaActual() === 1"
+              (click)="cambiarPagina(currentPaginaActual() - 1)"
+            >
+              <i class="fas fa-chevron-left"></i> Anterior
+            </button>
+            
+            <div class="page-numbers">
+              @for (page of getPageNumbers(); track page) {
+                <button 
+                  class="btn" 
+                  [class.btn-primary]="page === currentPaginaActual()"
+                  [class.btn-outline-primary]="page !== currentPaginaActual()"
+                  (click)="cambiarPagina(page)"
+                >
+                  {{ page }}
+                </button>
+              }
+            </div>
+            
+            <button 
+              class="btn btn-outline-primary" 
+              [disabled]="currentPaginaActual() === currentTotalPaginas()"
+              (click)="cambiarPagina(currentPaginaActual() + 1)"
+            >
+              Siguiente <i class="fas fa-chevron-right"></i>
+            </button>
+          </div>
+        </div>
+      }
+    </div>
+  }
+
+  <!-- Empty State -->
+  @if (!isLoading() && !hasError() && currentTUCs().length === 0) {
+    <div class="empty-state">
+      <i class="fas fa-id-card"></i>
+      <h3>No se encontraron TUCs</h3>
+      <p>No hay TUCs que coincidan con los filtros aplicados.</p>
+      <button class="btn btn-primary" (click)="limpiarFiltros()">
+        <i class="fas fa-times"></i> Limpiar Filtros
+      </button>
+    </div>
+  }
+</div> 

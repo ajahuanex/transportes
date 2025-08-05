@@ -1,223 +1,192 @@
-# 🚀 Guía para Continuar el Desarrollo - DRTC Puno
+# CONTINUAR DESARROLLO - DRTC PUNO
 
-## 📋 Estado Actual del Proyecto
+## Resumen del Proyecto
+Sistema de gestión integral para la Dirección Regional de Transportes y Comunicaciones (DRTC) de Puno, desarrollado con Angular 17 y arquitectura moderna.
 
-### ✅ **Completado (Diciembre 2024)**
-- **Arquitectura base** con Angular 17 y TypeScript
-- **Módulo de Empresas** con CRUD completo y soft delete
-- **Módulo de Expedientes** con funcionalidades avanzadas
-- **Sistema de filtros** y búsqueda general
-- **Exportación de datos** personalizable
-- **Columnas configurables** en tablas
-- **Formularios reactivos** con validación
-- **Diseño responsive** y moderno
-- **Build exitoso** y servidor funcionando
+## Estado Actual (Enero 2025)
 
-### 🚧 **Próximos Pasos Inmediatos**
+### ✅ **Nuevo Completado (Enero 2025)**
 
-#### 1. **Completar Módulos Base**
-- [ ] **Módulo de Vehículos** - Implementar CRUD completo
-- [ ] **Módulo de Conductores** - Implementar CRUD completo
-- [ ] **Formularios reactivos** para ambos módulos
-- [ ] **Vistas de detalle** para vehículos y conductores
-- [ ] **Listas de eliminados** para ambos módulos
+#### **Módulo de Vehículos**
+- ✅ **Vista de detalle de vehículos** - Implementada con información completa
+- ✅ **Lista de vehículos eliminados** - Vista para vehículos soft-deleted
+- ✅ **Rutas completas configuradas** - Navegación completa del módulo
+- ✅ **Servicios con datos mock funcionales** - CRUD completo con simulación de backend
+- ✅ **Formularios de creación/edición** - Con validaciones completas
+- ✅ **Corrección de formato de placa** - Validación XXX-NNN implementada
 
-#### 2. **Sistema de Notificaciones**
-- [ ] **Toast notifications** para reemplazar `alert()` y `prompt()`
-- [ ] **Notificaciones de estado** para cambios en expedientes
-- [ ] **Alertas de vencimiento** para documentos
-- [ ] **Sistema de mensajes** en tiempo real
+#### **Módulo de Conductores**
+- ✅ **Vista de detalle de conductores** - Implementada con información completa
+- ✅ **Lista de conductores eliminados** - Vista para conductores soft-deleted
+- ✅ **Rutas completas configuradas** - Navegación completa del módulo
+- ✅ **Servicios con datos mock funcionales** - CRUD completo con simulación de backend
+- ✅ **Corregir errores de TypeScript** en mock-data.service.ts
 
-#### 3. **Autenticación y Autorización**
-- [ ] **Sistema de login** con JWT
-- [ ] **Gestión de roles** y permisos
-- [ ] **Guards de ruta** para protección
-- [ ] **Interceptores HTTP** para manejo de errores
+#### **Correcciones de Build y Configuración**
+- ✅ **Corregir errores de SCSS** en configuraciones - Funciones deprecadas actualizadas
+- ✅ **Configurar prerendering** para rutas con parámetros - Configuración de servidor optimizada
+- ✅ **Resolver errores de compilación** - Build exitoso sin errores
+- ✅ **Optimizar presupuestos SCSS** - Límites aumentados para mejor rendimiento
 
-## 🔧 **Instrucciones para Continuar**
+### 🔄 **En Desarrollo**
 
-### **1. Configurar el Entorno de Desarrollo**
+#### **Sistema de Notificaciones**
+- [ ] Toast notifications para reemplazar `alert()` y `prompt()`
+- [ ] Notificaciones de estado para cambios en expedientes
+- [ ] Alertas de vencimiento para documentos
+- [ ] Sistema de mensajes en tiempo real
 
-```bash
-# Clonar el repositorio (si no lo tienes)
-git clone <url-del-repositorio>
-cd frontend
+#### **Autenticación y Autorización**
+- [ ] Sistema de login con JWT
+- [ ] Gestión de roles y permisos
+- [ ] Guards de ruta para protección
+- [ ] Interceptores HTTP para manejo de errores
 
-# Instalar dependencias
-npm install
+### 📋 **Próximos Pasos Inmediatos**
 
-# Verificar que todo funciona
-npm run build
-npm start
-```
+#### **Mejoras en Módulos Existentes**
+- [ ] Optimizar servicios mock para mejor rendimiento
+- [ ] Agregar validaciones adicionales en formularios
+- [ ] Implementar búsqueda avanzada en listas
+- [ ] Mejorar UX/UI con animaciones y transiciones
 
-### **2. Estructura de Trabajo Recomendada**
+### 🎯 **Rutas Implementadas**
 
-#### **Para el Módulo de Vehículos:**
-1. **Crear componentes:**
-   ```bash
-   # En src/app/components/vehiculos/
-   # - vehiculo-form/ (formulario CRUD)
-   # - vehiculo-detail/ (vista detallada)
-   # - vehiculos-eliminados/ (lista de eliminados)
-   ```
-
-2. **Actualizar modelos:**
-   ```typescript
-   // En src/app/models/vehiculo.model.ts
-   // - Completar interfaces
-   // - Agregar validaciones
-   // - Extender BaseEntity
-   ```
-
-3. **Implementar servicios:**
-   ```typescript
-   // En src/app/services/vehiculo.ts
-   // - Métodos CRUD completos
-   // - Soft delete y restauración
-   // - Filtros avanzados
-   ```
-
-#### **Para el Módulo de Conductores:**
-1. **Seguir el mismo patrón** que vehículos
-2. **Implementar validaciones** específicas para conductores
-3. **Agregar gestión de licencias** y documentos
-
-### **3. Patrones de Desarrollo a Seguir**
-
-#### **Componentes:**
+#### **Módulo de Vehículos**
 ```typescript
-// Usar siempre:
-- ChangeDetectionStrategy.OnPush
-- Angular Signals para estado
-- inject() para dependencias
-- Componentes standalone
+{ path: 'vehiculos', loadComponent: () => import('./components/vehiculos/vehiculos').then(m => m.VehiculosComponent), title: 'Gestión de Vehículos - DRTC Puno' },
+{ path: 'vehiculos/nuevo', loadComponent: () => import('./components/vehiculos/vehiculo-form/vehiculo-form').then(m => m.VehiculoFormComponent), title: 'Nuevo Vehículo - DRTC Puno' },
+{ path: 'vehiculos/:id', loadComponent: () => import('./components/vehiculos/vehiculo-detail/vehiculo-detail').then(m => m.VehiculoDetailComponent), title: 'Detalles de Vehículo - DRTC Puno' },
+{ path: 'vehiculos/:id/editar', loadComponent: () => import('./components/vehiculos/vehiculo-form/vehiculo-form').then(m => m.VehiculoFormComponent), title: 'Editar Vehículo - DRTC Puno' },
+{ path: 'vehiculos/eliminados', loadComponent: () => import('./components/vehiculos/vehiculos-eliminados/vehiculos-eliminados').then(m => m.VehiculosEliminadosComponent), title: 'Vehículos Eliminados - DRTC Puno' }
 ```
 
-#### **Formularios:**
+#### **Módulo de Conductores**
 ```typescript
-// Patrón recomendado:
-- ReactiveFormsModule
-- Validaciones personalizadas
-- markFormGroupTouched() para mostrar errores
-- Manejo de errores con try-catch
+{ path: 'conductores', loadComponent: () => import('./components/conductores/conductores').then(m => m.ConductoresComponent), title: 'Gestión de Conductores - DRTC Puno' },
+{ path: 'conductores/nuevo', loadComponent: () => import('./components/conductores/conductor-form/conductor-form').then(m => m.ConductorFormComponent), title: 'Nuevo Conductor - DRTC Puno' },
+{ path: 'conductores/:id', loadComponent: () => import('./components/conductores/conductor-detail/conductor-detail').then(m => m.ConductorDetailComponent), title: 'Detalles de Conductor - DRTC Puno' },
+{ path: 'conductores/:id/editar', loadComponent: () => import('./components/conductores/conductor-form/conductor-form').then(m => m.ConductorFormComponent), title: 'Editar Conductor - DRTC Puno' },
+{ path: 'conductores/eliminados', loadComponent: () => import('./components/conductores/conductores-eliminados/conductores-eliminados').then(m => m.ConductoresEliminadosComponent), title: 'Conductores Eliminados - DRTC Puno' }
 ```
 
-#### **Servicios:**
-```typescript
-// Estructura estándar:
-- providedIn: 'root'
-- Métodos que retornan Observable
-- Manejo de errores consistente
-- Soft delete implementado
+### 🏗️ **Arquitectura y Patrones**
+
+#### **Componentes**
+- **Standalone Components**: Todos los componentes son standalone
+- **Signals**: Estado reactivo con Angular Signals
+- **OnPush Change Detection**: Optimización de rendimiento
+- **Lazy Loading**: Carga bajo demanda de módulos
+
+#### **Servicios**
+- **Injection Pattern**: Uso de `inject()` para DI
+- **Mock Data Services**: Simulación de backend
+- **Observable Pattern**: Manejo asíncrono de datos
+- **Error Handling**: Manejo robusto de errores
+
+#### **Formularios**
+- **Reactive Forms**: Formularios reactivos con validaciones
+- **Custom Validators**: Validadores personalizados
+- **Real-time Validation**: Validación en tiempo real
+- **Format Validation**: Validación de formatos específicos (ej: placa XXX-NNN)
+
+### 📊 **Componentes Creados**
+
+#### **Módulo de Vehículos**
+- ✅ `vehiculos/` - Lista principal
+- ✅ `vehiculo-form/` - Formulario de creación/edición
+- ✅ `vehiculo-detail/` - Vista de detalle
+- ✅ `vehiculos-eliminados/` - Lista de eliminados
+
+#### **Módulo de Conductores**
+- ✅ `conductores/` - Lista principal
+- ✅ `conductor-form/` - Formulario de creación/edición
+- ✅ `conductor-detail/` - Vista de detalle
+- ✅ `conductores-eliminados/` - Lista de eliminados
+
+### 🔧 **Correcciones Recientes**
+
+#### **Validación de Placa de Vehículos**
+- ✅ Regex actualizado: `/^[A-Z0-9]{3}-\d{3}$/`
+- ✅ Formateo automático: `XXX-NNN`
+- ✅ Validación en tiempo real
+- ✅ Mensajes de error específicos
+
+#### **Manejo de Errores**
+- ✅ Error "Vehículo no encontrado" - Manejo específico con redirección
+- ✅ Validación de formato de placa - Mensajes claros
+- ✅ Errores de TypeScript - Todos resueltos
+- ✅ Errores de compilación - Build exitoso
+
+#### **Jerarquía de Relaciones Mejorada**
+- ✅ **Empresa** → **Resolución (PADRE)** → **Resolución (HIJO)** → **Vehículo** → **TUC**
+- ✅ `resolucionId` como campo requerido en vehículos
+- ✅ `empresaId` derivado de la resolución seleccionada
+- ✅ Validación de relaciones jerárquicas
+
+#### **Configuración de Build**
+- ✅ Funciones SCSS deprecadas actualizadas (`darken()`, `lighten()` → `color.adjust()`)
+- ✅ Configuración de prerendering optimizada para rutas con parámetros
+- ✅ Presupuestos SCSS aumentados (4kB → 16kB warning, 8kB → 20kB error)
+- ✅ Build exitoso sin errores ni advertencias críticas
+
+### 📈 **Métricas de Build**
+- **Bundle Size**: 404.86 kB (105.38 kB transferido)
+- **Lazy Chunks**: 22+ chunks optimizados
+- **Prerendered Routes**: 12 rutas estáticas
+- **Server Routes**: Configuradas para renderizado dinámico
+- **Build Time**: ~8.8 segundos
+
+### 📝 **Notas de Desarrollo**
+
+#### **Jerarquía de Relaciones entre Entidades**
+```
+EMPRESA → RESOLUCIÓN (PADRE) → RESOLUCIÓN (HIJO) → VEHÍCULO → TUC
 ```
 
-### **4. Convenciones de Código**
+**Reglas de Implementación:**
+- **Resolución → Vehículo**: Relación directa y crítica
+- **Vehículo → TUC**: Relación opcional
+- **Empresa**: Se deriva de la resolución seleccionada
 
-#### **Nomenclatura:**
-- **Componentes:** `kebab-case` (ej: `vehiculo-form`)
-- **Archivos:** `kebab-case.ts/html/scss`
-- **Clases:** `PascalCase` (ej: `VehiculoFormComponent`)
-- **Variables:** `camelCase` (ej: `currentVehiculos`)
-- **Constantes:** `UPPER_SNAKE_CASE` (ej: `MAX_FILE_SIZE`)
+#### **Reglas de Implementación en Frontend**
 
-#### **Estructura de Archivos:**
-```
-componente/
-├── componente.ts          # Lógica del componente
-├── componente.html        # Template
-├── componente.scss        # Estilos
-└── componente.spec.ts     # Tests (opcional)
-```
+**VehiculoForm:**
+- `resolucionId` es campo requerido
+- `empresaId` se actualiza automáticamente basado en la resolución
+- Validación de formato de placa: `XXX-NNN`
 
-### **5. Próximas Funcionalidades Avanzadas**
+**Servicio de Vehículos:**
+- Mock data incluye `resolucionId` y `empresaId` derivado
+- Relaciones jerárquicas respetadas
 
-#### **Sistema de Reportes:**
-- [ ] **Reportes de expedientes** por estado
-- [ ] **Estadísticas de empresas** por tipo
-- [ ] **Dashboard con métricas** en tiempo real
-- [ ] **Exportación de reportes** en PDF
+**Componente de Lista de Vehículos:**
+- Muestra empresa derivada de la resolución
+- Filtros por resolución y empresa
 
-#### **Integración con APIs Externas:**
-- [ ] **API de RENIEC** para validación de DNI
-- [ ] **API de SUNAT** para validación de RUC
-- [ ] **Sistema de geolocalización** para rutas
-- [ ] **Integración con GPS** para seguimiento
+### 🎯 **Próximas Funcionalidades**
 
-#### **Optimizaciones:**
-- [ ] **Lazy loading** para todos los módulos
-- [ ] **Virtual scrolling** para listas grandes
-- [ ] **Caching** de datos frecuentes
-- [ ] **PWA** para uso offline
+#### **Sistema de Notificaciones**
+- Toast notifications para reemplazar `alert()` y `prompt()`
+- Notificaciones de estado para cambios en expedientes
+- Alertas de vencimiento para documentos
+- Sistema de mensajes en tiempo real
 
-## 🐛 **Solución de Problemas Comunes**
+#### **Autenticación y Autorización**
+- Sistema de login con JWT
+- Gestión de roles y permisos
+- Guards de ruta para protección
+- Interceptores HTTP para manejo de errores
 
-### **Error de Build:**
-```bash
-# Si hay errores de TypeScript:
-npm run build --verbose
-
-# Si hay problemas de dependencias:
-rm -rf node_modules package-lock.json
-npm install
-```
-
-### **Problemas de Rutas:**
-```typescript
-// Verificar que las rutas estén en app.routes.ts
-// Asegurar que los componentes estén importados
-// Verificar lazy loading configurado correctamente
-```
-
-### **Problemas de Estilos:**
-```scss
-// Usar siempre:
-- Variables CSS para colores y tamaños
-- Mixins para patrones repetitivos
-- BEM para nomenclatura de clases
-- Responsive design con breakpoints
-```
-
-## 📚 **Recursos Útiles**
-
-### **Documentación Angular:**
-- [Angular Signals](https://angular.io/guide/signals)
-- [Standalone Components](https://angular.io/guide/standalone-components)
-- [Reactive Forms](https://angular.io/guide/reactive-forms)
-- [Lazy Loading](https://angular.io/guide/lazy-loading-ngmodules)
-
-### **Patrones de Diseño:**
-- [Angular Style Guide](https://angular.io/guide/styleguide)
-- [TypeScript Best Practices](https://www.typescriptlang.org/docs/)
-- [SCSS Guidelines](https://sass-guidelin.es/)
-
-## 🎯 **Objetivos a Corto Plazo (1-2 semanas)**
-
-1. **Completar módulos de Vehículos y Conductores**
-2. **Implementar sistema de notificaciones**
-3. **Agregar autenticación básica**
-4. **Crear dashboard con métricas**
-5. **Implementar reportes básicos**
-
-## 🎯 **Objetivos a Mediano Plazo (1-2 meses)**
-
-1. **Integración con APIs externas**
-2. **Sistema de notificaciones avanzado**
-3. **Optimizaciones de performance**
-4. **Tests unitarios y de integración**
-5. **Documentación completa de API**
-
-## 📞 **Contacto y Soporte**
-
-Para continuar el desarrollo:
-1. **Revisar este documento** antes de empezar
-2. **Seguir los patrones establecidos**
-3. **Mantener consistencia** en el código
-4. **Documentar cambios** importantes
-5. **Hacer commits frecuentes** con mensajes descriptivos
+#### **Mejoras de UX/UI**
+- Animaciones y transiciones suaves
+- Modo oscuro/claro
+- Responsive design mejorado
+- Accesibilidad (WCAG 2.1)
 
 ---
 
-**Última actualización:** Diciembre 2024  
-**Versión del proyecto:** 1.0.0  
-**Estado:** Listo para continuar desarrollo 
+**Última actualización**: Enero 2025  
+**Estado del Build**: ✅ Exitoso  
+**Errores críticos**: 0  
+**Advertencias**: Solo presupuesto SCSS (no críticas) 

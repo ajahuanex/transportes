@@ -1,0 +1,189 @@
+<div class="conductores-eliminados-container">
+  <!-- Header -->
+  <div class="page-header">
+    <div class="header-left">
+      <button class="btn-back" (click)="volverAtras()">
+        <i class="fas fa-arrow-left"></i>
+        Volver
+      </button>
+      <h1 class="page-title">Conductores Eliminados</h1>
+    </div>
+    
+    <div class="header-actions">
+      <button class="btn btn-secondary" (click)="exportarDatos()">
+        <i class="fas fa-download"></i>
+        Exportar
+      </button>
+    </div>
+  </div>
+
+  <!-- Filtros -->
+  <div class="filters-section">
+    <div class="filters-grid">
+      <div class="filter-group">
+        <label for="filtroDNI">DNI:</label>
+        <input 
+          type="text" 
+          id="filtroDNI"
+          [(ngModel)]="currentFiltros().dni"
+          (input)="actualizarFiltroDNI($event.target.value)"
+          placeholder="Buscar por DNI"
+          class="form-control"
+        >
+      </div>
+      
+      <div class="filter-group">
+        <label for="filtroNombres">Nombres:</label>
+        <input 
+          type="text" 
+          id="filtroNombres"
+          [(ngModel)]="currentFiltros().nombres"
+          (input)="actualizarFiltroNombres($event.target.value)"
+          placeholder="Buscar por nombres"
+          class="form-control"
+        >
+      </div>
+      
+      <div class="filter-group">
+        <label for="filtroApellidos">Apellidos:</label>
+        <input 
+          type="text" 
+          id="filtroApellidos"
+          [(ngModel)]="currentFiltros().apellidos"
+          (input)="actualizarFiltroApellidos($event.target.value)"
+          placeholder="Buscar por apellidos"
+          class="form-control"
+        >
+      </div>
+      
+      <div class="filter-group">
+        <label for="filtroLicencia">Licencia:</label>
+        <input 
+          type="text" 
+          id="filtroLicencia"
+          [(ngModel)]="currentFiltros().licencia"
+          (input)="actualizarFiltroLicencia($event.target.value)"
+          placeholder="Buscar por licencia"
+          class="form-control"
+        >
+      </div>
+    </div>
+    
+    <div class="filter-actions">
+      <button class="btn btn-primary" (click)="aplicarFiltros()">
+        <i class="fas fa-search"></i>
+        Buscar
+      </button>
+      <button class="btn btn-secondary" (click)="limpiarFiltros()">
+        <i class="fas fa-times"></i>
+        Limpiar
+      </button>
+    </div>
+  </div>
+
+  <!-- Loading State -->
+  @if (isLoading()) {
+    <div class="loading-container">
+      <div class="spinner"></div>
+      <p>Cargando conductores eliminados...</p>
+    </div>
+  }
+
+  <!-- Results -->
+  @if (!isLoading()) {
+    <div class="results-section">
+      <div class="results-header">
+        <p class="results-count">
+          Mostrando {{ currentConductores().length }} de {{ currentTotalConductores() }} conductores eliminados
+        </p>
+      </div>
+
+      @if (currentConductores().length === 0) {
+        <div class="empty-state">
+          <i class="fas fa-trash-alt"></i>
+          <h3>No hay conductores eliminados</h3>
+          <p>No se encontraron conductores eliminados con los filtros aplicados.</p>
+        </div>
+      } @else {
+        <div class="table-container">
+          <table class="data-table">
+            <thead>
+              <tr>
+                <th>DNI</th>
+                <th>Nombres</th>
+                <th>Apellidos</th>
+                <th>Licencia</th>
+                <th>Teléfono</th>
+                <th>Fecha Eliminación</th>
+                <th>Acciones</th>
+              </tr>
+            </thead>
+            <tbody>
+              @for (conductor of currentConductores(); track conductor.id) {
+                <tr>
+                  <td>{{ conductor.dni }}</td>
+                  <td>{{ conductor.nombres }}</td>
+                  <td>{{ conductor.apellidos }}</td>
+                  <td>{{ conductor.licencia.numero || 'N/A' }}</td>
+                  <td>{{ conductor.contacto?.telefono || 'N/A' }}</td>
+                  <td>{{ formatearFecha(conductor.fechaEliminacion || '') }}</td>
+                  <td class="actions-cell">
+                    <button 
+                      class="btn-action btn-restore" 
+                      (click)="restaurarConductor(conductor.id)"
+                      title="Restaurar conductor"
+                    >
+                      <i class="fas fa-undo"></i>
+                    </button>
+                    <button 
+                      class="btn-action btn-delete" 
+                      (click)="eliminarPermanente(conductor.id)"
+                      title="Eliminar permanentemente"
+                    >
+                      <i class="fas fa-trash"></i>
+                    </button>
+                  </td>
+                </tr>
+              }
+            </tbody>
+          </table>
+        </div>
+
+        <!-- Paginación -->
+        @if (currentTotalPaginas() > 1) {
+          <div class="pagination">
+            <button 
+              class="btn-page" 
+              [disabled]="currentPaginaActual() === 1"
+              (click)="cambiarPagina(currentPaginaActual() - 1)"
+            >
+              <i class="fas fa-chevron-left"></i>
+              Anterior
+            </button>
+            
+            <div class="page-numbers">
+              @for (pagina of generarArrayPaginas(currentTotalPaginas()); track pagina) {
+                <button 
+                  class="btn-page" 
+                  [class.active]="pagina === currentPaginaActual()"
+                  (click)="cambiarPagina(pagina)"
+                >
+                  {{ pagina }}
+                </button>
+              }
+            </div>
+            
+            <button 
+              class="btn-page" 
+              [disabled]="currentPaginaActual() === currentTotalPaginas()"
+              (click)="cambiarPagina(currentPaginaActual() + 1)"
+            >
+              Siguiente
+              <i class="fas fa-chevron-right"></i>
+            </button>
+          </div>
+        }
+      }
+    </div>
+  }
+</div> 

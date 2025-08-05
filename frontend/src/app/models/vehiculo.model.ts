@@ -2,7 +2,9 @@ import { BaseEntity, SoftDeleteRequest, RestoreRequest, BaseFilter, EstadoGenera
 
 export interface Vehiculo extends BaseEntity {
   placa: string;
-  empresaActualId: string;
+  resolucionId: string;        // RELACIÓN DIRECTA CON RESOLUCIÓN (REQUERIDO)
+  empresaId?: string;          // DERIVADO: se obtiene de resolucion.empresaId
+  empresaActualId?: string;    // MANTENER PARA COMPATIBILIDAD
   rutaId?: string;
   categoria: string; // M1, M2, M3, N1, N2, N3, etc.
   marca: string;
@@ -27,7 +29,6 @@ export interface Vehiculo extends BaseEntity {
     };
   };
   // Campos adicionales para compatibilidad
-  empresaId?: string;
   empresaNombre?: string;
   tipo?: TipoVehiculo;
   modelo?: string;
@@ -163,7 +164,8 @@ export interface HistorialVehiculo {
 // Interfaces para requests y responses
 export interface CreateVehiculoRequest {
   placa: string;
-  empresaId: string;
+  resolucionId: string;        // REQUERIDO - Relación directa con resolución
+  empresaId?: string;          // DERIVADO - Se obtiene de la resolución
   tipo: TipoVehiculo;
   marca: string;
   modelo: string;
@@ -175,6 +177,7 @@ export interface CreateVehiculoRequest {
 }
 
 export interface UpdateVehiculoRequest {
+  resolucionId?: string;       // Permitir cambio de resolución
   tipo?: TipoVehiculo;
   marca?: string;
   modelo?: string;
@@ -187,7 +190,8 @@ export interface UpdateVehiculoRequest {
 
 export interface VehiculoFilter extends BaseFilter {
   placa?: string;
-  empresaId?: string;
+  resolucionId?: string;       // Filtrar por resolución
+  empresaId?: string;          // Filtrar por empresa (a través de resoluciones)
   empresaNombre?: string;
   tipo?: TipoVehiculo;
   marca?: string;

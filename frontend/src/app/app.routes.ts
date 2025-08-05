@@ -47,8 +47,43 @@ export const routes: Routes = [
         title: 'Expedientes Eliminados - DRTC Puno'
       },
       
+      // Rutas de Vehículos
       { path: 'vehiculos', loadComponent: () => import('./components/vehiculos/vehiculos').then(m => m.VehiculosComponent), title: 'Gestión de Vehículos - DRTC Puno' },
+      { path: 'vehiculos/nuevo', loadComponent: () => import('./components/vehiculos/vehiculo-form/vehiculo-form').then(m => m.VehiculoFormComponent), title: 'Nuevo Vehículo - DRTC Puno' },
+      { 
+        path: 'vehiculos/:id', 
+        loadComponent: () => import('./components/vehiculos/vehiculo-detail/vehiculo-detail').then(m => m.VehiculoDetailComponent), 
+        title: 'Detalles de Vehículo - DRTC Puno'
+      },
+      { 
+        path: 'vehiculos/:id/editar', 
+        loadComponent: () => import('./components/vehiculos/vehiculo-form/vehiculo-form').then(m => m.VehiculoFormComponent), 
+        title: 'Editar Vehículo - DRTC Puno'
+      },
+      { 
+        path: 'vehiculos/eliminados', 
+        loadComponent: () => import('./components/vehiculos/vehiculos-eliminados/vehiculos-eliminados').then(m => m.VehiculosEliminadosComponent), 
+        title: 'Vehículos Eliminados - DRTC Puno'
+      },
+      // Rutas de Conductores
       { path: 'conductores', loadComponent: () => import('./components/conductores/conductores').then(m => m.ConductoresComponent), title: 'Gestión de Conductores - DRTC Puno' },
+      { path: 'conductores/nuevo', loadComponent: () => import('./components/conductores/conductor-form/conductor-form').then(m => m.ConductorFormComponent), title: 'Nuevo Conductor - DRTC Puno' },
+      { 
+        path: 'conductores/:id', 
+        loadComponent: () => import('./components/conductores/conductor-detail/conductor-detail').then(m => m.ConductorDetailComponent), 
+        title: 'Detalles de Conductor - DRTC Puno'
+      },
+      { 
+        path: 'conductores/:id/editar', 
+        loadComponent: () => import('./components/conductores/conductor-form/conductor-form').then(m => m.ConductorFormComponent), 
+        title: 'Editar Conductor - DRTC Puno'
+      },
+      { 
+        path: 'conductores/eliminados', 
+        loadComponent: () => import('./components/conductores/conductores-eliminados/conductores-eliminados').then(m => m.ConductoresEliminadosComponent), 
+        title: 'Conductores Eliminados - DRTC Puno'
+      },
+      
       // Rutas de Rutas
       { path: 'rutas', loadComponent: () => import('./components/rutas/rutas').then(m => m.RutasComponent), title: 'Gestión de Rutas - DRTC Puno' },
       { path: 'rutas/nueva', loadComponent: () => import('./components/rutas/ruta-form/ruta-form').then(m => m.RutaFormComponent), title: 'Nueva Ruta - DRTC Puno' },
@@ -68,9 +103,15 @@ export const routes: Routes = [
         title: 'Rutas Eliminadas - DRTC Puno'
       },
       
-      // Rutas pendientes de implementar (apuntando a VehiculosComponent como placeholder)
-      { path: 'resoluciones', loadComponent: () => import('./components/vehiculos/vehiculos').then(m => m.VehiculosComponent), title: 'Gestión de Resoluciones - DRTC Puno' },
-      { path: 'tucs', loadComponent: () => import('./components/vehiculos/vehiculos').then(m => m.VehiculosComponent), title: 'Gestión de TUCs - DRTC Puno' },
+      // Rutas de Resoluciones
+      { path: 'resoluciones', loadComponent: () => import('./components/resoluciones/resoluciones').then(m => m.ResolucionesComponent), title: 'Gestión de Resoluciones - DRTC Puno' },
+      
+      // Rutas de TUCs
+      { path: 'tucs', loadComponent: () => import('./components/tucs/tucs').then(m => m.TUCsComponent), title: 'Gestión de TUCs - DRTC Puno' },
+      
+      // Rutas de Configuraciones
+      { path: 'configuraciones', loadComponent: () => import('./components/configuraciones/configuraciones').then(m => m.ConfiguracionesComponent), title: 'Configuraciones del Sistema - DRTC Puno' },
+      
       { path: 'reportes', loadComponent: () => import('./components/vehiculos/vehiculos').then(m => m.VehiculosComponent), title: 'Reportes - DRTC Puno' },
       { path: 'notificaciones', loadComponent: () => import('./components/vehiculos/vehiculos').then(m => m.VehiculosComponent), title: 'Notificaciones - DRTC Puno' },
       { path: '**', redirectTo: '/dashboard' }

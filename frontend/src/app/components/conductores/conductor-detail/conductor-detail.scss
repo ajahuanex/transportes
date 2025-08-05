@@ -1,0 +1,308 @@
+.conductor-detail-container {
+  padding: 20px;
+  max-width: 1200px;
+  margin: 0 auto;
+
+  .detail-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 30px;
+    padding-bottom: 20px;
+    border-bottom: 2px solid #e0e0e0;
+
+    .header-left {
+      display: flex;
+      align-items: center;
+      gap: 20px;
+
+      .btn-back {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        padding: 10px 16px;
+        background: #f8f9fa;
+        border: 1px solid #dee2e6;
+        border-radius: 6px;
+        color: #495057;
+        text-decoration: none;
+        transition: all 0.3s ease;
+        cursor: pointer;
+
+        &:hover {
+          background: #e9ecef;
+          border-color: #adb5bd;
+        }
+
+        i {
+          font-size: 14px;
+        }
+      }
+
+      .page-title {
+        margin: 0;
+        font-size: 28px;
+        font-weight: 600;
+        color: #2c3e50;
+      }
+    }
+
+    .header-actions {
+      display: flex;
+      gap: 12px;
+
+      .btn {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        padding: 10px 20px;
+        border: none;
+        border-radius: 6px;
+        font-weight: 500;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        text-decoration: none;
+
+        &.btn-secondary {
+          background: #6c757d;
+          color: white;
+
+          &:hover {
+            background: #5a6268;
+          }
+        }
+
+        &.btn-danger {
+          background: #dc3545;
+          color: white;
+
+          &:hover {
+            background: #c82333;
+          }
+        }
+
+        i {
+          font-size: 14px;
+        }
+      }
+    }
+  }
+
+  .loading-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 60px 20px;
+    text-align: center;
+
+    .spinner {
+      width: 40px;
+      height: 40px;
+      border: 4px solid #f3f3f3;
+      border-top: 4px solid #3498db;
+      border-radius: 50%;
+      animation: spin 1s linear infinite;
+      margin-bottom: 20px;
+    }
+
+    p {
+      color: #6c757d;
+      font-size: 16px;
+      margin: 0;
+    }
+  }
+
+  .error-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 60px 20px;
+    text-align: center;
+    background: #f8d7da;
+    border: 1px solid #f5c6cb;
+    border-radius: 8px;
+    color: #721c24;
+
+    i {
+      font-size: 48px;
+      margin-bottom: 20px;
+    }
+
+    p {
+      font-size: 16px;
+      margin-bottom: 20px;
+    }
+
+    .btn {
+      padding: 10px 20px;
+      background: #007bff;
+      color: white;
+      border: none;
+      border-radius: 6px;
+      cursor: pointer;
+      transition: background 0.3s ease;
+
+      &:hover {
+        background: #0056b3;
+      }
+    }
+  }
+
+  .conductor-details {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(400px, 1fr));
+    gap: 24px;
+
+    .detail-card {
+      background: white;
+      border-radius: 12px;
+      box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+      overflow: hidden;
+      border: 1px solid #e9ecef;
+
+      .card-header {
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        color: white;
+        padding: 20px;
+        border-bottom: 1px solid #e9ecef;
+
+        h2 {
+          margin: 0;
+          font-size: 20px;
+          font-weight: 600;
+        }
+      }
+
+      .card-content {
+        padding: 24px;
+
+        .detail-row {
+          display: flex;
+          justify-content: space-between;
+          align-items: center;
+          padding: 12px 0;
+          border-bottom: 1px solid #f8f9fa;
+
+          &:last-child {
+            border-bottom: none;
+          }
+
+          .detail-label {
+            font-weight: 600;
+            color: #495057;
+            min-width: 140px;
+          }
+
+          .detail-value {
+            color: #212529;
+            text-align: right;
+            flex: 1;
+            margin-left: 20px;
+
+            &.vencida {
+              color: #dc3545;
+              font-weight: 600;
+            }
+
+            .badge {
+              display: inline-block;
+              padding: 4px 8px;
+              font-size: 12px;
+              font-weight: 600;
+              border-radius: 4px;
+              margin-left: 8px;
+
+              &.badge-danger {
+                background: #dc3545;
+                color: white;
+              }
+
+              &.badge-warning {
+                background: #ffc107;
+                color: #212529;
+              }
+
+              &.badge-success {
+                background: #28a745;
+                color: white;
+              }
+
+              &.badge-secondary {
+                background: #6c757d;
+                color: white;
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+}
+
+// Estados de conductor
+.badge {
+  &.estado-habilitado {
+    background: #28a745;
+    color: white;
+  }
+
+  &.estado-inhabilitado {
+    background: #dc3545;
+    color: white;
+  }
+
+  &.estado-suspendido {
+    background: #ffc107;
+    color: #212529;
+  }
+
+  &.estado-desconocido {
+    background: #6c757d;
+    color: white;
+  }
+}
+
+// Animación del spinner
+@keyframes spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+
+// Responsive
+@media (max-width: 768px) {
+  .conductor-detail-container {
+    padding: 15px;
+
+    .detail-header {
+      flex-direction: column;
+      gap: 20px;
+      align-items: flex-start;
+
+      .header-actions {
+        width: 100%;
+        justify-content: flex-end;
+      }
+    }
+
+    .conductor-details {
+      grid-template-columns: 1fr;
+
+      .detail-card {
+        .card-content {
+          .detail-row {
+            flex-direction: column;
+            align-items: flex-start;
+            gap: 8px;
+
+            .detail-value {
+              text-align: left;
+              margin-left: 0;
+            }
+          }
+        }
+      }
+    }
+  }
+} 

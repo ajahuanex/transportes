@@ -1,0 +1,321 @@
+<div class="resoluciones-container">
+  <!-- Header -->
+  <div class="page-header">
+    <div class="header-content">
+      <h1><i class="fas fa-gavel"></i> Gestión de Resoluciones</h1>
+      <p>Administra las resoluciones de habilitación vehicular del DRTC Puno</p>
+    </div>
+    <div class="header-actions">
+      <button class="btn btn-outline-secondary" (click)="verEliminadas()">
+        <i class="fas fa-trash"></i> Eliminadas
+      </button>
+      <button class="btn btn-primary" (click)="nuevaResolucion()">
+        <i class="fas fa-plus"></i> Nueva Resolución
+      </button>
+    </div>
+  </div>
+
+  <!-- Estadísticas -->
+  @if (estadisticas()) {
+    <div class="stats-section">
+      <div class="stats-grid">
+        <div class="stat-card">
+          <div class="stat-icon">
+            <i class="fas fa-file-alt"></i>
+          </div>
+          <div class="stat-content">
+            <h3>{{ estadisticas().total }}</h3>
+            <p>Total</p>
+          </div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-icon">
+            <i class="fas fa-check-circle"></i>
+          </div>
+          <div class="stat-content">
+            <h3>{{ estadisticas().vigentes }}</h3>
+            <p>Vigentes</p>
+          </div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-icon">
+            <i class="fas fa-thumbs-up"></i>
+          </div>
+          <div class="stat-content">
+            <h3>{{ estadisticas().aprobadas }}</h3>
+            <p>Aprobadas</p>
+          </div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-icon">
+            <i class="fas fa-clock"></i>
+          </div>
+          <div class="stat-content">
+            <h3>{{ estadisticas().enRevision }}</h3>
+            <p>En Revisión</p>
+          </div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-icon">
+            <i class="fas fa-times-circle"></i>
+          </div>
+          <div class="stat-content">
+            <h3>{{ estadisticas().rechazadas }}</h3>
+            <p>Rechazadas</p>
+          </div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-icon">
+            <i class="fas fa-calendar-times"></i>
+          </div>
+          <div class="stat-content">
+            <h3>{{ estadisticas().vencidas }}</h3>
+            <p>Vencidas</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  }
+
+  <!-- Filtros -->
+  <div class="filters-section">
+    <div class="filters-grid">
+      <div class="filter-group">
+        <label for="nroResolucion">Nro. Resolución</label>
+        <input 
+          type="text" 
+          id="nroResolucion" 
+          [(ngModel)]="currentFiltros().nroResolucion"
+          (input)="actualizarFiltroNroResolucion($any($event.target).value)"
+          class="form-control"
+          placeholder="Buscar por número..."
+        >
+      </div>
+      <div class="filter-group">
+        <label for="empresa">Empresa</label>
+        <input 
+          type="text" 
+          id="empresa" 
+          [(ngModel)]="currentFiltros().empresa"
+          (input)="actualizarFiltroEmpresa($any($event.target).value)"
+          class="form-control"
+          placeholder="Buscar por empresa..."
+        >
+      </div>
+      <div class="filter-group">
+        <label for="tipoResolucion">Tipo Resolución</label>
+        <select 
+          id="tipoResolucion" 
+          [(ngModel)]="currentFiltros().tipoResolucion"
+          (change)="actualizarFiltroTipoResolucion($any($event.target).value)"
+          class="form-control"
+        >
+          <option value="">Todos los tipos</option>
+          <option value="PADRE">Padre</option>
+          <option value="HIJO">Hijo</option>
+        </select>
+      </div>
+      <div class="filter-group">
+        <label for="tipoTramite">Tipo Trámite</label>
+        <select 
+          id="tipoTramite" 
+          [(ngModel)]="currentFiltros().tipoTramite"
+          (change)="actualizarFiltroTipoTramite($any($event.target).value)"
+          class="form-control"
+        >
+          <option value="">Todos los trámites</option>
+          <option value="HABILITACION_VEHICULAR">Habilitación Vehicular</option>
+          <option value="INCREMENTO">Incremento</option>
+          <option value="SUSTITUCION">Sustitución</option>
+          <option value="RENOVACION">Renovación</option>
+          <option value="MODIFICACION">Modificación</option>
+        </select>
+      </div>
+      <div class="filter-group">
+        <label for="estado">Estado</label>
+        <select 
+          id="estado" 
+          [(ngModel)]="currentFiltros().estado"
+          (change)="actualizarFiltroEstado($any($event.target).value)"
+          class="form-control"
+        >
+          <option value="">Todos los estados</option>
+          <option value="BORRADOR">Borrador</option>
+          <option value="EN_REVISION">En Revisión</option>
+          <option value="APROBADA">Aprobada</option>
+          <option value="RECHAZADA">Rechazada</option>
+          <option value="VIGENTE">Vigente</option>
+          <option value="VENCIDA">Vencida</option>
+          <option value="ANULADA">Anulada</option>
+        </select>
+      </div>
+      <div class="filter-group">
+        <label for="fechaDesde">Fecha Desde</label>
+        <input 
+          type="date" 
+          id="fechaDesde" 
+          [(ngModel)]="currentFiltros().fechaDesde"
+          (change)="actualizarFiltroFechaDesde($any($event.target).value)"
+          class="form-control"
+        >
+      </div>
+      <div class="filter-group">
+        <label for="fechaHasta">Fecha Hasta</label>
+        <input 
+          type="date" 
+          id="fechaHasta" 
+          [(ngModel)]="currentFiltros().fechaHasta"
+          (change)="actualizarFiltroFechaHasta($any($event.target).value)"
+          class="form-control"
+        >
+      </div>
+    </div>
+    <div class="filter-actions">
+      <button type="button" class="btn btn-primary" (click)="aplicarFiltros()">
+        <i class="fas fa-search"></i> Buscar
+      </button>
+      <button type="button" class="btn btn-outline-secondary" (click)="limpiarFiltros()">
+        <i class="fas fa-times"></i> Limpiar
+      </button>
+      <button type="button" class="btn btn-success" (click)="exportarResoluciones()">
+        <i class="fas fa-download"></i> Exportar
+      </button>
+    </div>
+  </div>
+
+  <!-- Loading Overlay -->
+  @if (isLoading()) {
+    <div class="loading-overlay">
+      <div class="spinner"></div>
+      <p>Cargando resoluciones...</p>
+    </div>
+  }
+
+  <!-- Error Message -->
+  @if (hasError()) {
+    <div class="error-message">
+      <i class="fas fa-exclamation-triangle"></i>
+      <span>{{ hasError() }}</span>
+    </div>
+  }
+
+  <!-- Content Section -->
+  @if (!isLoading() && !hasError()) {
+    <div class="content-section">
+      <!-- Results Info -->
+      <div class="results-info">
+        <p>Mostrando {{ currentResoluciones().length }} de {{ currentTotalResoluciones() }} resoluciones</p>
+      </div>
+
+      <!-- Data Table -->
+      <div class="table-container">
+        <table class="data-table">
+          <thead>
+            <tr>
+              <th>Nro. Resolución</th>
+              <th>Empresa</th>
+              <th>Tipo</th>
+              <th>Trámite</th>
+              <th>Estado</th>
+              <th>Fecha Emisión</th>
+              <th>Vigencia</th>
+              <th>Acciones</th>
+            </tr>
+          </thead>
+          <tbody>
+            @for (resolucion of currentResoluciones(); track resolucion.id) {
+              <tr>
+                <td>
+                  <strong>{{ resolucion.nroResolucion }}</strong>
+                </td>
+                <td>{{ resolucion.empresaNombre }}</td>
+                <td>
+                  <span class="badge badge-info">
+                    {{ obtenerTipoResolucionTexto(resolucion.tipoResolucion) }}
+                  </span>
+                </td>
+                <td>{{ obtenerTipoTramiteTexto(resolucion.tipoTramite) }}</td>
+                <td>
+                  <span class="badge" [class]="obtenerClaseEstado(resolucion.estaActivo ? 'ACTIVO' : 'INACTIVO')">
+                    {{ obtenerEstadoTexto(resolucion.estaActivo ? 'ACTIVO' : 'INACTIVO') }}
+                  </span>
+                </td>
+                <td>{{ formatearFecha(resolucion.fechaEmision) }}</td>
+                <td>
+                  <div class="vigencia-info">
+                    <div>Inicio: {{ formatearFecha(resolucion.fechaVigenciaInicio) }}</div>
+                    <div>Fin: {{ formatearFecha(resolucion.fechaVigenciaFin) }}</div>
+                  </div>
+                </td>
+                <td>
+                  <div class="action-buttons">
+                    <button class="btn btn-sm btn-outline-primary" (click)="verResolucion(resolucion.id)" title="Ver detalles">
+                      <i class="fas fa-eye"></i>
+                    </button>
+                    <button class="btn btn-sm btn-outline-warning" (click)="editarResolucion(resolucion.id)" title="Editar">
+                      <i class="fas fa-edit"></i>
+                    </button>
+                    <button class="btn btn-sm btn-outline-danger" (click)="eliminarResolucion(resolucion.id)" title="Eliminar">
+                      <i class="fas fa-trash"></i>
+                    </button>
+                  </div>
+                </td>
+              </tr>
+            }
+          </tbody>
+        </table>
+      </div>
+
+      <!-- Pagination -->
+      @if (currentTotalPaginas() > 1) {
+        <div class="pagination-section">
+          <div class="pagination-info">
+            <p>Página {{ currentPaginaActual() }} de {{ currentTotalPaginas() }}</p>
+          </div>
+          <div class="pagination-controls">
+            <button 
+              class="btn btn-outline-primary" 
+              [disabled]="currentPaginaActual() === 1"
+              (click)="cambiarPagina(currentPaginaActual() - 1)"
+            >
+              <i class="fas fa-chevron-left"></i> Anterior
+            </button>
+            
+            <div class="page-numbers">
+              @for (page of getPageNumbers(); track page) {
+                <button 
+                  class="btn" 
+                  [class.btn-primary]="page === currentPaginaActual()"
+                  [class.btn-outline-primary]="page !== currentPaginaActual()"
+                  (click)="cambiarPagina(page)"
+                >
+                  {{ page }}
+                </button>
+              }
+            </div>
+            
+            <button 
+              class="btn btn-outline-primary" 
+              [disabled]="currentPaginaActual() === currentTotalPaginas()"
+              (click)="cambiarPagina(currentPaginaActual() + 1)"
+            >
+              Siguiente <i class="fas fa-chevron-right"></i>
+            </button>
+          </div>
+        </div>
+      }
+    </div>
+  }
+
+  <!-- Empty State -->
+  @if (!isLoading() && !hasError() && currentResoluciones().length === 0) {
+    <div class="empty-state">
+      <i class="fas fa-file-alt"></i>
+      <h3>No se encontraron resoluciones</h3>
+      <p>No hay resoluciones que coincidan con los filtros aplicados.</p>
+      <button class="btn btn-primary" (click)="limpiarFiltros()">
+        <i class="fas fa-times"></i> Limpiar Filtros
+      </button>
+    </div>
+  }
+</div> 

@@ -1,0 +1,134 @@
+<div class="vehiculo-detail-container">
+  <div class="detail-header">
+    <div class="header-content">
+      <h2>Detalle del Vehículo</h2>
+      <div class="header-actions">
+        <button type="button" class="btn btn-secondary" (click)="volver()">
+          <i class="fas fa-arrow-left"></i> Volver
+        </button>
+        <button type="button" class="btn btn-primary" (click)="editarVehiculo()">
+          <i class="fas fa-edit"></i> Editar
+        </button>
+        <button type="button" class="btn btn-danger" (click)="eliminarVehiculo()">
+          <i class="fas fa-trash"></i> Eliminar
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <div class="loading-overlay" *ngIf="isLoading()">
+    <div class="spinner"></div>
+    <p>Cargando datos del vehículo...</p>
+  </div>
+
+  <div class="error-message" *ngIf="hasError()">
+    <div class="error-content">
+      <i class="fas fa-exclamation-triangle"></i>
+      <h3>Error</h3>
+      <p>{{ hasError() }}</p>
+      <button type="button" class="btn btn-primary" (click)="volver()">
+        Volver a la lista
+      </button>
+    </div>
+  </div>
+
+  <div class="vehiculo-detail" *ngIf="!isLoading() && !hasError() && currentVehiculo()">
+    <div class="detail-card">
+      <div class="card-header">
+        <h3>Información General</h3>
+        <span class="badge" [class]="obtenerClaseEstado(currentVehiculo()!.estado)">
+          {{ obtenerEstadoTexto(currentVehiculo()!.estado) }}
+        </span>
+      </div>
+      
+      <div class="card-body">
+        <div class="detail-grid">
+          <div class="detail-item">
+            <label>Placa:</label>
+            <span class="value">{{ currentVehiculo()!.placa }}</span>
+          </div>
+          
+          <div class="detail-item">
+            <label>Marca:</label>
+            <span class="value">{{ currentVehiculo()!.marca }}</span>
+          </div>
+          
+          <div class="detail-item">
+            <label>Modelo:</label>
+            <span class="value">{{ currentVehiculo()!.modelo }}</span>
+          </div>
+          
+          <div class="detail-item">
+            <label>Año:</label>
+            <span class="value">{{ currentVehiculo()!.anioFabricacion }}</span>
+          </div>
+          
+          <div class="detail-item">
+            <label>Color:</label>
+            <span class="value">{{ currentVehiculo()!.color || 'No especificado' }}</span>
+          </div>
+          
+          <div class="detail-item">
+            <label>Categoría:</label>
+            <span class="value">{{ currentVehiculo()!.categoria }}</span>
+          </div>
+          
+          <div class="detail-item">
+            <label>Tipo de Vehículo:</label>
+            <span class="value">{{ obtenerTipoVehiculoTexto(currentVehiculo()!.tipo) }}</span>
+          </div>
+          
+          <div class="detail-item">
+            <label>Empresa:</label>
+            <span class="value">
+              <span *ngIf="currentEmpresa()">{{ currentEmpresa()!.razonSocial }}</span>
+              <span *ngIf="!currentEmpresa()" class="text-muted">Cargando...</span>
+            </span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="detail-card" *ngIf="currentVehiculo()!.mantenimiento?.observaciones?.length">
+      <div class="card-header">
+        <h3>Observaciones de Mantenimiento</h3>
+      </div>
+      
+      <div class="card-body">
+        <ul class="observaciones">
+          <li *ngFor="let observacion of currentVehiculo()!.mantenimiento?.observaciones">{{ observacion }}</li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="detail-card">
+      <div class="card-header">
+        <h3>Información del Sistema</h3>
+      </div>
+      
+      <div class="card-body">
+        <div class="detail-grid">
+          <div class="detail-item">
+            <label>ID:</label>
+            <span class="value">{{ currentVehiculo()!.id }}</span>
+          </div>
+          
+          <div class="detail-item">
+            <label>Creado:</label>
+            <span class="value">{{ formatearFecha(currentVehiculo()!.fechaCreacion) }}</span>
+          </div>
+          
+          <div class="detail-item" *ngIf="currentVehiculo()!.fechaModificacion">
+            <label>Última actualización:</label>
+            <span class="value">{{ formatearFecha(currentVehiculo()!.fechaModificacion) }}</span>
+          </div>
+          
+          <div class="detail-item" *ngIf="currentVehiculo()!.fechaEliminacion">
+            <label>Eliminado:</label>
+            <span class="value text-danger">{{ formatearFecha(currentVehiculo()!.fechaEliminacion) }}</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div> 
